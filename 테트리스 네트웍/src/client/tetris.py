@@ -11,7 +11,7 @@ from interference import *
 import pickle
 import os.path
 
-import pyautogui
+# import pyautogui
 # pip install pygame
 
 #이벤트 처리함수
