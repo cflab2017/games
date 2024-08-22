@@ -178,9 +178,9 @@ class Stone():
         self.lines += n
         self.score += linescores[n] * self.level
         
-        if n >= 1:
-            # self.item_cnt += n-2
-            self.item_cnt += n
+        if n >= 3:
+            self.item_cnt += n-3
+            # self.item_cnt += n
             print(f'self.item_cnt : {self.item_cnt}')
         
         if self.score > self.score_high:
