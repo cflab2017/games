@@ -37,6 +37,13 @@ class socketServer():
         with open("host.txt", "r") as f:
             lines = f.readlines()
             for line in lines:
+                line = line.replace('\n','')
+                line = line.replace(' ','')
+                if line.find('#')>=0:
+                    continue
+                if len(line.split('.')) != 4:
+                    print(line)
+                    continue
                 print(line)
                 return line
             
