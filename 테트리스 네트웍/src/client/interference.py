@@ -50,6 +50,9 @@ class Interference():
             'game_over':pygame.mixer.Sound('./sound/game_over.wav'),
         }
 
+    def set_DrawMsg(self,DrawMsg):
+        self.DrawMsg = DrawMsg#.status_msg
+        
     def create_stone(self,idex):
         self.next_stone.append(self.shapes[idex])
         if len(self.stone)==0:
@@ -119,25 +122,30 @@ class Interference():
 ###########################################################
     #한칸 내리기
     def drop(self):
-        if (self.stone is not None) and len(self.stone):
-            self.stone_y += 1
-            if self.check_collision():
-                self.join_matrixes()
-                self.new_stone()
-                cleared_rows = 0
-                # while True:
-                for i, row in enumerate(self.board.board):
-                    if None not in row:
-                        self.remove_row(i)
-                        cleared_rows += 1
-                        break
-                    # else:
-                    #     break
-                
-                self.add_cl_lines(cleared_rows)
+        try:
+            if (self.stone is not None) and len(self.stone):
+                self.stone_y += 1
+                if self.check_collision():
+                    self.join_matrixes()
+                    self.new_stone()
+                    cleared_rows = 0
+                    while True:
+                        for i, row in enumerate(self.board.board):
+                            if None not in row:
+                                self.remove_row(i)
+                                cleared_rows += 1
+                                break
+                        else:
+                            break
+                    
+                    self.add_cl_lines(cleared_rows)
+                    return True
+                return False
+            else:
                 return True
-            return False
-        else:
+        except Exception:       
+            err_msg = traceback.format_exc()
+            print(err_msg) 
             return True
         
     #내려갈 수 있는 곳까지 내려가기
@@ -156,11 +164,20 @@ class Interference():
         self.mstone.lines += n
         self.mstone.score += linescores[n] * self.mstone.level
         
+        # if n >= 1:
+        #     self.mstone.item_cnt += int(n/1)
+        if n >= 2:
+            self.mstone.item_cnt += int(n/2)
+            print(f'self.item_cnt : {self.mstone.item_cnt}')
+            self.DrawMsg.status_msg.append(f'공격권 획득 {self.mstone.item_cnt}개')
+            
         if self.mstone.score > self.mstone.score_high:
             self.mstone.score_high = self.mstone.score
             
         if n > 0:
             self.snd_dic['score'].play()
+            
+        
             
         # if self.mstone.lines >= self.mstone.level*6:
         #     self.mstone.level += 1

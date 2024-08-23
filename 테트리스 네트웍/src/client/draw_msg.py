@@ -22,7 +22,10 @@ class DrawMsg():
         # self.defFont = pygame.font.Font(pygame.font.get_default_font(), 18)
         self.defFont = pygame.font.SysFont('malgungothic', 25)
         self.defFont18 = pygame.font.SysFont('malgungothic', 18)
-        self.click_draw=[]        
+        self.click_draw=[]
+        self.status_msg = []
+        self.status_msg_disp = ''
+        self.status_msg_tick = 0
         self.attack_delay_tick = 0
         self.attack_msg_tick = 0
         self.snd_dic = {
@@ -119,12 +122,26 @@ class DrawMsg():
                             self.attack_delay_tick = pygame.time.get_ticks()
                         
                     
-                
+    def drawStatusMsg(self):
+        if not self.stone.gameover:                
+            if self.status_msg_tick == 0:
+                if len(self.status_msg):
+                    self.status_msg_disp = self.status_msg.pop()
+                    self.status_msg_tick = pygame.time.get_ticks()
+            else:
+                ellip = pygame.time.get_ticks() - self.status_msg_tick
+                if ellip < 2000:
+                    if ellip < 400 or (800 < ellip < 1200)or (1600 < ellip):
+                        self.disp_msg(f"{self.status_msg_disp}",(self.cell_size, self.cell_size*10),(200, 0, 0))
+                else:
+                    self.status_msg_tick = 0
+                    self.status_msg_disp = ''
     
     def draw(self,is_pause,pause_cnt,interf_next_stone):
         if self.stone.gameover:
-            self.center_msg("Game Over!\nRe-start : Enter")
+            self.center_msg("Game Over!! (Re-start : Enter)")
         else:
+                
             #게임화면 구분선
             if len(interf_next_stone):
                 self.disp_msg(f" Next Attck", (self.msg_start+self.cell_size*5,2))

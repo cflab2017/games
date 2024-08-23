@@ -37,7 +37,9 @@ def eventProcess():
                     else:
                         if pause_cnt > 0:
                             is_pause = True
-                            pause_cnt -= 1                    
+                            
+                            pause_cnt -= 1      
+                            msg.status_msg.append(f'일시정지 남은 횟수 {pause_cnt}개')              
                 if is_pause == False:
                     key_process_stone(event.key)
                     key_process_inter(event.key)
@@ -164,6 +166,10 @@ board = Board(rows,cols)
 stone = Stone(rows,cols,board,user_name)
 interf = Interference(stone,rows,cols,board,user_name)
 msg = DrawMsg(screen,stone,user_name,client,rlim,cell_size)
+
+stone.set_DrawMsg(msg)
+interf.set_DrawMsg(msg)
+
 client.set_interf(interf)
 init_game()
 
@@ -195,7 +201,7 @@ while isActive:
         if stone.score != stone.score_pre:
             client.send_score(user_name, stone.score)
             stone.score_pre = stone.score
-            
+    msg.drawStatusMsg()
     pygame.display.update() #화면 갱신
     clock.tick(30) #초당 30프레임 
     

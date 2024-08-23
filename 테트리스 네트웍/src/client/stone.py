@@ -4,6 +4,7 @@ from random import randrange as rand
 
 import pickle
 import os.path
+import traceback
 
 class Stone():
     shapes = [    
@@ -56,6 +57,9 @@ class Stone():
             'score':pygame.mixer.Sound('./sound/score.wav'),
             'game_over':pygame.mixer.Sound('./sound/game_over.wav'),
         }
+        
+    def set_DrawMsg(self,DrawMsg):
+        self.DrawMsg = DrawMsg#.status_msg
         
     def game_init(self):
         self.level = 1
@@ -143,24 +147,29 @@ class Stone():
     
 ###########################################################
     #한칸 내리기
-    def drop(self):       
-        self.stone_y += 1
-        if self.check_collision():
-            self.join_matrixes()
-            self.new_stone()
-            cleared_rows = 0
-            # while True:
-            for i, row in enumerate(self.board.board):
-                if None not in row:
-                    self.remove_row(i)
-                    cleared_rows += 1
-                    break
-                # else:
-                #     break
-            
-            self.add_cl_lines(cleared_rows)
+    def drop(self):  
+        try:
+            self.stone_y += 1
+            if self.check_collision():
+                self.join_matrixes()
+                self.new_stone()
+                cleared_rows = 0
+                while True:
+                    for i, row in enumerate(self.board.board):
+                        if None not in row:
+                            self.remove_row(i)
+                            cleared_rows += 1
+                            break
+                    else:
+                        break
+                
+                self.add_cl_lines(cleared_rows)
+                return True
+            return False
+        except Exception:       
+            err_msg = traceback.format_exc()
+            print(err_msg) 
             return True
-        return False
 
     #내려갈 수 있는 곳까지 내려가기
     def insta_drop(self):
@@ -178,10 +187,12 @@ class Stone():
         self.lines += n
         self.score += linescores[n] * self.level
         
-        if n >= 3:
-            self.item_cnt += n-3
-            # self.item_cnt += n
+        # if n >= 1:
+        #     self.item_cnt += int(n/1)
+        if n >= 2:
+            self.item_cnt += int(n/2)
             print(f'self.item_cnt : {self.item_cnt}')
+            self.DrawMsg.status_msg.append(f'공격권 획득 {self.item_cnt}개')
         
         if self.score > self.score_high:
             self.score_high = self.score
