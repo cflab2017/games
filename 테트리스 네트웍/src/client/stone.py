@@ -38,7 +38,7 @@ class Stone():
         self.score = 0
         self.score_pre = -1
         self.user_name = user_name
-        self.item_cnt = 0
+        self.item_cnt = 1
         
         #저장할 딕셔너리
         self.load_dict = {}
@@ -56,6 +56,8 @@ class Stone():
             'move':pygame.mixer.Sound('./sound/move.wav'),
             'score':pygame.mixer.Sound('./sound/score.wav'),
             'game_over':pygame.mixer.Sound('./sound/game_over.wav'),
+            'clear':pygame.mixer.Sound('./sound/clear.wav'),
+            'destory':pygame.mixer.Sound('./sound/destory.wav'),
         }
         
     def set_DrawMsg(self,DrawMsg):
@@ -122,9 +124,11 @@ class Stone():
         return result
 
     def rotate_stone(self):
-        new_stone = self.rotate_clockwise()
-        if not self.check_collision():
-            self.stone = new_stone
+        pre_stone = self.stone
+        
+        self.stone = self.rotate_clockwise()
+        if self.check_collision():
+            self.stone = pre_stone
         
         while True:
             new_x = self.stone_x
@@ -137,13 +141,14 @@ class Stone():
             break
         
     def move(self, delta_x):
-        new_x = self.stone_x + delta_x
-        if new_x < 0:
-            new_x = 0
-        if new_x > self.cols - len(self.stone[0]):
-            new_x = self.cols - len(self.stone[0])
-        if not self.check_collision():
-            self.stone_x = new_x
+        pre_x = self.stone_x
+        self.stone_x = self.stone_x + delta_x
+        if self.stone_x < 0:
+            self.stone_x = 0
+        if self.stone_x > self.cols - len(self.stone[0]):
+            self.stone_x = self.cols - len(self.stone[0])
+        if self.check_collision():
+            self.stone_x = pre_x
     
 ###########################################################
     #한칸 내리기
@@ -151,7 +156,7 @@ class Stone():
         try:
             self.stone_y += 1
             if self.check_collision():
-                self.join_matrixes()
+                self.stone_y +=  self.join_matrixes() #마지막 라인에서 회전하면 overfllow
                 self.new_stone()
                 cleared_rows = 0
                 while True:
@@ -191,7 +196,7 @@ class Stone():
         #     self.item_cnt += int(n/1)
         if n >= 2:
             self.item_cnt += int(n/2)
-            print(f'self.item_cnt : {self.item_cnt}')
+            # print(f'self.item_cnt : {self.item_cnt}')
             self.DrawMsg.status_msg.append(f'공격권 획득 {self.item_cnt}개')
         
         if self.score > self.score_high:
@@ -199,7 +204,7 @@ class Stone():
             
 
         if n > 0:
-            self.snd_dic['score'].play()
+            self.snd_dic['clear'].play()
             
         if self.lines >= self.level*6:
             self.level += 1
@@ -209,7 +214,18 @@ class Stone():
             
     #보드에 stone을 삽입하기
     def join_matrixes(self):
+        result_y = 0
+        for cy, row in enumerate(self.stone):
+            for cx, val in enumerate(row):
+                if val is not None:
+                    if cy+self.stone_y-1 >= len(self.board.board):
+                        result_y -= 1
+        # if result_y < 0:
+        #     return result_y
+        self.stone_y += result_y
+        
         for cy, row in enumerate(self.stone):
             for cx, val in enumerate(row):
                 if val is not None:
                     self.board.board[cy+self.stone_y-1][cx+self.stone_x] = val
+        return 0

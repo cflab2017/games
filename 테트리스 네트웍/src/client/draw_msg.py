@@ -150,31 +150,40 @@ class DrawMsg():
             self.disp_msg("Next:", (self.msg_start,2))
             
             self.disp_msg_server_high_score(5)
-            self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*7),(0, 255, 255))
-            self.disp_msg_users(9)
+            self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*6),(0, 255, 255))
+            self.disp_msg_users(7)
             status = ''
             if self.stone.item_cnt>0:
                 status = '(공격상대 클릭!!)'
-
-            self.disp_msg(f"공격가능: {self.stone.item_cnt:,} {status}",(self.msg_start, self.cell_size*18),(200, 0, 0))
-            
-            self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*19))
-            self.disp_msg(f"제거라인: {self.stone.lines}",(self.msg_start, self.cell_size*20))
-            self.disp_msg(f"최고점수: {self.stone.score_high:,}",(self.msg_start, self.cell_size*21))
+                
+            msg_idex = 13
+            self.disp_msg(f"공격가능: {self.stone.item_cnt:,} {status}",(self.msg_start, self.cell_size*msg_idex),(200, 0, 0))
+            msg_idex += 1
+            self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*msg_idex))
+            msg_idex += 1
+            self.disp_msg(f"제거라인: {self.stone.lines}",(self.msg_start, self.cell_size*msg_idex))
+            msg_idex += 1
+            self.disp_msg(f"최고점수: {self.stone.score_high:,}",(self.msg_start, self.cell_size*msg_idex))
+            msg_idex += 1
             
             if is_pause:
                 color = (255, 0, 0)
             else:
                 color = (255, 255, 255)
-            self.disp_msg(f"일지정지(P) 남은 횟수({pause_cnt})",(self.msg_start, self.cell_size*22),color)
+            self.disp_msg(f"일지정지(P) 남은 횟수({pause_cnt})",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
             
             color = (0, 0, 255)
-            self.disp_msg_s(f"[스톤제어]",(self.msg_start, self.cell_size*24),color)
+            self.disp_msg_s(f"[스톤제어]",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
             color = (255, 255, 255)
-            self.disp_msg_s(f"왼쪽:←, 오른쪽:→, 회전:↑, 내리기:↓, 한번에내리기: space",(self.msg_start, self.cell_size*25),color)
+            self.disp_msg_s(f"왼쪽:←, 오른쪽:→, 회전:↑, 내리기:↓, 한번에내리기: space",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
             color = (0, 0, 255)
-            self.disp_msg_s(f"[공격받은 스톤제어]",(self.msg_start, self.cell_size*26),color)
+            self.disp_msg_s(f"[공격받은 스톤제어]",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
             color = (255, 0, 255)
-            self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*27),color)
+            self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
 
             self.check_click()

@@ -16,9 +16,10 @@ class Board():
             col = []
             for x in range(self.cols):
                 if x % 2 == y%2:
-                    col.append((35,  35,  35))
+                    col.append((200,  200,  200))
                 else:
-                    col.append(None)
+                    col.append((220,  220,  220))
+                    # col.append(None)
             self.bground_grid.append(col)
             
     def new_board(self):        

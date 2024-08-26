@@ -47,7 +47,10 @@ class Interference():
         self.snd_dic = {
             'move':pygame.mixer.Sound('./sound/move.wav'),
             'score':pygame.mixer.Sound('./sound/score.wav'),
+            'clear':pygame.mixer.Sound('./sound/clear.wav'),
             'game_over':pygame.mixer.Sound('./sound/game_over.wav'),
+            'destory':pygame.mixer.Sound('./sound/destory.wav'),
+            
         }
 
     def set_DrawMsg(self,DrawMsg):
@@ -57,7 +60,14 @@ class Interference():
         self.next_stone.append(self.shapes[idex])
         if len(self.stone)==0:
             self.new_stone()
-        
+            
+    def del_stone(self):
+        if self.mstone.item_cnt > 0:
+            self.mstone.item_cnt -= 1
+            self.stone = []
+            self.new_stone()
+            self.snd_dic['destory'].play()
+
     def new_stone(self):
         if len(self.next_stone):
             self.stone = self.next_stone.pop()
@@ -90,9 +100,12 @@ class Interference():
     def rotate_stone(self):
         if self.stone is None or (len(self.stone)<1):
             return
-        new_stone = self.rotate_clockwise()
-        if not self.check_collision():
-            self.stone = new_stone
+        
+        pre_stone = self.stone
+        
+        self.stone = self.rotate_clockwise()
+        if self.check_collision():
+            self.stone = pre_stone
         
         while True:
             new_x = self.stone_x
@@ -108,13 +121,14 @@ class Interference():
         if self.stone is None or (len(self.stone)<1):
             return
         try:
-            new_x = self.stone_x + delta_x
-            if new_x < 0:
-                new_x = 0
-            if new_x > self.cols - len(self.stone[0]):
-                new_x = self.cols - len(self.stone[0])
-            if not self.check_collision():
-                self.stone_x = new_x
+            pre_x = self.stone_x
+            self.stone_x = self.stone_x + delta_x
+            if self.stone_x < 0:
+                self.stone_x = 0
+            if self.stone_x > self.cols - len(self.stone[0]):
+                self.stone_x = self.cols - len(self.stone[0])
+            if self.check_collision():
+                self.stone_x = pre_x
         except Exception:            
             err_msg = traceback.format_exc()
             print(err_msg) 
@@ -175,7 +189,7 @@ class Interference():
             self.mstone.score_high = self.mstone.score
             
         if n > 0:
-            self.snd_dic['score'].play()
+            self.snd_dic['clear'].play()
             
         
             
@@ -187,7 +201,18 @@ class Interference():
             
     #보드에 stone을 삽입하기
     def join_matrixes(self):
+        result_y = 0
+        for cy, row in enumerate(self.stone):
+            for cx, val in enumerate(row):
+                if val is not None:
+                    if cy+self.stone_y-1 >= len(self.board.board):
+                        result_y -= 1
+        # if result_y < 0:
+        #     return result_y
+        self.stone_y += result_y
+        
         for cy, row in enumerate(self.stone):
             for cx, val in enumerate(row):
                 if val is not None:
                     self.board.board[cy+self.stone_y-1][cx+self.stone_x] = val
+        return 0

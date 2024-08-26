@@ -16,7 +16,7 @@ import os.path
 
 #이벤트 처리함수
 def eventProcess():
-    global isActive
+    global isActive,design_mode
     global is_pause, pause_cnt
     for event in pygame.event.get():#이벤트 가져오기
         if event.type == QUIT: #종료버튼?
@@ -24,6 +24,11 @@ def eventProcess():
         if event.type == pygame.KEYDOWN:#키 눌림?
             if event.key == pygame.K_ESCAPE:#ESC 키?
                 isActive = False
+            if event.key == pygame.K_F5:
+                if design_mode==0:
+                    design_mode = 1
+                else:
+                    design_mode = 0
                 
             if stone.gameover:
                 if event.key == pygame.K_RETURN:#재시작
@@ -104,24 +109,66 @@ def key_process_inter( key):
     if key == pygame.K_w:#회전하기
         interf.snd_dic['move'].play()
         interf.rotate_stone()
+    if key == pygame.K_1:#삭제
+        interf.snd_dic['move'].play()
+        interf.del_stone()
         
+color_list = [
+    (255, 85,  85),
+    (100, 200, 115),
+    (120, 108, 245),
+    (255, 140, 50),
+    (50,  120, 52),
+    (146, 202, 73),
+    (150, 161, 218),
+    (100, 0,  100),
+    ]        
 def draw_matrix(matrix, off_x,off_y,Thickness,outline = False):
     global cell_size
     for y, row in enumerate(matrix):
         for x, color in enumerate(row):
             if color is not None:
-                pygame.draw.rect(
-                    screen,
-                    color,
-                    pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
-                    Thickness)
-                if outline:
+                if design_mode == 1 and color in color_list:
+                    idex = color_list.index(color)
+                    if idex > -1:
+                        screen.blit(img_player[idex], ((off_x+x) *cell_size,(off_y+y) *cell_size))
+                else:
                     pygame.draw.rect(
                         screen,
-                        (50,50,50),
+                        color,
+                        pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
+                        Thickness)
+                if design_mode==0 and outline:
+                    pygame.draw.rect(
+                        screen,
+                        (200,200,200),
                         pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
                         1)
-                
+            else:
+                pass
+                # pygame.draw.rect(
+                #     screen,
+                #     (255,255,255),
+                #     pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
+                #     Thickness)
+                    
+def load_player_img():
+    file_names = [
+        "player_army.png",    "player_dinosaur.png",
+        "player_ninja.png",   "player_penguin.png",
+        "player_Pirate.png",  "player_police.png",
+        "player_samurai.png", "player_soldier.png",
+        "player_warrior.png",
+        ]
+    
+    img_player = []
+    for file in file_names:
+        image = pygame.image.load(f"./images/{file}").convert_alpha()
+        image = pygame.transform.scale(image, (cell_size, cell_size))
+        img_player.append(image)  
+        
+    return img_player
+
 def init_game():
     global is_pause, pause_cnt
     stone.gameover = False
@@ -136,24 +183,26 @@ def init_game():
                 
 #1.초기화 하기
 pygame.init() #pygame 초기화
-pygame.display.set_caption("codingnow.co.kr") #타이틀
+pygame.display.set_caption("codingnow.co.kr 버전02") #타이틀
 clock = pygame.time.Clock() #프레임을 처리 하기위해
 
 #2.변수초기화
 isActive = True
-cell_size = 25+10
+design_mode = 0
+cell_size = 25+10+10
 cols = 10
-rows = 22+6
+rows = 22+6-5
 rlim = cell_size*cols
 is_pause = False
 pause_cnt = 0
     
 
 #3.스크린 생성하기
-SCREEN_WIDTH = cell_size*(cols+7)
+SCREEN_WIDTH = cell_size*(cols+3)
 SCREEN_HEIGHT = cell_size*rows
 screen = pygame.display.set_mode((SCREEN_WIDTH+400, SCREEN_HEIGHT)) #화면생성
 
+img_player = load_player_img()
 
 #4.클래스 생성
 client = socketClient()

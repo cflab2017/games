@@ -22,7 +22,7 @@ class socketServer():
         }
 
     def __init__(self):
-        print('>> Server Start')
+        print('>> Server Start 버전02')
         
         self.HOST = self.get_host_ip()
         self.update_store_dic('r')
@@ -108,6 +108,8 @@ class socketServer():
                 continue
             print(self.infor,self.infor[key])
             if 'name' not in self.infor[key]:
+                continue
+            if self.infor[key]['name'] is None:
                 continue
             if name_check == self.infor[key]['name'].replace(' ', ''):
                 return None
