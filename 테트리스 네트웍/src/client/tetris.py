@@ -189,7 +189,7 @@ clock = pygame.time.Clock() #프레임을 처리 하기위해
 #2.변수초기화
 isActive = True
 design_mode = 0
-cell_size = 25+10+10
+cell_size = 25+10+9
 cols = 10
 rows = 22+6-5
 rlim = cell_size*cols
