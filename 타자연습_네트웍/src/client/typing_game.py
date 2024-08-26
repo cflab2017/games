@@ -7,6 +7,9 @@ from _thread import *
 import time
 from client import *
 import pyautogui
+from account import *
+
+from keyboardDraw import *
 
 from gen_word import *
 # 1옥타브: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
@@ -18,7 +21,7 @@ lasting = 80
 class game_main():
     
     isActive = True
-    WIDTH = 1000
+    WIDTH = 1000-110
     HEIGHT = 1000
     msg_inbox = ''
     score = 0
@@ -46,17 +49,20 @@ class game_main():
         pygame.display.set_caption("codingnow.co.kr") #타이틀
         self.clock = pygame.time.Clock() #프레임을 처리 하기위해
         
-        self.mfont30 = pygame.font.SysFont("malgungothic", 30)
+        self.mfont30 = pygame.font.SysFont("malgungothic", 20)
         self.mfont18 = pygame.font.SysFont("malgungothic", 18)
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        self.creat_name()
-        self.client = socketClient(self.user_name)
+        # self.creat_name()
+        self.client = socketClient()
+        account = Account(self.screen)
+        self.user_name,self.isActive = account.run(self.client)
         
+        self.keyboardDraw = KeyboardDraw(self.screen)
         self.snd_space = pygame.mixer.Sound(f'./sound/shoot.wav')
         self.snd_hit = pygame.mixer.Sound(f'./sound/hit.wav')
         self.snd_item = pygame.mixer.Sound(f'./sound/item.wav')
         self.snd_gameover = pygame.mixer.Sound(f'./sound/game_over.wav')
-        self.gen_word = Gen_Workd(self)
+        self.gen_word = Gen_Workd(self,self.client.words)
         start_new_thread(self.thread_play, (self.play_memody, ))
         
     def creat_name(self):
@@ -83,8 +89,15 @@ class game_main():
     #이벤트 확인 및 처리 함수
     def eventProcess(self):
         for event in pygame.event.get():#이벤트 가져오기
+            self.keyboardDraw.update_key(event)
             if event.type == QUIT: #종료버튼?
                 self.isActive = False
+                    
+            if event.type == pygame.TEXTINPUT:
+                if self.is_game_over == False:
+                    self.msg_inbox += event.text
+                    # winsound.Beep(pitch['g_'], lasting)
+                    self.play_memody.append('g_')
                     
             if event.type == pygame.KEYDOWN:#키 눌림?
                 if event.key == pygame.K_ESCAPE:#ESC 키?
@@ -93,16 +106,7 @@ class game_main():
                     if self.is_game_over:
                         self.is_game_init = True
                 elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                    self.msg_inbox = ''
-                        
-            if event.type == pygame.TEXTINPUT:
-                if self.is_game_over == False:
-                    self.msg_inbox += event.text
-                    # winsound.Beep(pitch['g_'], lasting)
-                    self.play_memody.append('g_')
-                        
-                # elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                    
+                    # self.msg_inbox = ''
                     # winsound.Beep(pitch['g_'], lasting)
                     if self.is_game_over == False:
                         centerx, centery = self.gen_word.match_word(self.msg_inbox)
@@ -135,9 +139,9 @@ class game_main():
                         else:
                             self.play_memody.append('b_')
                             
-                    # self.msg_inbox = ''
-                else:
-                    pass
+                        self.msg_inbox = ''
+                    else:
+                        pass
             
                 
             if event.type == pygame.USEREVENT+1:#사용자 이벤트            
@@ -146,6 +150,9 @@ class game_main():
                     self.msg_inbox = self.msg_inbox[0:-1] 
                     self.play_memody.append('g_')
                     
+            if event.type == pygame.USEREVENT+2:#사용자 이벤트  
+                self.gen_word.drop()
+                
     def check_combo(self):
         
         if self.com_bo_tick != 0:
@@ -177,7 +184,7 @@ class game_main():
             width = self.msg_win_width
             x = self.screen.get_width() - width
             x += 4
-            y = 300
+            y = 150+300
             
             img = self.mfont30.render(f'최고점수', 1, (255,0,0))
             self.screen.blit(img,(x, y))
@@ -208,11 +215,11 @@ class game_main():
         width = self.msg_win_width
         height = self.screen.get_height()
         x = self.screen.get_width() - width
-        y = 0
+        y = 0+300
         pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)
         
         x += 2#self.screen.get_width()/2 -  width/2
-        y = 20
+        y = 20+300
         
         img = self.mfont30.render(f' 레벨: {self.level}', 1, (0,0,255))
         self.screen.blit(img,(x, y+2))
@@ -270,6 +277,7 @@ class game_main():
                 
     def run(self):
         pygame.time.set_timer(pygame.USEREVENT+1, 50)
+        pygame.time.set_timer(pygame.USEREVENT+2, 10)
         while self.isActive:
             self.screen.fill((0, 0, 0)) #화면을 흰색으로 채우기
             self.game_init()
@@ -284,6 +292,7 @@ class game_main():
                         self.hp = 0
                         self.is_game_over = True
                         self.snd_gameover.play()
+            self.keyboardDraw.draw(self.gen_word.words)
             pygame.display.update() #화면 갱신
             self.clock.tick(30) #초당 60프레임 갱신을 위한 잠시 대기
 

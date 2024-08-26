@@ -20,12 +20,14 @@ class socketServer():
         '최고점수':high_score_dict
         }
 
+    game_words = []
+    
     def __init__(self):
         print('>> Server Start')
         
         self.HOST = self.get_host_ip()
         self.update_store_dic('r')
-                                
+        self.get_words()
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT))
@@ -45,6 +47,18 @@ class socketServer():
                     continue
                 print(line)
                 return line
+            
+    def get_words(self):        
+        with open("word.txt", "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if len(line.replace(" ","")):
+                    word = line.replace("\n","")
+                    word = word.replace(" ","")
+                    # word = word.lower()
+                    
+                    self.game_words.append(word)
+            self.game_words = sorted(self.game_words, key=lambda x:len(x))
             
     def update_store_dic(self, state):
         if state == 'r':
@@ -106,7 +120,26 @@ class socketServer():
             print("연결된 수 : ", len(self.client_sockets))            
             
             start_new_thread(self.thread_client, (client_socket, addr[1])) #클라이언트 쓰레드 생성
-                        
+            
+    def check_same_name(self,identity,name):
+        identity = int(identity)
+        if len(name) < 1 or (name is None):
+            return None
+        
+        name_check = name.replace(" ", "")
+        
+        for key in self.infor:
+            if key == '최고점수' or identity == key:
+                continue
+            print(self.infor,self.infor[key])
+            if 'name' not in self.infor[key]:
+                continue
+            if self.infor[key]['name'] is None:
+                continue
+            if name_check == self.infor[key]['name'].replace(' ', ''):
+                return None
+            
+        return name       
     #접속된 client마다 각각 쓰레드가 생성된다.
     def thread_client(self,client_socket, identity):
         
@@ -120,11 +153,23 @@ class socketServer():
                 
                 values = json.loads(data)
                 if 'request' in values:
-                    response = {
-                        'response':{
-                            'identity':identity
+                    
+                    if 'name' in values['request']:
+                        name = None
+                        name = values['request']['name']
+                        name = self.check_same_name(identity,name)
+                        response = {
+                            'response':{
+                                'identity':identity,
+                                'name':name
+                                }
+                            }   
+                    if 'words' in values['request']:
+                        response = {
+                            'response':{
+                                'words':self.game_words
+                                }
                             }
-                        }                    
                     json_string = json.dumps(response)
                     client_socket.send(json_string.encode())
                     print(f"response : {json_string}")

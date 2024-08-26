@@ -9,11 +9,13 @@ class socketClient():
     HOST = '127.0.0.1'
     PORT = 9997
     infor = {}
+    words = None
     
-    def __init__(self,name):        
+    def __init__(self):        
         self.HOST = self.get_host_ip()
-        self.name = name
+        self.name = None
         self.identity = None
+        self.response = None
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.HOST, self.PORT))
         self.client_run()
@@ -77,23 +79,48 @@ class socketClient():
             for value in server_infor[identity]:
                 self.infor[identity].update({value:user[value]})
                 
-    def client_run(self):
-        #서버로부터 오는 메세지를 대기하는 쓰레드 생성
-        start_new_thread(self.recv_data, (self.client_socket,))   
-        
+    def request_words(self):
         json_object = {
             'request':{
-                'name':self.name
+                'words':None
                 }
             }
-        
         while True:
             json_string = json.dumps(json_object)
             self.client_socket.send(json_string.encode())
             time.sleep(0.1)
-            if self.identity is not None:
+            if self.words is not None:
                 break
-        print(f'response {self.identity}')
+        print(f'response {self.words}')
+        
+    def send_request(self, name):        
+        json_object = {
+            'request':{
+                'name':name
+                }
+            }
+        self.response = None
+        json_string = json.dumps(json_object)
+        self.client_socket.send(json_string.encode())
+        
+    def client_run(self):
+        #서버로부터 오는 메세지를 대기하는 쓰레드 생성
+        start_new_thread(self.recv_data, (self.client_socket,))   
+        
+        # json_object = {
+        #     'request':{
+        #         'name':self.name
+        #         }
+        #     }
+        
+        # while True:
+        #     json_string = json.dumps(json_object)
+        #     self.client_socket.send(json_string.encode())
+        #     time.sleep(0.1)
+        #     if self.identity is not None:
+        #         break
+        # print(f'response {self.identity}')
+        self.request_words()
         
         #클라이언트 무한 대기
         # while True:
@@ -111,6 +138,10 @@ class socketClient():
             if 'response' in server_infor:
                 if 'identity' in server_infor['response']:
                     self.identity = server_infor['response']['identity']
+                    self.name = server_infor['response']['name']
+                    self.response = server_infor['response']   
+                if 'words' in server_infor['response']:
+                    self.words = server_infor['response']['words']
             else:
                 self.del_out_user(server_infor)#접속을 해제 한 유저 삭제.                    
                 self.update_infor(server_infor)

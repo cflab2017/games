@@ -7,14 +7,18 @@ import pygame.time
 class Gen_Workd():
     # game_words = ['if','for', 'while']
     game_words = []
-    def __init__(self,parent) -> None:
+    def __init__(self,parent, game_words) -> None:
         self.parent = parent
         self.screen = self.parent.screen
         
         self.mfont30 = pygame.font.SysFont("malgungothic", 30)
         self.speed = 1
         self.words = {}
-        self.get_words()
+        if game_words is None:
+            self.get_words()
+        else:
+            self.game_words = game_words
+            
         self.creat_word_time_tick = 0
         # self.creat_word()
     
@@ -50,9 +54,9 @@ class Gen_Workd():
         img = self.mfont30.render(value, 2, (0,255,255))
         rect = img.get_rect()
         rect.x = random.randint(0,self.screen.get_width() - rect.width-self.parent.msg_win_width)
-        rect.y = 0
-        speed = random.randint(1,2)
-        self.words[value] = {'img':img, 'rect':rect, 'speed':speed}
+        rect.y = 0+300
+        speed = random.randint(9,10)
+        self.words[value] = {'img':img, 'rect':rect, 'speed':speed, 'speed_cnt':0}
         
     def clear_word(self):
         self.words.clear()
@@ -86,7 +90,16 @@ class Gen_Workd():
         if ellip > (1000 - self.parent.level*10):
             self.creat_word_time_tick = pygame.time.get_ticks()
             self.creat_word()
-            
+    
+    def drop(self):
+        for key in self.words:
+            rect = self.words[key]['rect']
+            # rect.y += (self.speed+(self.parent.level - 1*0.2))
+            if self.words[key]['speed_cnt'] > self.words[key]['speed']:
+                rect.y += 1
+                self.words[key]['speed_cnt'] = 0
+            else:
+                self.words[key]['speed_cnt'] += 1
         
     def draw(self, gamover):
         if gamover == False:
@@ -97,7 +110,7 @@ class Gen_Workd():
             img = self.words[key]['img']
             rect = self.words[key]['rect']
             # rect.y += (self.speed+(self.parent.level - 1*0.2))
-            rect.y += self.words[key]['speed']
+            # rect.y += self.words[key]['speed']
             if rect.bottom > self.screen.get_height()-self.parent.inp_win_heigh:
                 # del self.words[key]
                 delet_keys.append(key)
