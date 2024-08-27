@@ -185,5 +185,8 @@ class DrawMsg():
             color = (255, 0, 255)
             self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*msg_idex),color)
             msg_idex += 1
+            color = (255, 0, 255)
+            self.disp_msg_s(f"공격소멸: 1",(self.msg_start, self.cell_size*msg_idex),color)
+            msg_idex += 1
 
             self.check_click()

@@ -8,25 +8,25 @@ import os.path
 
 class Interference():
     shapes = [    
-        [[(100, 0,  100), (100, 0,  100), (100, 0,  100)],
-         [None,(100, 0,  100),None]],
+        [[8, 8, 8],
+         [None,8,None]],
 
-        [[None, (100, 0,  100), (100, 0,  100)],
-        [(100, 0,  100), (100, 0,  100), None]],
+        [[None, 8, 8],
+        [8, 8, None]],
 
-        [[(100, 0,  100), (100, 0,  100), None],
-        [None, (100, 0,  100), (100, 0,  100)]],
+        [[8, 8, None],
+        [None, 8, 8]],
 
-        [[(100, 0,  100), None, None],
-        [(100, 0,  100), (100, 0,  100), (100, 0,  100)]],
+        [[8, None, None],
+        [8, 8, 8]],
 
-        [[None, None, (100, 0,  100)],
-        [(100, 0,  100),(100, 0,  100), (100, 0,  100)]],
+        [[None, None, 8],
+        [8, 8, 8]],
 
-        [[(100, 0,  100), (100, 0,  100), (100, 0,  100), (100, 0,  100)]],
+        [[8, 8, 8, 8]],
 
-        [[(100, 0,  100), (100, 0,  100)],
-        [(100, 0,  100), (100, 0,  100)]]
+        [[8, 8],
+        [8, 8]]
     ]
     
     def __init__(self,stone,rows,cols,board,user_name):
@@ -62,7 +62,7 @@ class Interference():
             self.new_stone()
             
     def del_stone(self):
-        if self.mstone.item_cnt > 0:
+        if self.mstone.item_cnt > 0 and len(self.stone) > 0:
             self.mstone.item_cnt -= 1
             self.stone = []
             self.new_stone()

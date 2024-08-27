@@ -8,25 +8,25 @@ import traceback
 
 class Stone():
     shapes = [    
-        [[(255, 85,  85), (255, 85,  85), (255, 85,  85)],
-         [None,(255, 85,  85),None]],
+        [[1, 1, 1],
+         [None,1,None]],
 
-        [[None, (100, 200, 115), (100, 200, 115)],
-        [(100, 200, 115), (100, 200, 115), None]],
+        [[None, 2, 2],
+        [2, 2, None]],
 
-        [[(120, 108, 245), (120, 108, 245), None],
-        [None, (120, 108, 245), (120, 108, 245)]],
+        [[3, 3, None],
+        [None, 3, 3]],
 
-        [[(255, 140, 50), None, None],
-        [(255, 140, 50), (255, 140, 50), (255, 140, 50)]],
+        [[4, None, None],
+        [4, 4, 4]],
 
-        [[None, None, (50,  120, 52)],
-        [(50,  120, 52), (50,  120, 52), (50,  120, 52)]],
+        [[None, None, 5],
+        [5, 5, 5]],
 
-        [[(146, 202, 73), (146, 202, 73), (146, 202, 73), (146, 202, 73)]],
+        [[6, 6, 6, 6]],
 
-        [[(150, 161, 218), (150, 161, 218)],
-        [(150, 161, 218), (150, 161, 218)]]
+        [[7, 7],
+        [7, 7]]
     ]
     
     def __init__(self,  rows,cols,board,user_name):
@@ -111,7 +111,11 @@ class Stone():
                     if cell and self.board.board[cy + self.stone_y][cx + self.stone_x]:
                         return True
                 except IndexError:
+                    # err_msg = traceback.format_exc()
+                    # print(err_msg) 
+                    # print(cx , self.stone_x,cy , self.stone_y,len(self.board.board)) 
                     return True
+        
         return False    
 
     def rotate_clockwise(self):
@@ -156,7 +160,8 @@ class Stone():
         try:
             self.stone_y += 1
             if self.check_collision():
-                self.stone_y +=  self.join_matrixes() #마지막 라인에서 회전하면 overfllow
+                # self.stone_y +=  self.join_matrixes() #마지막 라인에서 회전하면 overfllow
+                self.join_matrixes()
                 self.new_stone()
                 cleared_rows = 0
                 while True:

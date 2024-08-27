@@ -7,6 +7,7 @@ from client import *
 from account import *
 from draw_msg import *
 from interference import *
+from shapeLoad import *
 
 import pickle
 import os.path
@@ -25,9 +26,9 @@ def eventProcess():
             if event.key == pygame.K_ESCAPE:#ESC 키?
                 isActive = False
             if event.key == pygame.K_F5:
-                if design_mode==0:
-                    design_mode = 1
-                else:
+                design_mode += 1
+                
+                if design_mode>2:
                     design_mode = 0
                 
             if stone.gameover:
@@ -48,21 +49,6 @@ def eventProcess():
                 if is_pause == False:
                     key_process_stone(event.key)
                     key_process_inter(event.key)
-                    # if event.key == pygame.K_SPACE:#한번에 내리기
-                    #     stone.snd_dic['move'].play()
-                    #     stone.insta_drop()
-                    # if event.key == pygame.K_LEFT:
-                    #     stone.snd_dic['move'].play()
-                    #     stone.move(-1)
-                    # if event.key == pygame.K_RIGHT:
-                    #     stone.snd_dic['move'].play()
-                    #     stone.move(+1)
-                    # if event.key == pygame.K_DOWN:#한칸내리기
-                    #     stone.snd_dic['move'].play()
-                    #     stone.drop()
-                    # if event.key == pygame.K_UP:#회전하기
-                    #     stone.snd_dic['move'].play()
-                    #     stone.rotate_stone()
                         
         if event.type == pygame.USEREVENT+3:
             interf.create_stone(2)
@@ -98,52 +84,62 @@ def key_process_inter( key):
         interf.snd_dic['move'].play()
         interf.insta_drop()
     if key == pygame.K_a:
+        print('A')
         interf.snd_dic['move'].play()
         interf.move(-1)
     if key == pygame.K_d:
+        print('d')
         interf.snd_dic['move'].play()
         interf.move(+1)
     if key == pygame.K_s:#한칸내리기
+        print('S')
         interf.snd_dic['move'].play()
         interf.drop()
     if key == pygame.K_w:#회전하기
         interf.snd_dic['move'].play()
         interf.rotate_stone()
+        
     if key == pygame.K_1:#삭제
         interf.snd_dic['move'].play()
         interf.del_stone()
         
-color_list = [
-    (255, 85,  85),
-    (100, 200, 115),
-    (120, 108, 245),
-    (255, 140, 50),
-    (50,  120, 52),
-    (146, 202, 73),
-    (150, 161, 218),
-    (100, 0,  100),
-    ]        
-def draw_matrix(matrix, off_x,off_y,Thickness,outline = False):
+def draw_rect(p_x,p_y,color,Thickness,outline):
+    
+    pygame.draw.rect(
+        screen,
+        color,
+        pygame.Rect(p_x,p_y,cell_size,cell_size), 
+        Thickness)
+    
+    if outline:
+        pygame.draw.rect(
+            screen,
+            (200,200,200),
+            # (24,5,194),
+            pygame.Rect(p_x,p_y,cell_size,cell_size), 
+            1)
+        
+def draw_matrix(matrix, off_x,off_y,Thickness,outline = (200,200,200)):
     global cell_size
     for y, row in enumerate(matrix):
         for x, color in enumerate(row):
             if color is not None:
-                if design_mode == 1 and color in color_list:
-                    idex = color_list.index(color)
-                    if idex > -1:
-                        screen.blit(img_player[idex], ((off_x+x) *cell_size,(off_y+y) *cell_size))
+                p_x = (off_x+x) *cell_size
+                p_y = (off_y+y) *cell_size
+                
+                if (str(type(color)) == "<class 'tuple'>"):                    
+                    draw_rect(p_x,p_y,color,Thickness,outline)
                 else:
-                    pygame.draw.rect(
-                        screen,
-                        color,
-                        pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
-                        Thickness)
-                if design_mode==0 and outline:
-                    pygame.draw.rect(
-                        screen,
-                        (200,200,200),
-                        pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
-                        1)
+                    color -= 1
+                    if design_mode==0:
+                        color= shape.shape['color'][color]
+                        draw_rect(p_x,p_y,color,Thickness,outline)
+                    elif design_mode==1:
+                        img = shape.shape['char'][color]
+                        screen.blit(img, (p_x,p_y,))
+                    elif design_mode==2:
+                        img = shape.shape['stone'][color]
+                        screen.blit(img, (p_x,p_y,))
             else:
                 pass
                 # pygame.draw.rect(
@@ -152,23 +148,6 @@ def draw_matrix(matrix, off_x,off_y,Thickness,outline = False):
                 #     pygame.Rect((off_x+x) *cell_size,(off_y+y) *cell_size,cell_size,cell_size), 
                 #     Thickness)
                     
-def load_player_img():
-    file_names = [
-        "player_army.png",    "player_dinosaur.png",
-        "player_ninja.png",   "player_penguin.png",
-        "player_Pirate.png",  "player_police.png",
-        "player_samurai.png", "player_soldier.png",
-        "player_warrior.png",
-        ]
-    
-    img_player = []
-    for file in file_names:
-        image = pygame.image.load(f"./images/{file}").convert_alpha()
-        image = pygame.transform.scale(image, (cell_size, cell_size))
-        img_player.append(image)  
-        
-    return img_player
-
 def init_game():
     global is_pause, pause_cnt
     stone.gameover = False
@@ -202,7 +181,6 @@ SCREEN_WIDTH = cell_size*(cols+3)
 SCREEN_HEIGHT = cell_size*rows
 screen = pygame.display.set_mode((SCREEN_WIDTH+400, SCREEN_HEIGHT)) #화면생성
 
-img_player = load_player_img()
 
 #4.클래스 생성
 client = socketClient()
@@ -210,7 +188,7 @@ client = socketClient()
 account = Account(screen)
 user_name,isActive = account.run(client)
 
-
+shape = ShapeLoad(cell_size)
 board = Board(rows,cols)
 stone = Stone(rows,cols,board,user_name)
 interf = Interference(stone,rows,cols,board,user_name)
