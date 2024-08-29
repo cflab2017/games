@@ -5,6 +5,7 @@ import keyboardlayout as kl
 import keyboardlayout.pygame as klp
 from keyboardlayout.pygame.key import *
 import pygame
+from pygame import *
 import pygame.event
 import pygame.locals
 # https://pypi.org/project/keyboardlayout/
@@ -17,8 +18,9 @@ class KeyboardDraw():
     key_disp = []
     key_disp_pre = []
     
-    def __init__(self,screen) -> None: 
+    def __init__(self,screen:Surface,game_line_end) -> None: 
         self.screen = screen
+        self.game_line_end = game_line_end
         parser = argparse.ArgumentParser()
         parser.add_argument(
             'layout_name',
@@ -45,7 +47,7 @@ class KeyboardDraw():
             color=pygame.Color('red'),
             txt_color=pygame.Color('white'),
             txt_font=pygame.font.SysFont('Arial', key_size//4),
-            txt_padding=(key_size//6, key_size//10)
+            txt_padding=(key_size//6, key_size//10),
         )
     
         self.words_key_info = kl.KeyInfo(
@@ -62,7 +64,7 @@ class KeyboardDraw():
         key_info: kl.KeyInfo
     ) -> klp.KeyboardLayout:
         keyboard_info = kl.KeyboardInfo(
-            position=(0, 0),
+            position=(0, self.game_line_end),
             padding=2,
             color=~self.grey
         )
@@ -71,7 +73,7 @@ class KeyboardDraw():
             layout_name,
             keyboard_info,
             letter_key_size,
-            key_info
+            key_info,
         )
         return keyboard_layout
     
@@ -107,7 +109,6 @@ class KeyboardDraw():
                         
         for key in self.key_disp_pre:
             if key not in self.key_disp:
-                print('aaa')
                 self.keyboard.update_key(key, self.released_key_info)
                 
         self.key_disp_pre = self.key_disp[:]

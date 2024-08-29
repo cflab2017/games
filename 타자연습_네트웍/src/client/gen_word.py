@@ -7,9 +7,15 @@ import pygame.time
 class Gen_Workd():
     # game_words = ['if','for', 'while']
     game_words = []
-    def __init__(self,parent, game_words) -> None:
+    def __init__(self,parent, game_words,game_line_start,game_line_end) -> None:
         self.parent = parent
         self.screen = self.parent.screen
+        self.game_line_start = game_line_start
+        self.game_line_end = game_line_end
+        
+        img = pygame.image.load('./images/boom.png')
+        self.img_boom = pygame.transform.scale(img,((40, 40)))
+        self.rect_boom = self.img_boom.get_rect()
         
         self.mfont30 = pygame.font.SysFont("malgungothic", 30)
         self.speed = 1
@@ -51,12 +57,24 @@ class Gen_Workd():
             if value not in self.words:
                 break
         
-        img = self.mfont30.render(value, 2, (0,255,255))
+        img = self.mfont30.render(value, 2, (255,255,255))
         rect = img.get_rect()
-        rect.x = random.randint(0,self.screen.get_width() - rect.width-self.parent.msg_win_width)
-        rect.y = 0+300
+        
+        is_ok = False
+        cnt = 0
+        while is_ok==False and cnt < 10:
+            rect.x = random.randint(0,self.screen.get_width() - rect.width-self.parent.msg_win_width)
+            rect.y = self.game_line_start+40#0+300 +40
+            
+            is_ok = True
+            for word in self.words:
+                if rect.colliderect(self.words[word]['rect']):
+                    is_ok = False
+                    cnt+=1
+                    break
+            
         speed = random.randint(9,10)
-        self.words[value] = {'img':img, 'rect':rect, 'speed':speed, 'speed_cnt':0}
+        self.words[value] = {'img':img, 'rect':rect, 'speed':speed, 'speed_cnt':0,'blink_tick':0,'blink_color':0}
         
     def clear_word(self):
         self.words.clear()
@@ -68,12 +86,22 @@ class Gen_Workd():
         # display_words = []
         # for word in self.words:
         #     display_words.append(word.lower())
-        # key = key.lower()
+        key = key.lower()
         # print(key, self.words)
-        if key in self.words:
-            centerx = self.words[key]['rect'].centerx
-            centery = self.words[key]['rect'].centery
-            del self.words[key]
+        for word in self.words:
+            temp = word.replace(' ','')
+            temp = temp.replace('\n','')
+            temp = temp.lower()
+            if key == temp:
+                centerx = self.words[word]['rect'].centerx
+                centery = self.words[word]['rect'].centery
+                del self.words[word]
+                break
+            
+        # if key in self.words:
+        #     centerx = self.words[key]['rect'].centerx
+        #     centery = self.words[key]['rect'].centery
+        #     del self.words[key]
             
         if centerx is not None:
             # self.creat_word()
@@ -106,17 +134,44 @@ class Gen_Workd():
             self.create_word_uing_time()
         delet_keys = []
         is_drop = False
+        drops = []
         for key in self.words:
             img = self.words[key]['img']
             rect = self.words[key]['rect']
             # rect.y += (self.speed+(self.parent.level - 1*0.2))
             # rect.y += self.words[key]['speed']
-            if rect.bottom > self.screen.get_height()-self.parent.inp_win_heigh:
+            if rect.bottom > (self.game_line_end-20):#self.screen.get_height()-self.parent.inp_win_heigh:
                 # del self.words[key]
                 delet_keys.append(key)
+                drops.append(rect)
                 is_drop = True
             else:
-                self.screen.blit(img,rect)
+                size = img.get_size()
+                w = rect.width+4
+                h = rect.height+4
+                rect_img = pygame.Rect(0,0,w,h)
+                temp_surface = pygame.Surface((w,h))
+                ellip = pygame.time.get_ticks() - self.words[key]['blink_tick']
+                if ellip > 200:
+                    self.words[key]['blink_tick'] = pygame.time.get_ticks()
+                    if self.words[key]['blink_color'] == 0:
+                        self.words[key]['blink_color'] = 1
+                    else:
+                        self.words[key]['blink_color'] = 0
+                if self.words[key]['blink_color']:
+                    temp_surface.fill((0, 0, 0))
+                else:
+                    temp_surface.fill((255, 0, 0))
+                temp_surface.blit(img, (2, 2))
+                temp_surface.set_alpha(100)
+                
+                # img_boom = pygame.transform.scale(self.img_boom,((rect.width*2, rect.height*2)))
+                # rect_boom = img_boom.get_rect()
+                self.rect_boom.centerx = rect.centerx
+                self.rect_boom.top  = rect.bottom
+                self.screen.blit(self.img_boom,self.rect_boom)
+                
+                self.screen.blit(temp_surface, rect)
                 
         for key in delet_keys:
             del self.words[key]
@@ -124,4 +179,4 @@ class Gen_Workd():
         if is_drop:
             self.creat_word()
             
-        return is_drop
+        return drops

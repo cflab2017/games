@@ -1,16 +1,23 @@
 import pygame
+import pygame.image
 import pygame.key
+
+from pygame import *
+import pygame.font
 from pygame.locals import *
-import pygame.time
+# import pygame.time
 import winsound
 from _thread import *
-import time
+import time as ott
+
+import pygame.sprite
+import pygame.transform
 from client import *
 import pyautogui
 from account import *
 
 from keyboardDraw import *
-
+from explosion import *
 from gen_word import *
 # 1옥타브: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
 pitch = {'c_': 523, 'cs': 554, 'd_': 587, 'ds': 622, 'e_': 659,
@@ -33,13 +40,16 @@ class game_main():
     is_game_over = False
     is_game_init = True
     com_bo_tick = 0
-    com_bo_tick_limit = 2000
+    com_bo_tick_limit = 5000
     com_bo_ellip = 0
     com_bo_bonus = 3
     com_bo_position = []
     play_memody = []
     msg_win_width = 400
     inp_win_heigh = 80
+    
+    game_line_start = 0
+    game_line_end = 630
     
     
     
@@ -49,37 +59,35 @@ class game_main():
         pygame.display.set_caption("codingnow.co.kr") #타이틀
         self.clock = pygame.time.Clock() #프레임을 처리 하기위해
         
+        img = pygame.image.load('./images/background.png')
+        self.img_bg = pygame.transform.scale(img,((self.WIDTH, self.game_line_end)))
+        
+        img = pygame.image.load('./images/heart.png')
+        self.img_heart = pygame.transform.scale(img,((30, 30)))
+        self.img_heart.set_alpha(200)
+        
+        self.mfont40 = pygame.font.SysFont("malgungothic", 40)
         self.mfont30 = pygame.font.SysFont("malgungothic", 20)
         self.mfont18 = pygame.font.SysFont("malgungothic", 18)
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        # self.creat_name()
+
         self.client = socketClient()
         account = Account(self.screen)
         self.user_name,self.isActive = account.run(self.client)
         
-        self.keyboardDraw = KeyboardDraw(self.screen)
-        self.snd_space = pygame.mixer.Sound(f'./sound/shoot.wav')
+        self.keyboardDraw = KeyboardDraw(self.screen,self.game_line_end)
+        self.snd_drop = pygame.mixer.Sound(f'./sound/shoot.wav')
         self.snd_hit = pygame.mixer.Sound(f'./sound/hit.wav')
         self.snd_item = pygame.mixer.Sound(f'./sound/item.wav')
         self.snd_gameover = pygame.mixer.Sound(f'./sound/game_over.wav')
-        self.gen_word = Gen_Workd(self,self.client.words)
+        self.gen_word = Gen_Workd(self,self.client.words,self.game_line_start,self.game_line_end)
+        self.ExplosionGroup = pygame.sprite.Group()
         start_new_thread(self.thread_play, (self.play_memody, ))
-        
-    def creat_name(self):
-        msg = '이름을 입력하세요'
-        while True:
-            name = pyautogui.prompt(msg,'게임시작')
-            
-            if name is None or len(name.replace(" ","")) < 1:
-                msg = '이름을 입력해야 합니다.'
-                continue
-            self.user_name = name
-            break           
 
     def thread_play(self,play_memody):
         
         while True:
-            time.sleep(0.1)
+            ott.sleep(0.1)
             if len(play_memody):
                 # print(play_memody)
                 for memody in play_memody:
@@ -123,6 +131,7 @@ class game_main():
                             else:
                                 self.score += (len(self.msg_inbox)+3)*self.level
                                 self.snd_hit.play()
+                            self.ExplosionGroup.add(Explosion(self.screen,centerx, centery))
                             self.msg_inbox = ''
                             
                             if self.score > self.score_high:
@@ -130,8 +139,8 @@ class game_main():
                                 # self.snd_item.play()
                                 
                             self.client.send_score(self.user_name, self.score)
-                            if self.hp < self.hp_max:
-                                self.hp += 1
+                            # if self.hp < self.hp_max:
+                            #     self.hp += 1
                             self.match_cnt += 1
                             if self.match_cnt % 10 == 0:
                                 self.level += 1
@@ -184,7 +193,7 @@ class game_main():
             width = self.msg_win_width
             x = self.screen.get_width() - width
             x += 4
-            y = 150+300
+            y = self.game_line_start+10
             
             img = self.mfont30.render(f'최고점수', 1, (255,0,0))
             self.screen.blit(img,(x, y))
@@ -213,28 +222,10 @@ class game_main():
     def display_box(self):
         
         width = self.msg_win_width
-        height = self.screen.get_height()
+        height = self.game_line_end#self.screen.get_height()
         x = self.screen.get_width() - width
-        y = 0+300
+        y = 0+self.game_line_start
         pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)
-        
-        x += 2#self.screen.get_width()/2 -  width/2
-        y = 20+300
-        
-        img = self.mfont30.render(f' 레벨: {self.level}', 1, (0,0,255))
-        self.screen.blit(img,(x, y+2))
-        
-        y += 40
-        img = self.mfont30.render(f' HP: {self.hp}/{self.hp_max}', 1, (255,0,0))
-        self.screen.blit(img,(x, y+2))
-                
-        y += 40
-        img = self.mfont30.render(f' 점수: {self.score}', 1, (255,255,255))
-        self.screen.blit(img,(x, y+2))
-        
-        y = self.screen.get_height()-60
-        img = self.mfont30.render(f' 콤보타임: {self.com_bo_tick_limit - self.com_bo_ellip}: x{self.com_bo_bonus}', 1, (255,255,0))
-        self.screen.blit(img,(x, y+2))
         
         if self.is_game_over:
             img = self.mfont30.render(f'Game Over!! [재시작 : 스페이스 누르기]', 1, (255,255,255))
@@ -242,52 +233,88 @@ class game_main():
             rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
             rect.centery = self.screen.get_height()/2
             self.screen.blit(img,rect)
-        
+            
+        if self.com_bo_ellip > 0:
+            
+            img = self.mfont30.render(f' 콤보시간: {self.com_bo_tick_limit - self.com_bo_ellip}: 점수{self.com_bo_bonus}배', 1, (255,255,0))
+            img.set_alpha(150)
+            rect = img.get_rect()
+            rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
+            rect.centery = self.screen.get_height()-250            
+            self.screen.blit(img,rect)
+            
         # print(self.com_bo_position)
         for i,com in enumerate(self.com_bo_position):
             if pygame.time.get_ticks()- com[2] > 3000:
                 del self.com_bo_position[i]
             else:
-                img = self.mfont30.render(f'COMBO x {com[3]}', 1, (255,0,0))
+                img = self.mfont40.render(f'점수 {com[3]}배', 1, (255,0,0))
+                img.set_alpha(150)
                 rect = img.get_rect()
-                rect.centerx = com[0]
-                rect.centery = com[1]
-                if rect.right > self.screen.get_width() - rect.width - self.msg_win_width:
-                    rect.x = self.screen.get_width() - rect.width - self.msg_win_width
-                if rect.x < 0 :
-                    rect.x = 0
+                # rect.centerx = com[0]
+                # rect.centery = com[1]
+                rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
+                rect.centery = self.screen.get_height()-200
+                # if rect.right > self.screen.get_width() - rect.width - self.msg_win_width:
+                #     rect.x = self.screen.get_width() - rect.width - self.msg_win_width
+                # if rect.x < 0 :
+                #     rect.x = 0
                     
                 self.screen.blit(img,rect)
-            
-        width = self.screen.get_width()-self.msg_win_width
-        height = self.inp_win_heigh
-        x = 0
-        y = self.screen.get_height()-height
-        pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)
-        
+                    
         width = self.screen.get_width()-self.msg_win_width-40
         height = 60
         
         x = 20
-        y = self.screen.get_height() - height - 10
-        # pygame.draw.rect(self.screen, (  0,  0,  0),(x,y, width,height), 0)#검정 사각형 채움
-        # pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)#흰색 사각형 라인        
+        y = self.screen.get_height() - height - 5 
         img = self.mfont30.render(' 입력: '+self.msg_inbox, 1, (255,255,255))
         self.screen.blit(img,(x, y+10))
-                
+        
+    def draw_heart(self):
+        
+        
+        rect = self.img_heart.get_rect()
+        rect.x = 20
+        rect.y = self.game_line_start+2
+        for i in range(self.hp):
+            self.screen.blit(self.img_heart,rect)
+            rect.x += rect.width+10
+        
+        img = self.mfont30.render(f' 레벨: {self.level}', 1, (255,255,255))
+        img.set_alpha(150)
+        rect = img.get_rect()
+        rect.x = 220
+        rect.y = self.game_line_start+2
+        self.screen.blit(img,rect)
+        
+        img = self.mfont30.render(f' 점수: {self.score}', 1, (255,255,255))
+        img.set_alpha(150)
+        rect = img.get_rect()
+        rect.x = 220+100
+        rect.y = self.game_line_start+2
+        self.screen.blit(img,rect)
+        
     def run(self):
         pygame.time.set_timer(pygame.USEREVENT+1, 50)
         pygame.time.set_timer(pygame.USEREVENT+2, 10)
         while self.isActive:
             self.screen.fill((0, 0, 0)) #화면을 흰색으로 채우기
+            self.screen.blit(self.img_bg,(0,0))
             self.game_init()
+            self.draw_heart()
             self.display_users_score()
             self.eventProcess()
             self.check_combo()
             self.display_box()
+            self.ExplosionGroup.update()
+            self.ExplosionGroup.draw(self.screen)
             if self.is_game_over == False:
-                if self.gen_word.draw(self.is_game_over):
-                    self.hp -= 1
+                drops = self.gen_word.draw(self.is_game_over)
+                if len(drops):
+                    self.hp -= len(drops)
+                    self.snd_drop.play()
+                    for drop in drops:
+                        self.ExplosionGroup.add(Explosion(self.screen,drop.centerx, drop.centery))
                     if self.hp <= 0:
                         self.hp = 0
                         self.is_game_over = True
