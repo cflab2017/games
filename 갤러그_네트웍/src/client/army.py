@@ -54,6 +54,26 @@ class Army():
         #         em = Ememy(self.screen,cx,cy,limit_x)
         #         self.army_group.add(em)
         
-    def draw(self):
-        self.army_group.update()
+    def draw(self,player_centerx, level):
+        limit = {}
+        for em in self.army_group:
+            if em.rect.centery not in limit:
+                limit[em.rect.centery] = {
+                    'left':[],
+                    'right':[],
+                    }
+            limit[em.rect.centery]['left'].append(em.rect.left)
+            limit[em.rect.centery]['right'].append(em.rect.right)
+        for key in limit:
+            limit[key]['left'] = min(limit[key]['left'])
+            limit[key]['right'] = self.screen.get_width() - max(limit[key]['right'])
+            
+        # print(limit)
+        for em in self.army_group:
+            left_limit = limit[em.rect.centery]['left']
+            right_limit = limit[em.rect.centery]['right']
+            em.set_limit(left_limit,right_limit)
+            
+            
+        self.army_group.update(player_centerx, level)
         self.army_group.draw(self.screen)

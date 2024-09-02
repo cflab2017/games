@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import *
 from player import *
 from army import *
+from items import *
+from account import *
 # pip install pygame
 
 class SpaceWar():
@@ -24,10 +26,17 @@ class SpaceWar():
             'gameover':pygame.mixer.Sound('./sound/game_over.wav'),
             'hit':pygame.mixer.Sound('./sound/hit.wav'),
             'shock':pygame.mixer.Sound('./sound/shock.wav'),
+            'shield':pygame.mixer.Sound('./sound/shield.wav'),
         }
-        self.player = Player(self.screen,self.snd_dic)
+        
+        self.client = None
+        account = Account(self.screen)
+        self.user_name,self.is_run = account.run(self.client)
+        
+        self.player = Player(self.screen,self.snd_dic,self.user_name)
         self.army = Army(self.screen)
         self.player.set_army(self.army)
+        self.items = Items(self.screen)
         
     def setCaption(self):
         pygame.display.set_caption("codingnow.co.kr")   
@@ -36,7 +45,7 @@ class SpaceWar():
         pygame.display.set_icon(icon)
     
     def loadBackground(self):
-        img = pygame.image.load('./images/background.png')
+        img = pygame.image.load('./images/background.png').convert_alpha()
         self.img_bg = pygame.transform.scale(img, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
     
     def gameRestart(self):
@@ -67,7 +76,7 @@ class SpaceWar():
             
             self.eventProcess() #이벤트 함수 호출
             self.player.draw()
-            self.army.draw()
+            self.army.draw(self.player.rect.centerx,self.player.level)
             
             if self.player.hp <= 0:
                 if self.game_over == False:
@@ -86,17 +95,26 @@ class SpaceWar():
                             self.snd_dic['hit'].play()
                             em.hp -= 1
                             if em.hp < 1:
-                                self.player.score += 30
+                                self.player.score += (30*self.player.level)
+                                if em.image_shield is not None:
+                                    self.items.createHP(em.rect.centerx, em.rect.centery)
                                 em.kill()
                             else:
                                 em.shield_on = True
-                                self.player.score += 10
+                                self.player.score += (10*self.player.level)
                                 
+                            self.player.update_user_dic('w',self.player.score)
+                                
+                if pygame.sprite.spritecollide(self.player, self.items.hp_group, True):
+                    self.player.hp += 10
+                    self.snd_dic['shield'].play()
+                    
                 if len(self.army.army_group)==0 and self.player.level_up_tick==0:
                     self.player.level += 1
                     self.player.level_up = True
                     
                 
+            self.items.draw()
             pygame.display.update() #화면 갱신
             self.clock.tick(200) #초당 60프레임 갱신을 위한 잠시 대기
 
