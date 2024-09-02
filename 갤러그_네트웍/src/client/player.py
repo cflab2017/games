@@ -15,11 +15,18 @@ class Player():
         self.screen = screen
         self.snd_dic = snd_dic
         self.btnDraw = btnDraw
-        img = pygame.image.load('./images/player.png').convert_alpha()
-        self.image = pygame.transform.scale(img, (80, 80))
+        img = pygame.image.load('./images/player1.png').convert_alpha()
+        self.image1 = pygame.transform.scale(img, (80, 80))
+        img = pygame.image.load('./images/player2.png').convert_alpha()
+        self.image2 = pygame.transform.scale(img, (80, 80))
+        
+        self.image = self.image1
         self.rect = self.image.get_rect()
         self.rect.centerx = self.screen.get_width()/2
         self.rect.bottom = self.screen.get_height()-80
+        
+        self.player_img_tick = 0
+
         self.bullet_group = pygame.sprite.Group()
         self.bullet_tick = 0
         img = pygame.image.load('./images/bullet.png').convert_alpha()
@@ -239,6 +246,13 @@ class Player():
         self.screen.blit(temp_surface, rect)
         
     def draw(self):
+        if pygame.time.get_ticks()- self.player_img_tick > 200:
+            self.player_img_tick = pygame.time.get_ticks()
+            if self.image == self.image1:
+                self.image = self.image2
+            else:
+                self.image = self.image1
+
         if self.hp <= 0:
             self.draw_text_gameover()
         else:

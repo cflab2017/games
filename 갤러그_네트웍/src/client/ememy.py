@@ -10,9 +10,20 @@ class Ememy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
         self.limit_x = limit_x
-        img = pygame.image.load('./images/enemy.png').convert_alpha()
+        
+        img = pygame.image.load('./images/enemy1.png').convert_alpha()
         img = pygame.transform.scale(img, (70, 70))
-        self.image = pygame.transform.flip(img, False, True)
+        self.image1 = pygame.transform.flip(img, False, True)
+        
+
+        img = pygame.image.load('./images/enemy2.png').convert_alpha()
+        img = pygame.transform.scale(img, (70, 70))
+        self.image2 = pygame.transform.flip(img, False, True)
+        
+        self.image = self.image1
+        
+        self.ememy_img_tick = 0
+        
         self.rect = self.image.get_rect()
         self.rect.centerx = cx
         self.rect.centery = cy
@@ -80,6 +91,14 @@ class Ememy(pygame.sprite.Sprite):
         self.limt_right = right
         
     def update(self,player_centerx, level):
+        
+        if pygame.time.get_ticks()- self.ememy_img_tick > random.randint(200,400):
+            self.ememy_img_tick = pygame.time.get_ticks()
+            if self.image == self.image1:
+                self.image = self.image2
+            else:
+                self.image = self.image1
+                
         self.draw_shield()
         self.draw_text_score()
         if pygame.time.get_ticks() - self.bullet_tick > self.bullet_time:
