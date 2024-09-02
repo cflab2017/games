@@ -5,14 +5,16 @@ import pygame.time
 import pygame.transform
 from bullet import *
 
+from btnDraw import *
 import pickle
 import os.path
 
 class Player():
 	
-    def __init__(self,screen:Surface,snd_dic,user_name):
+    def __init__(self,screen:Surface,snd_dic,user_name,btnDraw:BtnDraw):
         self.screen = screen
         self.snd_dic = snd_dic
+        self.btnDraw = btnDraw
         img = pygame.image.load('./images/player.png').convert_alpha()
         self.image = pygame.transform.scale(img, (80, 80))
         self.rect = self.image.get_rect()
@@ -82,6 +84,9 @@ class Player():
                 self.bullet_group.add(bullet)
                 self.bullet_tick = pygame.time.get_ticks()
                 self.snd_dic['shoot'].play()
+            self.btnDraw.btn_space.set_alpha(200)
+        else:
+            self.btnDraw.btn_space.set_alpha(100)
             
         if key_pressed[pygame.K_LEFT]:
             self.rect.x -= 2
@@ -89,27 +94,39 @@ class Player():
             self.rect_engine.centery = self.rect.centery
             img = pygame.transform.rotate(self.image_engine,90)
             self.screen.blit(img, self.rect_engine)
+            self.btnDraw.btn_left.set_alpha(200)
+        else:
+            self.btnDraw.btn_left.set_alpha(100)
             
-        elif key_pressed[pygame.K_RIGHT]:
+        if key_pressed[pygame.K_RIGHT]:
             self.rect.x += 2
             self.rect_engine.right = self.rect.left+40
             self.rect_engine.centery = self.rect.centery
             img = pygame.transform.rotate(self.image_engine,-90)
             self.screen.blit(img, self.rect_engine)
+            self.btnDraw.btn_right.set_alpha(200)
+        else:
+            self.btnDraw.btn_right.set_alpha(100)
             
-        elif key_pressed[pygame.K_UP]:
+        if key_pressed[pygame.K_UP]:
             self.rect.y -= 2
             self.rect_engine.centerx = self.rect.centerx
             self.rect_engine.top = self.rect.bottom
             self.screen.blit(self.image_engine, self.rect_engine)
-            
-            
-        elif key_pressed[pygame.K_DOWN]:
+            self.btnDraw.btn_up.set_alpha(200)
+        else:
+            self.btnDraw.btn_up.set_alpha(100)
+                        
+        if key_pressed[pygame.K_DOWN]:
             self.rect.y += 2
             self.rect_engine.centerx = self.rect.centerx
             self.rect_engine.bottom = self.rect.top+30
             img = pygame.transform.flip(self.image_engine,False,True)
             self.screen.blit(img, self.rect_engine)
+            self.btnDraw.btn_down.set_alpha(200)
+        else:
+            self.btnDraw.btn_down.set_alpha(100)
+            
             
         if self.rect.left < 0:
             self.rect.left = 0

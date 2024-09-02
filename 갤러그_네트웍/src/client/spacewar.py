@@ -4,6 +4,7 @@ from player import *
 from army import *
 from items import *
 from account import *
+from btnDraw import *
 # pip install pygame
 
 class SpaceWar():
@@ -33,7 +34,8 @@ class SpaceWar():
         account = Account(self.screen)
         self.user_name,self.is_run = account.run(self.client)
         
-        self.player = Player(self.screen,self.snd_dic,self.user_name)
+        self.btnDraw = BtnDraw(self.screen)
+        self.player = Player(self.screen,self.snd_dic,self.user_name,self.btnDraw)
         self.army = Army(self.screen)
         self.player.set_army(self.army)
         self.items = Items(self.screen)
@@ -115,6 +117,7 @@ class SpaceWar():
                     
                 
             self.items.draw()
+            self.btnDraw.draw()
             pygame.display.update() #화면 갱신
             self.clock.tick(200) #초당 60프레임 갱신을 위한 잠시 대기
 
