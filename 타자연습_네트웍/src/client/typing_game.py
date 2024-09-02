@@ -13,7 +13,6 @@ import time as ott
 import pygame.sprite
 import pygame.transform
 from client import *
-import pyautogui
 from account import *
 
 from keyboardDraw import *
