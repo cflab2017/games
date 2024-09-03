@@ -67,6 +67,12 @@ class Interference():
             self.stone = []
             self.new_stone()
             self.snd_dic['destory'].play()
+        else:
+            if len(self.stone) == 0:
+                return '공격 받은 스톤 없음'
+            if self.mstone.item_cnt == 0:
+                return '방어권 없음'        
+        return None
 
     def new_stone(self):
         if len(self.next_stone):

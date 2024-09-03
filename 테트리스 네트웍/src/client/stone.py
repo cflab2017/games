@@ -50,7 +50,9 @@ class Stone():
         self.stone_y = 0
         self.stone = []
         self.next_stone = []
-        self.next_stone = self.shapes[rand(len(self.shapes))]
+        self.next_stone.append(self.shapes[rand(len(self.shapes))])
+        self.next_stone.append(self.shapes[rand(len(self.shapes))])
+        self.next_stone.append(self.shapes[rand(len(self.shapes))])
             
         self.snd_dic = {
             'move':pygame.mixer.Sound('./sound/move.wav'),
@@ -89,8 +91,15 @@ class Stone():
                     pickle.dump(self.load_dict,fw)
                     
     def new_stone(self):        
-        self.stone = self.next_stone[:]
-        self.next_stone = self.shapes[rand(len(self.shapes))]
+        if len(self.next_stone)==0:
+            self.next_stone.append(self.shapes[rand(len(self.shapes))])
+        self.stone = self.next_stone.pop(0)
+        # self.next_stone = self.shapes[rand(len(self.shapes))]
+        while len(self.next_stone)<3:
+            self.next_stone.append(self.shapes[rand(len(self.shapes))])
+            
+        
+        # print(self.next_stone)
         
         self.stone_x = int(self.cols / 2 - len(self.stone[0])/2)
         self.stone_y = 0

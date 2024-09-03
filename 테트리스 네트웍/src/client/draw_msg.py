@@ -20,7 +20,7 @@ class DrawMsg():
         self.cell_size = cell_size
         self.msg_start = rlim+cell_size
         # self.defFont = pygame.font.Font(pygame.font.get_default_font(), 18)
-        self.defFont = pygame.font.SysFont('malgungothic', 25)
+        self.defFont = pygame.font.SysFont('malgungothic', 20)
         self.defFont18 = pygame.font.SysFont('malgungothic', 18)
         self.click_draw=[]
         self.status_msg = []
@@ -34,12 +34,16 @@ class DrawMsg():
     
     def disp_msg(self,msg, topleft,color=(255, 255, 255)):
         x, y = topleft
-        pos = self.screen.blit(self.defFont.render(msg,False,color,(0, 0, 0)),(x, y))        
+        img = self.defFont.render(msg,False,color,(0, 0, 0))
+        img.set_alpha(150)
+        pos = self.screen.blit(img,(x, y))        
         return pos
     
     def disp_msg_s(self,msg, topleft,color=(255, 255, 255)):
         x, y = topleft
-        pos = self.screen.blit(self.defFont18.render(msg,False,color,(0, 0, 0)),(x, y))        
+        img = self.defFont18.render(msg,False,color,(0, 0, 0))
+        img.set_alpha(150)
+        pos = self.screen.blit(img,(x, y))       
         return pos
     
     def center_msg(self,msg):
@@ -55,12 +59,15 @@ class DrawMsg():
             return           
         name = self.client.infor['최고점수']['name']
         score = self.client.infor['최고점수']['score']
-        self.disp_msg(f"최고점수: {score:7,} {name}",(self.msg_start, self.cell_size*(line)),(0, 255, 0))   
+        self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
+        self.disp_msg(f" {score:7,} ({name})",(self.msg_start+100, self.cell_size*(line)),(0, 255, 0))   
         
     def disp_msg_users(self,line):
         users, high = self.client.get_score()
         
         user_cnt = 0
+        pos = self.disp_msg(f"[접속자 순위]",(self.msg_start, self.cell_size*(line+user_cnt)),(255,255,255))
+        user_cnt += 1
         self.click_draw = []
         for user in users:
             name  = user[0]
@@ -80,7 +87,7 @@ class DrawMsg():
                 else:
                     color = (255, 255, 255)
                 
-            pos = self.disp_msg(f"{user_cnt+1}등: {score:7,} {name} {status}",(self.msg_start, self.cell_size*(line+user_cnt)),color)
+            pos = self.disp_msg(f" {user_cnt}위: {score:7,} {name} {status}",(self.msg_start, self.cell_size*(line+user_cnt)),color)
             if name != self.client.name:
                 self.click_draw.append([pos,name])
             user_cnt += 1
@@ -136,6 +143,15 @@ class DrawMsg():
                 else:
                     self.status_msg_tick = 0
                     self.status_msg_disp = ''
+                    
+    def disp_msg_score(self):
+        msg = f"(level : {self.stone.level}) (score : {self.stone.score:,}) "
+        img = self.defFont.render(msg,False,(255, 255, 255),(0, 0, 0))
+        img.set_alpha(50)
+        rect = img.get_rect()
+        rect.x = 10
+        rect.y = 10
+        self.screen.blit(img,rect)
     
     def draw(self,is_pause,pause_cnt,interf_next_stone):
         if self.stone.gameover:
@@ -143,50 +159,52 @@ class DrawMsg():
         else:
                 
             #게임화면 구분선
-            if len(interf_next_stone):
-                self.disp_msg(f" Next Attck", (self.msg_start+self.cell_size*5,2))
-                self.disp_msg(f" X : {len(interf_next_stone)}", (self.msg_start+self.cell_size*9,self.cell_size*2))
+            msg_add = ' Next Attck'
+            if len(interf_next_stone) > 3:
+                msg_add += f' + {len(interf_next_stone)-3}'            
+            self.disp_msg(msg_add, (self.msg_start+self.cell_size*5,2))
                 
             self.disp_msg("Next:", (self.msg_start,2))
             
-            self.disp_msg_server_high_score(5)
-            self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*6),(0, 255, 255))
+            self.disp_msg_server_high_score(6)
+            # self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*7),(0, 255, 255))
             self.disp_msg_users(7)
-            status = ''
-            if self.stone.item_cnt>0:
-                status = '(공격상대 클릭!!)'
                 
-            msg_idex = 13
-            self.disp_msg(f"공격가능: {self.stone.item_cnt:,} {status}",(self.msg_start, self.cell_size*msg_idex),(200, 0, 0))
-            msg_idex += 1
-            self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*msg_idex))
-            msg_idex += 1
-            self.disp_msg(f"제거라인: {self.stone.lines}",(self.msg_start, self.cell_size*msg_idex))
-            msg_idex += 1
+            msg_idex = 14
+            # self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*msg_idex))
+            # msg_idex += 1
+            # self.disp_msg(f"제거라인: {self.stone.lines}",(self.msg_start, self.cell_size*msg_idex))
+            # msg_idex += 1
             self.disp_msg(f"최고점수: {self.stone.score_high:,}",(self.msg_start, self.cell_size*msg_idex))
-            msg_idex += 1
             
+            msg_idex += 1
+            if self.stone.item_cnt>0:
+                color = (255, 0, 0)
+            else:
+                color = (255, 255, 255)
+            self.disp_msg(f"공격가능: {self.stone.item_cnt:,}개 (방어)",(self.msg_start, self.cell_size*msg_idex),color)
+            
+            msg_idex += 1            
             if is_pause:
                 color = (255, 0, 0)
             else:
                 color = (255, 255, 255)
-            self.disp_msg(f"일지정지(P) 남은 횟수({pause_cnt})",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
+            self.disp_msg(f"일지정지: {pause_cnt}번 남음",(self.msg_start, self.cell_size*msg_idex),color)
+            # msg_idex += 1
+            # color = (255, 0, 255)
+            # self.disp_msg_s(f"공격소멸: 1",(self.msg_start, self.cell_size*msg_idex),color)
+            # msg_idex += 1
             
-            color = (0, 0, 255)
-            self.disp_msg_s(f"[스톤제어]",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
-            color = (255, 255, 255)
-            self.disp_msg_s(f"왼쪽:←, 오른쪽:→, 회전:↑, 내리기:↓, 한번에내리기: space",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
-            color = (0, 0, 255)
-            self.disp_msg_s(f"[공격받은 스톤제어]",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
-            color = (255, 0, 255)
-            self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
-            color = (255, 0, 255)
-            self.disp_msg_s(f"공격소멸: 1",(self.msg_start, self.cell_size*msg_idex),color)
-            msg_idex += 1
-
+            # color = (0, 0, 255)
+            # self.disp_msg_s(f"[스톤제어]",(self.msg_start+400, self.cell_size*19),color)
+            # msg_idex += 1
+            # color = (255, 255, 255)
+            # self.disp_msg_s(f"왼쪽:←, 오른쪽:→, 회전:↑, 내리기:↓, 한번에내리기: space",(self.msg_start, self.cell_size*msg_idex),color)
+            # msg_idex += 1
+            # color = (0, 0, 255)
+            # self.disp_msg_s(f"[공격받은 스톤제어]",(self.msg_start+200, self.cell_size*19),color)
+            # msg_idex += 1
+            # color = (255, 0, 255)
+            # self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*msg_idex),color)
+            
             self.check_click()
