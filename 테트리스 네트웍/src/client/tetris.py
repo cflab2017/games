@@ -248,7 +248,7 @@ def init_game():
     board.new_board()
     stone.new_stone()
     interf.new_stone()
-    stone.item_cnt = 10
+    stone.item_cnt = 2
     pygame.time.set_timer(pygame.USEREVENT+1, 1000)#1초마다 "USEREVENT+1" 이벤트 발생
     pygame.time.set_timer(pygame.USEREVENT+2, 1000)
 

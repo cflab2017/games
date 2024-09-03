@@ -18,7 +18,7 @@ class DrawMsg():
         self.client = client
         self.rlim = rlim
         self.cell_size = cell_size
-        self.msg_start = rlim+cell_size
+        self.msg_start = rlim+cell_size - 30
         # self.defFont = pygame.font.Font(pygame.font.get_default_font(), 18)
         self.defFont = pygame.font.SysFont('malgungothic', 20)
         self.defFont18 = pygame.font.SysFont('malgungothic', 18)
@@ -57,16 +57,28 @@ class DrawMsg():
     def disp_msg_server_high_score(self,line):
         if '최고점수'  not in self.client.infor:
             return           
-        name = self.client.infor['최고점수']['name']
-        score = self.client.infor['최고점수']['score']
+        # name = self.client.infor['최고점수']['name']
+        # score = self.client.infor['최고점수']['score']
+        # self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
+        # self.disp_msg(f" {score:7,} ({name})",(self.msg_start+100, self.cell_size*(line)),(0, 255, 0)) 
+        
         self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
-        self.disp_msg(f" {score:7,} ({name})",(self.msg_start+100, self.cell_size*(line)),(0, 255, 0))   
+        line += 1
+        start_y = self.cell_size*(line)
+        for i,key in enumerate(self.client.infor['최고점수']):
+            name = self.client.infor['최고점수'][key]['name']
+            score = self.client.infor['최고점수'][key]['score']
+            date = self.client.infor['최고점수'][key]['date']
+            self.disp_msg(f" {i+1}위 : {score:7,}",(self.msg_start, start_y),(0, 255, 0)) 
+            start_y += 30
+            self.disp_msg(f"      {name} ({date})",(self.msg_start, start_y),(255, 255, 255)) 
+            start_y += 50
         
     def disp_msg_users(self,line):
-        users, high = self.client.get_score()
+        users = self.client.get_score()
         
         user_cnt = 0
-        pos = self.disp_msg(f"[접속자 순위]",(self.msg_start, self.cell_size*(line+user_cnt)),(255,255,255))
+        pos = self.disp_msg(f"[접속자 순위]",(self.msg_start+200, self.cell_size*(line+user_cnt)),(255,255,255))
         user_cnt += 1
         self.click_draw = []
         for user in users:
@@ -81,13 +93,13 @@ class DrawMsg():
                     ellip = pygame.time.get_ticks()-self.attack_msg_tick
                     
                     if ellip < 500:
-                        status = ' 공격!! (마우스 클릭)'                        
+                        status = ' 공격'                        
                     elif ellip > 1000:
                         self.attack_msg_tick = pygame.time.get_ticks()
                 else:
                     color = (255, 255, 255)
                 
-            pos = self.disp_msg(f" {user_cnt}위: {score:7,} {name} {status}",(self.msg_start, self.cell_size*(line+user_cnt)),color)
+            pos = self.disp_msg(f" {user_cnt}위: {score:7,} {name} {status}",(self.msg_start+200, self.cell_size*(line+user_cnt)),color)
             if name != self.client.name:
                 self.click_draw.append([pos,name])
             user_cnt += 1
@@ -168,7 +180,7 @@ class DrawMsg():
             
             self.disp_msg_server_high_score(6)
             # self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*7),(0, 255, 255))
-            self.disp_msg_users(7)
+            self.disp_msg_users(6)
                 
             msg_idex = 14
             # self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*msg_idex))

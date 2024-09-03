@@ -86,13 +86,14 @@ class socketClient():
             score = self.infor[identity]['score']
             
             if identity == '최고점수':
-                high = (name,score)
+                # high = (name,score)
+                continue
             else:
                 result.append([name,score])
                 
         if result is not None:
             result = sorted(result, key=lambda x:x[1],reverse=True)
-        return result,high
+        return result
                 
     def update_infor(self,server_infor):                    
         for identity in server_infor:
