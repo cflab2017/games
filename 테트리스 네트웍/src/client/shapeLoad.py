@@ -17,9 +17,25 @@ class ShapeLoad():
         }
     
     def __init__(self,cell_size) -> None:
+        self.shape['color'] = self.load_def_img(cell_size)
         self.shape['char'] = self.load_char_img(cell_size)
         self.shape['stone'] = self.load_stone_img(cell_size)
         
+    def load_def_img(self,cell_size):
+        file_names = [
+            "def0.png", "def1.png",
+            "def2.png", "def3.png",
+            "def4.png", "def5.png",
+            "def6.png", "def7.png",
+            ]
+        
+        img_player = []
+        for file in file_names:
+            image = pygame.image.load(f"./images/{file}").convert_alpha()
+            image = pygame.transform.scale(image, (cell_size, cell_size))
+            img_player.append(image)  
+            
+        return img_player 
     
     def load_char_img(self,cell_size):
         file_names = [

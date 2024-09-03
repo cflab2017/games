@@ -3,6 +3,7 @@ import pygame.image
 import pygame.image
 from pygame.locals import *
 import pygame.transform
+import pygame.transform
 
 from board import *
 from stone import *
@@ -224,13 +225,21 @@ def draw_matrix(matrix, off_x,off_y,Thickness,outline = (200,200,200),divide = 1
                 else:
                     color -= 1
                     if design_mode==0:
-                        color= shape.shape['color'][color]
-                        draw_rect(p_x,p_y,color,Thickness,outline,divide)
+                        # color= shape.shape['color'][color]
+                        # draw_rect(p_x,p_y,color,Thickness,outline,divide)
+                        img = shape.shape['color'][color]
+                        if divide > 1:
+                            img = pygame.transform.scale(img,(int(cell_size/divide),int(cell_size/divide)))
+                        screen.blit(img, (p_x,p_y,))
                     elif design_mode==1:
                         img = shape.shape['char'][color]
+                        if divide > 1:
+                            img = pygame.transform.scale(img,(int(cell_size/divide),int(cell_size/divide)))
                         screen.blit(img, (p_x,p_y,))
                     elif design_mode==2:
                         img = shape.shape['stone'][color]
+                        if divide > 1:
+                            img = pygame.transform.scale(img,(int(cell_size/divide),int(cell_size/divide)))
                         screen.blit(img, (p_x,p_y,))
             else:
                 pass
