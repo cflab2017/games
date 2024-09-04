@@ -56,6 +56,27 @@ class Interference():
     def set_DrawMsg(self,DrawMsg):
         self.DrawMsg = DrawMsg#.status_msg
         
+    def key_event(self,key):
+        if key == pygame.K_LSHIFT:#한번에 내리기
+            self.snd_dic['move'].play()
+            self.insta_drop()
+            
+        if key == pygame.K_a:
+            self.snd_dic['move'].play()
+            self.move(-1)
+
+        if key == pygame.K_d:
+            self.snd_dic['move'].play()
+            self.move(+1)
+
+        if key == pygame.K_s:#한칸내리기
+            self.snd_dic['move'].play()
+            self.drop()
+
+        if key == pygame.K_w:#회전하기
+            self.snd_dic['move'].play()
+            self.rotate_stone()
+            
     def create_stone(self,idex):
         self.next_stone.append(self.shapes[idex])
         if len(self.stone)==0:

@@ -4,7 +4,7 @@ import random
 
 import pygame.time
 
-class BtnDraw():
+class Draw_button():
 	
     def __init__(self,screen:Surface):
         pygame.sprite.Sprite.__init__(self)
@@ -88,21 +88,28 @@ class BtnDraw():
         self.btn_shield.set_alpha(100)
         self.btn_shield_rect = self.btn_shield.get_rect()        
         self.btn_shield_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_shield_rect.bottom = self.screen.get_height() - 10 - (40+10)*2
+        self.btn_shield_rect.bottom = self.screen.get_height() - 10 - ((40+10)*3-20)
+        #################################################################
+        image = pygame.image.load('./images/btn_boom.png').convert_alpha()
+        self.btn_boom = pygame.transform.scale(image, (40, 40))
+        self.btn_boom.set_alpha(100)
+        self.btn_boom_rect = self.btn_boom.get_rect()        
+        self.btn_boom_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
+        self.btn_boom_rect.top = self.btn_shield_rect.bottom+5
         #################################################################
         image = pygame.image.load('./images/btn_pause.png').convert_alpha()
         self.btn_pause = pygame.transform.scale(image, (40, 40))
         self.btn_pause.set_alpha(100)
         self.btn_pause_rect = self.btn_pause.get_rect()        
         self.btn_pause_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_pause_rect.bottom = self.screen.get_height() - 10 - (40+10)*1
+        self.btn_pause_rect.top = self.btn_boom_rect.bottom+5
         #################################################################
         image = pygame.image.load('./images/btn_stone.png').convert_alpha()
         self.btn_stone = pygame.transform.scale(image, (40, 40))
         self.btn_stone.set_alpha(100)
         self.btn_stone_rect = self.btn_stone.get_rect()        
         self.btn_stone_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_stone_rect.bottom = self.screen.get_height() - 10 - (40+10)*0
+        self.btn_stone_rect.top = self.btn_pause_rect.bottom+5
         
     def disp_msg_1(self,msg, topleft,color=(255, 255, 255)):
         img = self.defFont18.render(msg,False,color,(0, 0, 0))
@@ -140,6 +147,9 @@ class BtnDraw():
         
         self.disp_msg_2('-공격 방어',(self.btn_shield_rect.right+2,self.btn_shield_rect.centery),(192,192,192))
         self.screen.blit(self.btn_shield,self.btn_shield_rect)
+        
+        self.disp_msg_2('-폭탄 변경',(self.btn_boom_rect.right+2,self.btn_boom_rect.centery),(192,192,192))
+        self.screen.blit(self.btn_boom,self.btn_boom_rect)
         
         self.disp_msg_2('-스톤 변경',(self.btn_stone_rect.right+2,self.btn_stone_rect.centery),(192,192,192))
         self.screen.blit(self.btn_stone,self.btn_stone_rect)

@@ -26,7 +26,9 @@ class Stone():
         [[6, 6, 6, 6]],
 
         [[7, 7],
-        [7, 7]]
+        [7, 7]],
+        
+        [[9]]
     ]
     
     def __init__(self,  rows,cols,board,user_name):
@@ -50,9 +52,10 @@ class Stone():
         self.stone_y = 0
         self.stone = []
         self.next_stone = []
-        self.next_stone.append(self.shapes[rand(len(self.shapes))])
-        self.next_stone.append(self.shapes[rand(len(self.shapes))])
-        self.next_stone.append(self.shapes[rand(len(self.shapes))])
+        self.stone_max = len(self.shapes)-1
+        self.next_stone.append(self.shapes[rand(self.stone_max)])
+        self.next_stone.append(self.shapes[rand(self.stone_max)])
+        self.next_stone.append(self.shapes[rand(self.stone_max)])
             
         self.snd_dic = {
             'move':pygame.mixer.Sound('./sound/move.wav'),
@@ -71,6 +74,27 @@ class Stone():
         self.lines = 0
         self.item_cnt = 0
         
+    def key_event(self,key):
+        if key == pygame.K_SPACE:#한번에 내리기
+            self.snd_dic['move'].play()
+            self.insta_drop()
+            
+        if key == pygame.K_LEFT:
+            self.snd_dic['move'].play()
+            self.move(-1)
+
+        if key == pygame.K_RIGHT:
+            self.snd_dic['move'].play()
+            self.move(+1)
+
+        if key == pygame.K_DOWN:#한칸내리기
+            self.snd_dic['move'].play()
+            self.drop()
+
+        if key == pygame.K_UP:#회전하기
+            self.snd_dic['move'].play()
+            self.rotate_stone()
+    
     def update_user_dic(self,state,high_score=None):
         user_file_name = 'user.pickle'
         
@@ -92,11 +116,11 @@ class Stone():
                     
     def new_stone(self):        
         if len(self.next_stone)==0:
-            self.next_stone.append(self.shapes[rand(len(self.shapes))])
+            self.next_stone.append(self.shapes[rand(self.stone_max)])
         self.stone = self.next_stone.pop(0)
         # self.next_stone = self.shapes[rand(len(self.shapes))]
         while len(self.next_stone)<3:
-            self.next_stone.append(self.shapes[rand(len(self.shapes))])
+            self.next_stone.append(self.shapes[rand(self.stone_max)])
             
         
         # print(self.next_stone)
@@ -112,6 +136,21 @@ class Stone():
                 self.game_init()
                 
             self.gameover = True
+    
+    def change_boom(self):
+        if self.item_cnt == 0:
+             return '폭탄 교환 권 없음'
+        
+        if len(self.stone) <= 0:
+             return '준비안됨'
+        
+        if self.shapes[self.stone_max] == self.stone:             
+             return '사용중'
+        
+        self.item_cnt -= 1
+        self.stone = self.shapes[self.stone_max]            
+        self.snd_dic['destory'].play()      
+        return None
     
     def check_collision(self):
         for cy, row in enumerate(self.stone):
@@ -175,7 +214,7 @@ class Stone():
                 cleared_rows = 0
                 while True:
                     for i, row in enumerate(self.board.board):
-                        if None not in row:
+                        if None not in row or (9 in row):
                             self.remove_row(i)
                             cleared_rows += 1
                             break

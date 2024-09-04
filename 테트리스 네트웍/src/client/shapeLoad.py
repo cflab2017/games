@@ -10,6 +10,7 @@ class ShapeLoad():
                 (50,  120, 52),#5
                 (69, 205, 205),#6
                 (150, 161, 218),#7
+                (100, 161, 218),#7
                 (100, 0,  100),#8
             ],
         'char':[],
@@ -27,6 +28,7 @@ class ShapeLoad():
             "def2.png", "def3.png",
             "def4.png", "def5.png",
             "def6.png", "def7.png",
+            "boom.png",
             ]
         
         img_player = []
@@ -43,6 +45,7 @@ class ShapeLoad():
             "player_ninja.png",   "player_penguin.png",
             "player_Pirate.png",  "player_police.png",
             "player_samurai.png", "player_soldier.png",
+            "boom.png",
             # "player_warrior.png",
             ]
         
@@ -60,6 +63,7 @@ class ShapeLoad():
             "stone2.png", "stone3.png",
             "stone4.png", "stone5.png",
             "stone6.png", "stone7.png",
+            "boom.png",
             ]
         
         img_player = []

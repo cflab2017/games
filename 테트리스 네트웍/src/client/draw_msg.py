@@ -69,10 +69,12 @@ class DrawMsg():
             name = self.client.infor['최고점수'][key]['name']
             score = self.client.infor['최고점수'][key]['score']
             date = self.client.infor['최고점수'][key]['date']
-            self.disp_msg(f" {i+1}위 : {score:7,}",(self.msg_start, start_y),(0, 255, 0)) 
+            self.disp_msg(f"{i+1}위 : {score:,}",(self.msg_start+4, start_y),(0, 255, 0)) 
             start_y += 30
-            self.disp_msg(f"      {name} ({date})",(self.msg_start, start_y),(255, 255, 255)) 
-            start_y += 50
+            self.disp_msg(f"{name}",(self.msg_start+40, start_y),(255, 255, 255)) 
+            start_y += 30
+            self.disp_msg(f"{date}",(self.msg_start+40, start_y),(255, 255, 255)) 
+            start_y += 30
         
     def disp_msg_users(self,line):
         users = self.client.get_score()
@@ -103,24 +105,6 @@ class DrawMsg():
             if name != self.client.name:
                 self.click_draw.append([pos,name])
             user_cnt += 1
-            
-        
-        # user_cnt = 0
-        # for value in self.client.infor:
-        #     info = self.client.infor[value]
-        #     if 'name'  not in info:
-        #         continue            
-        #     if 'score' not in info:
-        #         continue
-        #     if value=='최고점수':
-        #         continue            
-        #     if self.user_name == info['name']:
-        #         continue
-            
-        #     name  = info['name']
-        #     score = info['score']
-        #     self.disp_msg(f"상대점수: {score:7,} {name}",(self.msg_start, self.cell_size*(line+user_cnt)))
-        #     user_cnt += 1
         
     def check_click(self):
         mous = pygame.mouse.get_pos()
@@ -158,8 +142,8 @@ class DrawMsg():
                     
     def disp_msg_score(self):
         msg = f"(level : {self.stone.level}) (score : {self.stone.score:,}) "
-        img = self.defFont.render(msg,False,(255, 255, 255),(0, 0, 0))
-        img.set_alpha(50)
+        img = self.defFont.render(msg,False,(0, 0, 0),(255, 255, 255))
+        img.set_alpha(150)
         rect = img.get_rect()
         rect.x = 10
         rect.y = 10
@@ -179,14 +163,9 @@ class DrawMsg():
             self.disp_msg("Next:", (self.msg_start,2))
             
             self.disp_msg_server_high_score(6)
-            # self.disp_msg(f"나의점수: {self.stone.score:7,} {self.user_name}",(self.msg_start, self.cell_size*7),(0, 255, 255))
             self.disp_msg_users(6)
                 
-            msg_idex = 14
-            # self.disp_msg(f"현재레벨: {self.stone.level}",(self.msg_start, self.cell_size*msg_idex))
-            # msg_idex += 1
-            # self.disp_msg(f"제거라인: {self.stone.lines}",(self.msg_start, self.cell_size*msg_idex))
-            # msg_idex += 1
+            msg_idex = 15
             self.disp_msg(f"최고점수: {self.stone.score_high:,}",(self.msg_start, self.cell_size*msg_idex))
             
             msg_idex += 1
@@ -202,21 +181,4 @@ class DrawMsg():
             else:
                 color = (255, 255, 255)
             self.disp_msg(f"일지정지: {pause_cnt}번 남음",(self.msg_start, self.cell_size*msg_idex),color)
-            # msg_idex += 1
-            # color = (255, 0, 255)
-            # self.disp_msg_s(f"공격소멸: 1",(self.msg_start, self.cell_size*msg_idex),color)
-            # msg_idex += 1
-            
-            # color = (0, 0, 255)
-            # self.disp_msg_s(f"[스톤제어]",(self.msg_start+400, self.cell_size*19),color)
-            # msg_idex += 1
-            # color = (255, 255, 255)
-            # self.disp_msg_s(f"왼쪽:←, 오른쪽:→, 회전:↑, 내리기:↓, 한번에내리기: space",(self.msg_start, self.cell_size*msg_idex),color)
-            # msg_idex += 1
-            # color = (0, 0, 255)
-            # self.disp_msg_s(f"[공격받은 스톤제어]",(self.msg_start+200, self.cell_size*19),color)
-            # msg_idex += 1
-            # color = (255, 0, 255)
-            # self.disp_msg_s(f"왼쪽:A, 오른쪽:D, 회전:W, 내리기:S, 한번에내리기: x",(self.msg_start, self.cell_size*msg_idex),color)
-            
             self.check_click()
