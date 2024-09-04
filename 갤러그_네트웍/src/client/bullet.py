@@ -6,11 +6,12 @@ import pygame.time
 
 class Bullet(pygame.sprite.Sprite):
 	
-    def __init__(self,screen:Surface,image,cx,y, direction,player_centerx=None,level = 0):
+    def __init__(self,screen:Surface,image,cx,y, direction,player_centerx=None,level = 0,speed=1):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
         self.direction = direction
         self.image = image
+        self.speed = speed
         self.rect = self.image.get_rect()
         self.rect.centerx = cx
         self.rect.y = y
@@ -33,8 +34,8 @@ class Bullet(pygame.sprite.Sprite):
             
         if self.bullet_target is not None:
             if self.rect.x > self.bullet_target:
-                self.rect.x -= 1
+                self.rect.x -= self.speed
             if self.rect.x < self.bullet_target:
-                self.rect.x += 1
+                self.rect.x += self.speed
         if self.rect.bottom < 0 or self.rect.bottom > self.screen.get_height():
             self.kill()

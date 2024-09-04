@@ -4,21 +4,21 @@ import pygame.time
 import random
 from bullet import *
 
-class Ememy(pygame.sprite.Sprite):
+class Boss(pygame.sprite.Sprite):
 	
     def __init__(self,screen:Surface,cx,cy,limit_x,level):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
         self.limit_x = limit_x
         
-        img = pygame.image.load('./images/enemy1.png').convert_alpha()
-        img = pygame.transform.scale(img, (70, 70))
-        self.image1 = pygame.transform.flip(img, False, True)
+        img = pygame.image.load('./images/boss1_0.png').convert_alpha()
+        self.image1 = pygame.transform.scale(img, (100, 100))
+        # self.image1 = pygame.transform.flip(img, False, True)
         
 
-        img = pygame.image.load('./images/enemy2.png').convert_alpha()
-        img = pygame.transform.scale(img, (70, 70))
-        self.image2 = pygame.transform.flip(img, False, True)
+        img = pygame.image.load('./images/boss1_1.png').convert_alpha()
+        self.image2 = pygame.transform.scale(img, (100, 100))
+        # self.image2 = pygame.transform.flip(img, False, True)
         
         self.image = self.image1
         
@@ -34,11 +34,11 @@ class Ememy(pygame.sprite.Sprite):
         self.bullet_tick = 0
         self.bullet_time = random.randint(1000,2000)
         
-        self.damage = level*2
+        self.damage = level*3
         if self.damage > 20:
             self.damage = 20
-        
-        self.hp_max = level
+            
+        self.hp_max = level*2
         self.hp = self.hp_max
         self.shield_on = False
         self.shield_tick = 0
@@ -48,10 +48,10 @@ class Ememy(pygame.sprite.Sprite):
         self.moving_y_tick = pygame.time.get_ticks()
         
         self.font15 = pygame.font.SysFont('malgungothic', 15)
-        img = pygame.image.load('./images/bullet3.png').convert_alpha()
+        img = pygame.image.load('./images/bullet2.png').convert_alpha()
         # self.image_bullet = pygame.transform.scale(img, (20, 20))
-        img = pygame.transform.scale(img, (40, 50))
-        self.image_bullet = pygame.transform.flip(img, False,True)
+        self.image_bullet = pygame.transform.scale(img, (50, 50))
+        # self.image_bullet = pygame.transform.flip(img, False,True)
         
         if random.randint(0,100) < 20:
             image = pygame.image.load('./images/shield.png').convert_alpha()
@@ -118,11 +118,11 @@ class Ememy(pygame.sprite.Sprite):
         self.draw_shield()
         self.draw_text_hp()
         if pygame.time.get_ticks() - self.bullet_tick > self.bullet_time:
-            if len(self.bullet_group) < int(level/3)+1 and random.randint(0,100) > 60:
-                bullet = Bullet(self.screen,self.image_bullet,self.rect.centerx, self.rect.bottom,2,player_centerx,level,1)
+            if len(self.bullet_group) < int(level)*2 and random.randint(0,100) > 80:
+                bullet = Bullet(self.screen,self.image_bullet,self.rect.centerx, self.rect.bottom,2,player_centerx,level,3)
                 self.bullet_group.add(bullet)
             self.bullet_tick = pygame.time.get_ticks()
-            self.bullet_time = random.randint(1000,2000)
+            self.bullet_time = random.randint(500,1000)
         
         self.bullet_group.update()
         self.bullet_group.draw(self.screen)
@@ -130,16 +130,16 @@ class Ememy(pygame.sprite.Sprite):
         if self.limt_left is not None:
             if self.direction > 0:
                 if self.limt_right < 0:
-                    self.direction = -2
+                    self.direction = random.randint(-6,-2)
             else:
                 if self.limt_left < 0:
-                    self.direction = 2
+                    self.direction = random.randint(4,6)
         else:
             if abs(self.move + self.direction) > self.limit_x:
                 if self.direction > 0:
-                    self.direction = -2
+                    self.direction = random.randint(-6,-2)
                 else:
-                    self.direction = 2
+                    self.direction = random.randint(4,6)
                     
         # if pygame.time.get_ticks() - self.moving_y_tick > 500:
         #     self.rect.y = self.start_y + random.randint(-10,10)

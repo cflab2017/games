@@ -4,6 +4,7 @@ import pygame.sprite
 import pygame.time
 from bullet import *
 from ememy import *
+from boss import *
 
 class Army():
 	
@@ -28,7 +29,8 @@ class Army():
         if max_line > 0:
             nums.append(max_line)
             
-        cy = 40+20
+        self.army_group.add(Boss(self.screen,self.screen.get_width()/2,70,self.screen.get_width()/2,level))
+        cy = 40+20+150
         for i in nums:
             limit_x = self.screen.get_width()/2 - (i)*90/2 - 90/2 +90
             for k in range(i):

@@ -88,7 +88,7 @@ class SpaceWar():
                 for em in self.army.army_group:                
                     if pygame.sprite.spritecollide(self.player, em.bullet_group, True):
                         self.snd_dic['shock'].play()
-                        self.player.hp -= 10
+                        self.player.hp -= em.damage
                         self.player.shield_on = True
                         if self.player.hp <=0:
                             self.player.hp = 0
@@ -97,13 +97,13 @@ class SpaceWar():
                             self.snd_dic['hit'].play()
                             em.hp -= 1
                             if em.hp < 1:
-                                self.player.score += (30*self.player.level)
+                                self.player.score += (self.player.level*em.damage)
                                 if em.image_shield is not None:
                                     self.items.createHP(em.rect.centerx, em.rect.centery)
                                 em.kill()
                             else:
                                 em.shield_on = True
-                                self.player.score += (10*self.player.level)
+                                self.player.score += (self.player.level+em.damage)
                                 
                             self.player.update_user_dic('w',self.player.score)
                                 
@@ -114,6 +114,7 @@ class SpaceWar():
                 if len(self.army.army_group)==0 and self.player.level_up_tick==0:
                     self.player.level += 1
                     self.player.level_up = True
+                    self.player.score += (self.player.hp*2)
                     
                 
             self.items.draw()
