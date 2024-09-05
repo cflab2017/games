@@ -10,6 +10,10 @@ class Account():
         self.msg_inbox = ''
         self.isRun = True
         self.isQuit = False
+        self.font = pygame.font.SysFont("malgungothic", 30)
+        img_bg = pygame.image.load('./images/background.png')
+        self.img_bg = pygame.transform.scale(img_bg,(screen.get_width(), screen.get_height()))
+        self.cursor_tick = pygame.time.get_ticks()
         
     def eventProcess(self):
         for event in pygame.event.get():
@@ -29,28 +33,45 @@ class Account():
                 self.msg_inbox += event.text
                 
     def display_box(self):
-        font = pygame.font.SysFont("malgungothic", 18)
-
-        width = 200
-        height = 40
-        x = self.screen.get_width()/2 -  width/2
-        y = self.screen.get_height()/2 - height/2
                 
-        msg = font.render(self.lable, 1, (255,255,255))
-        self.screen.blit(msg,(x, y-100))
+        img = self.font.render('[코딩나우 타이핑 게임]', 1, (255,255,255),(0,0,0))
+        img.set_alpha(200)
+        rect = img.get_rect()
+        rect.centerx = self.screen.get_width()/2
+        rect.centery = self.screen.get_height()/2-300
+        self.screen.blit(img,rect)
         
-        #검정 사각형 채움
-        pygame.draw.rect(self.screen, (  0,  0,  0),(x,y, width,height), 0)
-        #흰색 사각형 라인
-        pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)
+        img = self.font.render(self.lable, 1, (255,0,255),(0,0,0))
+        img.set_alpha(200)
+        rect = img.get_rect()
+        rect.centerx = self.screen.get_width()/2
+        rect.centery = self.screen.get_height()/2-100
+        self.screen.blit(img,rect)
         
-        msg = font.render('ID:'+self.msg_inbox, 1, (255,255,255))
-        self.screen.blit(msg,(x+2, y+10))
+        # #검정 사각형 채움
+        # pygame.draw.rect(self.screen, (  0,  0,  0),(x,y, width,height), 0)
+        # #흰색 사각형 라인
+        # pygame.draw.rect(self.screen, (255,255,255),(x,y, width,height), 1)
+        ellip = pygame.time.get_ticks() - self.cursor_tick
+        msg = f'[{self.msg_inbox}◁](enter)'
+        if ellip < 400:
+            pass
+        elif ellip < 800:
+            msg = f'[{self.msg_inbox}◀](enter)'
+        else:
+            self.cursor_tick = pygame.time.get_ticks()
+        img = self.font.render(msg, 1, (255,255,255),(0,0,0))
+        img.set_alpha(200)
+        rect = img.get_rect()
+        rect.centerx = self.screen.get_width()/2
+        rect.centery = self.screen.get_height()/2
+        self.screen.blit(img,rect)
                 
     def run(self,client):
         self.lable = 'ID를 입력하세요.'
         while self.isRun:
             self.screen.fill((0, 0, 0))
+            self.screen.blit(self.img_bg,(0,0))
             self.eventProcess()
             if self.isQuit:
                 return None,None,False

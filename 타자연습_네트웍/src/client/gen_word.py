@@ -7,11 +7,12 @@ import pygame.time
 class Gen_Workd():
     # game_words = ['if','for', 'while']
     game_words = []
-    def __init__(self,parent, game_words,game_line_start,game_line_end) -> None:
+    def __init__(self,parent, game_words,game_line_start,game_line_end,game_line_dead) -> None:
         self.parent = parent
         self.screen = self.parent.screen
         self.game_line_start = game_line_start
         self.game_line_end = game_line_end
+        self.game_line_dead = game_line_dead
         
         img = pygame.image.load('./images/boom.png')
         self.img_boom = pygame.transform.scale(img,((40, 40)))
@@ -41,8 +42,11 @@ class Gen_Workd():
             self.game_words = sorted(self.game_words, key=lambda x:len(x))
             
     def creat_word(self):
+        limit_num = self.parent.level
+        if limit_num > 10:
+            limit_num = 10
         
-        if len(self.words) >= self.parent.level:
+        if len(self.words) >= limit_num:
             return
         
         while True:
@@ -140,7 +144,7 @@ class Gen_Workd():
             rect = self.words[key]['rect']
             # rect.y += (self.speed+(self.parent.level - 1*0.2))
             # rect.y += self.words[key]['speed']
-            if rect.bottom > (self.game_line_end-20):#self.screen.get_height()-self.parent.inp_win_heigh:
+            if rect.bottom > self.game_line_dead:#self.screen.get_height()-self.parent.inp_win_heigh:
                 # del self.words[key]
                 delet_keys.append(key)
                 drops.append(rect)

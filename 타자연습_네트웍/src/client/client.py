@@ -55,6 +55,13 @@ class socketClient():
         result = []
         high = []
         # print( self.infor)
+        if '최고점수' in self.infor:
+            for idex in self.infor['최고점수']:
+                name = self.infor['최고점수'][idex]['name']
+                score = self.infor['최고점수'][idex]['score']
+                date = self.infor['최고점수'][idex]['date']
+                high.append((name,score,date))
+            
         for identity in self.infor:
             if 'name' not in self.infor[identity]:
                 continue
@@ -64,7 +71,8 @@ class socketClient():
             score = self.infor[identity]['score']
             
             if identity == '최고점수':
-                high = (name,score)
+                # high = (name,score)
+                continue
             else:
                 result.append([name,score])
         result = sorted(result, key=lambda x:x[1],reverse=True)

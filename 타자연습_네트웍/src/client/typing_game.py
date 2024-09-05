@@ -50,7 +50,8 @@ class game_main():
     inp_win_heigh = 80
     
     game_line_start = 0
-    game_line_end = 630
+    game_line_end = 630+75
+    game_line_dead = game_line_end - 90
     
     
     
@@ -81,7 +82,7 @@ class game_main():
         self.snd_hit = pygame.mixer.Sound(f'./sound/hit.wav')
         self.snd_item = pygame.mixer.Sound(f'./sound/item.wav')
         self.snd_gameover = pygame.mixer.Sound(f'./sound/game_over.wav')
-        self.gen_word = Gen_Workd(self,self.client.words,self.game_line_start,self.game_line_end)
+        self.gen_word = Gen_Workd(self,self.client.words,self.game_line_start,self.game_line_end,self.game_line_dead)
         self.ExplosionGroup = pygame.sprite.Group()
         self.bulletGroup = pygame.sprite.Group()
         start_new_thread(self.thread_play, (self.play_memody, ))
@@ -134,7 +135,7 @@ class game_main():
                                 self.score += (len(self.msg_inbox)+3)*self.level
                                 # self.snd_hit.play()
                             self.ExplosionGroup.add(Explosion(self.screen,centerx, centery,self.snd_hit))
-                            self.bulletGroup.add(Bullet(self.screen,centerx,self.game_line_end,centery))
+                            self.bulletGroup.add(Bullet(self.screen,100,self.game_line_dead,centerx,centery))
                             self.msg_inbox = ''
                             
                             if self.score > self.score_high:
@@ -202,23 +203,31 @@ class game_main():
             self.screen.blit(img,(x, y))
             y+= 40
             if len(high)>1:
-                img = self.mfont30.render(f' {high[1]:7,d} {high[0]}', 1, (0,255,255))
-                self.screen.blit(img,(x, y))
-            y+= 60
+                for i,hi in enumerate(high):
+                    name = hi[0]
+                    score = hi[1]
+                    date = hi[2]
+                    img = self.mfont30.render(f' {i+1}위 {score:,d} ({name} : {date})', 1, (0,255,255))
+                    rect = img.get_rect()
+                    rect.x = x
+                    rect.y = y
+                    self.screen.blit(img,(x, y))
+                    y = rect.bottom+5
             
             img = self.mfont30.render(f'나의기록', 1, (255,0,0))
-            self.screen.blit(img,(x, y))
-            y+= 40
+            rect = self.screen.blit(img,(x, y))
+            y = rect.bottom+5
+            
             img = self.mfont30.render(f' {self.score_high:7,d}', 1, (0,255,255))
-            self.screen.blit(img,(x, y))
-            y+= 60
+            rect = self.screen.blit(img,(x, y))
+            y = rect.bottom+5
 
             
             img = self.mfont30.render(f'접속순위', 1, (255,0,0))
             self.screen.blit(img,(x, y))
             y+= 40
             for i,user in enumerate(users):
-                img = self.mfont30.render(f' {user[1]:7,d} {user[0]}', 1, (255,255,255))
+                img = self.mfont30.render(f' {i+1}위 {user[1]:7,d} {user[0]}', 1, (255,255,255))
                 self.screen.blit(img,(x, y))
                 y+= 40
     
@@ -242,8 +251,8 @@ class game_main():
             img = self.mfont30.render(f' 콤보시간: {self.com_bo_tick_limit - self.com_bo_ellip}: 점수{self.com_bo_bonus}배', 1, (255,255,0))
             img.set_alpha(150)
             rect = img.get_rect()
-            rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
-            rect.centery = self.screen.get_height()/2+100
+            rect.centerx = (self.screen.get_width()-rect.width)-50
+            rect.y = self.game_line_end - rect.height - 10
             self.screen.blit(img,rect)
             
         # print(self.com_bo_position)
@@ -265,13 +274,16 @@ class game_main():
                     
                 self.screen.blit(img,rect)
                     
-        width = self.screen.get_width()-self.msg_win_width-40
-        height = 60
+        # width = self.screen.get_width()-self.msg_win_width-40
+        # height = 60
         
-        x = 20
-        y = self.screen.get_height() - height - 5 
+
         img = self.mfont30.render(' 입력: '+self.msg_inbox, 1, (255,255,255))
-        self.screen.blit(img,(x, y+10))
+        rect = img.get_rect()
+        rect.x = 20
+        rect.y = self.game_line_end - rect.height - 10
+        rect.width = self.screen.get_width()-self.msg_win_width-40
+        self.screen.blit(img,rect)
         
     def draw_heart(self):
         
@@ -321,7 +333,7 @@ class game_main():
                     self.hp -= len(drops)
                     self.snd_drop.play()
                     for drop in drops:
-                        self.ExplosionGroup.add(Explosion(self.screen,drop.centerx, drop.centery))
+                        self.ExplosionGroup.add(Explosion(self.screen,drop.centerx, drop.centery,self.snd_hit))
                     if self.hp <= 0:
                         self.hp = 0
                         self.is_game_over = True
