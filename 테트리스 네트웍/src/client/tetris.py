@@ -103,7 +103,7 @@ class Tetris():
         for key in self.event_dic:
             if key_pressed[key] and self.event_dic[key]['long']:
                 if self.event_dic[key]['tick'] > 0:
-                    if pygame.time.get_ticks()-self.event_dic[key]['tick']>100:
+                    if pygame.time.get_ticks()-self.event_dic[key]['tick']>120:
                         self.key_process_stone(key,True)
                         self.event_dic[key]['tick'] = pygame.time.get_ticks()
                 
