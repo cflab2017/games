@@ -73,7 +73,14 @@ class socketServer():
                 with open(self.user_file_name, 'rb') as fr:
                     high_score_dict = pickle.load(fr) #딕셔너리로 변환
                     if 0 in high_score_dict:
+                        for key in self.high_score_dict:
+                            if key not in high_score_dict:
+                                high_score_dict[key] = {
+                                'name':None,
+                                'score':0,
+                                'date':None}
                         self.high_score_dict = high_score_dict
+                        
                     else:
                         if 'name' in high_score_dict:
                             self.high_score_dict[0]['name'] = high_score_dict['name']
