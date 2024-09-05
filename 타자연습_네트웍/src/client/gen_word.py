@@ -94,7 +94,7 @@ class Gen_Workd():
             temp = temp.lower()
             if key == temp:
                 centerx = self.words[word]['rect'].centerx
-                centery = self.words[word]['rect'].centery
+                centery = self.words[word]['rect'].bottom
                 del self.words[word]
                 break
             

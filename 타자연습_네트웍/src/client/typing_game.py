@@ -11,6 +11,7 @@ from _thread import *
 import time as ott
 
 import pygame.sprite
+import pygame.sprite
 import pygame.transform
 from client import *
 from account import *
@@ -18,6 +19,7 @@ from account import *
 from keyboardDraw import *
 from explosion import *
 from gen_word import *
+from bullet import *
 # 1옥타브: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
 pitch = {'c_': 523, 'cs': 554, 'd_': 587, 'ds': 622, 'e_': 659,
          'f_': 698, 'fs': 740, 'g_': 784, 'gs': 831, 'a_': 880,
@@ -81,6 +83,7 @@ class game_main():
         self.snd_gameover = pygame.mixer.Sound(f'./sound/game_over.wav')
         self.gen_word = Gen_Workd(self,self.client.words,self.game_line_start,self.game_line_end)
         self.ExplosionGroup = pygame.sprite.Group()
+        self.bulletGroup = pygame.sprite.Group()
         start_new_thread(self.thread_play, (self.play_memody, ))
 
     def thread_play(self,play_memody):
@@ -126,11 +129,12 @@ class game_main():
                                     self.com_bo_bonus = 10
                                 
                                 # self.snd_space.play()
-                                self.snd_hit.play()
+                                # self.snd_hit.play()
                             else:
                                 self.score += (len(self.msg_inbox)+3)*self.level
-                                self.snd_hit.play()
-                            self.ExplosionGroup.add(Explosion(self.screen,centerx, centery))
+                                # self.snd_hit.play()
+                            self.ExplosionGroup.add(Explosion(self.screen,centerx, centery,self.snd_hit))
+                            self.bulletGroup.add(Bullet(self.screen,centerx,self.game_line_end,centery))
                             self.msg_inbox = ''
                             
                             if self.score > self.score_high:
@@ -141,7 +145,7 @@ class game_main():
                             # if self.hp < self.hp_max:
                             #     self.hp += 1
                             self.match_cnt += 1
-                            if self.match_cnt % 10 == 0:
+                            if self.match_cnt % 20 == 0:
                                 self.level += 1
                             self.com_bo_tick = pygame.time.get_ticks()
                         else:
@@ -239,7 +243,7 @@ class game_main():
             img.set_alpha(150)
             rect = img.get_rect()
             rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
-            rect.centery = self.screen.get_height()-250            
+            rect.centery = self.screen.get_height()/2+100
             self.screen.blit(img,rect)
             
         # print(self.com_bo_position)
@@ -305,8 +309,12 @@ class game_main():
             self.eventProcess()
             self.check_combo()
             self.display_box()
+            
             self.ExplosionGroup.update()
             self.ExplosionGroup.draw(self.screen)
+                
+            self.bulletGroup.update()
+            self.bulletGroup.draw(self.screen)
             if self.is_game_over == False:
                 drops = self.gen_word.draw(self.is_game_over)
                 if len(drops):
@@ -320,7 +328,7 @@ class game_main():
                         self.snd_gameover.play()
             self.keyboardDraw.draw(self.gen_word.words)
             pygame.display.update() #화면 갱신
-            self.clock.tick(30) #초당 60프레임 갱신을 위한 잠시 대기
+            self.clock.tick(200) #초당 60프레임 갱신을 위한 잠시 대기
 
 if __name__ == "__main__":
     game = game_main()
