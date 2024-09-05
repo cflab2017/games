@@ -48,6 +48,7 @@ class Player():
         self.score = 0
         self.shield_on = False
         self.shield_tick = 0
+        self.weapon_speed = 4
         
         self.level_up = False
         self.level_up_tick = 0
@@ -86,8 +87,18 @@ class Player():
         key_pressed = pygame.key.get_pressed()
         
         if key_pressed[pygame.K_SPACE]:
-            if pygame.time.get_ticks() - self.bullet_tick > 200:
-                bullet = Bullet(self.screen,self.image_bullet,self.rect.centerx, self.rect.top,-2)
+            
+            self.weapon_speed = 200
+            if self.hp - 100 > 0:
+                speed = int((self.hp - 100)*2)
+                if speed > 190:
+                    speed = 190
+                speed = 200 - speed
+                self.weapon_speed = speed
+                
+            if pygame.time.get_ticks() - self.bullet_tick > self.weapon_speed:
+                
+                bullet = Bullet(self.screen,self.image_bullet,self.rect.centerx, self.rect.top,-4)
                 self.bullet_group.add(bullet)
                 self.bullet_tick = pygame.time.get_ticks()
                 self.snd_dic['shoot'].play()
@@ -231,6 +242,20 @@ class Player():
         temp_surface.set_alpha(128)
         self.screen.blit(temp_surface, rect)
         
+        
+    def draw_text_weapon_delay(self):        
+        msg = f'weapon delay : {self.weapon_speed}'
+        color = (0, 255, 0)
+        img = self.font30.render(msg, True, color)        
+        rect = img.get_rect()        
+        rect.x = 10
+        rect.y = 10+50+50
+        temp_surface = pygame.Surface(img.get_size())
+        temp_surface.fill((0, 0, 0))
+        temp_surface.blit(img, (0, 0))
+        temp_surface.set_alpha(128)
+        self.screen.blit(temp_surface, rect)
+        
     def draw_text_hp(self):        
         msg = f'HP : {self.hp}'
         color = (0, 255, 255)
@@ -261,6 +286,7 @@ class Player():
         self.bullet_group.draw(self.screen)
         self.draw_text_score()
         self.draw_text_highscore()
+        self.draw_text_weapon_delay()
         self.draw_text_hp()
         self.draw_shield()
         self.draw_text_levelup()
