@@ -96,6 +96,9 @@ class Draw_button():
         self.btn_boom_rect = self.btn_boom.get_rect()        
         self.btn_boom_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
         self.btn_boom_rect.top = self.btn_shield_rect.bottom+5
+        
+        image = pygame.image.load('./images/boom.png').convert_alpha()
+        self.img_boom = pygame.transform.scale(image, (30, 30))
         #################################################################
         image = pygame.image.load('./images/btn_pause.png').convert_alpha()
         self.btn_pause = pygame.transform.scale(image, (40, 40))
@@ -150,6 +153,7 @@ class Draw_button():
         
         self.disp_msg_2('-폭탄 변경',(self.btn_boom_rect.right+2,self.btn_boom_rect.centery),(192,192,192))
         self.screen.blit(self.btn_boom,self.btn_boom_rect)
+        self.screen.blit(self.img_boom,(self.btn_boom_rect.right+85,self.btn_boom_rect.y+4))
         
         self.disp_msg_2('-스톤 변경',(self.btn_stone_rect.right+2,self.btn_stone_rect.centery),(192,192,192))
         self.screen.blit(self.btn_stone,self.btn_stone_rect)

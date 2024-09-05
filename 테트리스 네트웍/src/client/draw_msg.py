@@ -62,25 +62,27 @@ class DrawMsg():
         # self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
         # self.disp_msg(f" {score:7,} ({name})",(self.msg_start+100, self.cell_size*(line)),(0, 255, 0)) 
         
-        self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
-        line += 1
-        start_y = self.cell_size*(line)
+        start_y = self.cell_size*(line) - 20
+        self.disp_msg(f"[최고점수]",(self.msg_start, start_y),(255, 255, 255))  
+        start_y += 30
         for i,key in enumerate(self.client.infor['최고점수']):
             name = self.client.infor['최고점수'][key]['name']
             score = self.client.infor['최고점수'][key]['score']
             date = self.client.infor['최고점수'][key]['date']
             self.disp_msg(f"{i+1}위 : {score:,}",(self.msg_start+4, start_y),(0, 255, 0)) 
             start_y += 30
-            self.disp_msg(f"{name}",(self.msg_start+40, start_y),(255, 255, 255)) 
+            self.disp_msg(f"{name}({date})",(self.msg_start+40, start_y),(255, 255, 255)) 
             start_y += 30
-            self.disp_msg(f"{date}",(self.msg_start+40, start_y),(255, 255, 255)) 
-            start_y += 30
+            # self.disp_msg(f"{date}",(self.msg_start+40, start_y),(255, 255, 255)) 
+            # start_y += 30
         
     def disp_msg_users(self,line):
         users = self.client.get_score()
-        
         user_cnt = 0
-        pos = self.disp_msg(f"[접속자 순위]",(self.msg_start+200, self.cell_size*(line+user_cnt)),(255,255,255))
+        start_x = self.msg_start+250        
+        start_y = self.cell_size*(line+user_cnt) - 20        
+        pos = self.disp_msg(f"[접속자 순위]",(start_x, start_y),(255,255,255))
+        start_y += 30
         user_cnt += 1
         self.click_draw = []
         for user in users:
@@ -101,7 +103,8 @@ class DrawMsg():
                 else:
                     color = (255, 255, 255)
                 
-            pos = self.disp_msg(f" {user_cnt}위: {score:7,} {name} {status}",(self.msg_start+200, self.cell_size*(line+user_cnt)),color)
+            pos = self.disp_msg(f" {user_cnt}위: {score:,} {name} {status}",(start_x, start_y),color)
+            start_y += 30
             if name != self.client.name:
                 self.click_draw.append([pos,name])
             user_cnt += 1

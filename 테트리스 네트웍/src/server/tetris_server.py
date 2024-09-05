@@ -26,6 +26,14 @@ class socketServer():
             'name':None,
             'score':0,
             'date':None},
+        3:{
+            'name':None,
+            'score':0,
+            'date':None},
+        4:{
+            'name':None,
+            'score':0,
+            'date':None},
     }
     
     infor = {
