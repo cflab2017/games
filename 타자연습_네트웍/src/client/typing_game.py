@@ -77,6 +77,10 @@ class game_main():
         account = Account(self.screen)
         self.user_name,self.isActive = account.run(self.client)
         
+        self.status_msg_tick = 0
+        self.status_msg_disp = ''   
+        self.status_msg = []
+        
         self.keyboardDraw = KeyboardDraw(self.screen,self.game_line_end)
         self.snd_drop = pygame.mixer.Sound(f'./sound/shoot.wav')
         self.snd_hit = pygame.mixer.Sound(f'./sound/hit.wav')
@@ -96,7 +100,26 @@ class game_main():
                 for memody in play_memody:
                     winsound.Beep(pitch[memody], lasting)
                 play_memody.clear()
-        
+                
+    def drawStatusMsg(self):           
+        if self.status_msg_tick == 0:
+            if len(self.status_msg):
+                self.status_msg_disp = self.status_msg.pop()
+                self.status_msg_tick = pygame.time.get_ticks()
+        else:
+            ellip = pygame.time.get_ticks() - self.status_msg_tick
+            if ellip < 2000:
+                if ellip < 400 or (800 < ellip < 1200)or (1600 < ellip):                    
+                    img = self.mfont40.render(self.status_msg_disp, 1, (255,0,0))
+                    img.set_alpha(150)
+                    rect = img.get_rect()
+                    rect.centerx = (self.screen.get_width()/2 -rect.width)-50
+                    rect.centery = self.screen.get_height()/2
+                    self.screen.blit(img,rect)
+            else:
+                self.status_msg_tick = 0
+                self.status_msg_disp = ''   
+                         
     #이벤트 확인 및 처리 함수
     def eventProcess(self):
         for event in pygame.event.get():#이벤트 가져오기
@@ -148,6 +171,8 @@ class game_main():
                             self.match_cnt += 1
                             if self.match_cnt % 20 == 0:
                                 self.level += 1
+                                self.status_msg.append(f'레벨업 {self.level}!!')
+                                
                             self.com_bo_tick = pygame.time.get_ticks()
                         else:
                             self.play_memody.append('b_')
@@ -321,6 +346,7 @@ class game_main():
             self.eventProcess()
             self.check_combo()
             self.display_box()
+            self.drawStatusMsg()
             
             self.ExplosionGroup.update()
             self.ExplosionGroup.draw(self.screen)

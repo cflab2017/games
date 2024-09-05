@@ -55,6 +55,19 @@ class Gen_Workd():
                 max_len = len(self.game_words)-1
             
             value = self.game_words[random.randint(0,max_len)]
+            if self.parent.level > 10 and (random.randint(0,max_len)<50):
+                temp = value + self.game_words[random.randint(0,max_len)]
+                if len(temp) <= 2:
+                    value = temp
+            if self.parent.level > 20 and (random.randint(0,max_len)<50):
+                temp = value + self.game_words[random.randint(0,max_len)]
+                if len(temp) <= 3:
+                    value = temp
+            if self.parent.level > 30 and (random.randint(0,max_len)<50):
+                temp = value + self.game_words[random.randint(0,max_len)]
+                if len(temp) <= 4:
+                    value = temp
+                
             # if self.parent.level < 5:
             if value in "(){}[]/%&*!@#$?":
                 continue
@@ -76,8 +89,25 @@ class Gen_Workd():
                     is_ok = False
                     cnt+=1
                     break
+                
+        start_speed = 9
+        end_speed = 10
+        offset_speed = 0
+        if self.parent.level > 5:
+            offset_speed = int(self.parent.level/5)
+            if offset_speed > 8:
+                offset_speed = 8
+            start_speed -= offset_speed
             
-        speed = random.randint(9,10)
+        if self.parent.level > 10:
+            offset_speed = int(self.parent.level/10)
+            if offset_speed > 8:
+                offset_speed = 8
+            end_speed -= offset_speed
+            if start_speed >= end_speed:
+                end_speed = start_speed + 1
+            
+        speed = random.randint(start_speed,end_speed)
         self.words[value] = {'img':img, 'rect':rect, 'speed':speed, 'speed_cnt':0,'blink_tick':0,'blink_color':0}
         
     def clear_word(self):

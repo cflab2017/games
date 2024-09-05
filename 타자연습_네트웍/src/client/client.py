@@ -154,4 +154,4 @@ class socketClient():
                 self.del_out_user(server_infor)#접속을 해제 한 유저 삭제.                    
                 self.update_infor(server_infor)
             
-            print(f"서버메세제:{server_infor}")
+            # print(f"서버메세제:{server_infor}")
