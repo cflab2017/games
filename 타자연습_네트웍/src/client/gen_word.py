@@ -18,6 +18,7 @@ class Gen_Workd():
         self.img_boom = pygame.transform.scale(img,((40, 40)))
         self.rect_boom = self.img_boom.get_rect()
         
+        self.creat_delay_tick = 0
         self.mfont30 = pygame.font.SysFont("malgungothic", 30)
         self.speed = 1
         self.words = {}
@@ -42,6 +43,12 @@ class Gen_Workd():
             self.game_words = sorted(self.game_words, key=lambda x:len(x))
             
     def creat_word(self):
+        
+        if len(self.words) > 0 and pygame.time.get_ticks() - self.creat_delay_tick < 1000:
+            return
+        
+        self.creat_delay_tick = pygame.time.get_ticks()
+        
         limit_num = self.parent.level
         if limit_num > 10:
             limit_num = 10
@@ -50,7 +57,11 @@ class Gen_Workd():
             return
         
         while True:
-            max_len = self.parent.level*3+26
+            max_len = 26-1
+            
+            if self.parent.level > 10:
+                max_len += self.parent.level
+                
             if max_len > len(self.game_words)-1:
                 max_len = len(self.game_words)-1
             
@@ -80,12 +91,14 @@ class Gen_Workd():
         is_ok = False
         cnt = 0
         while is_ok==False and cnt < 10:
-            rect.x = random.randint(0,self.screen.get_width() - rect.width-self.parent.msg_win_width)
+            rect.x = random.randint(0,self.screen.get_width() - rect.width-self.parent.msg_draw.msg_win_width)
             rect.y = self.game_line_start+40#0+300 +40
+            rect2 = rect.copy()
+            rect2.height += 40
             
             is_ok = True
             for word in self.words:
-                if rect.colliderect(self.words[word]['rect']):
+                if rect2.colliderect(self.words[word]['rect']):
                     is_ok = False
                     cnt+=1
                     break
@@ -93,14 +106,14 @@ class Gen_Workd():
         start_speed = 9
         end_speed = 10
         offset_speed = 0
-        if self.parent.level > 5:
-            offset_speed = int(self.parent.level/5)
+        if self.parent.level > 10:
+            offset_speed = int(self.parent.level/10)
             if offset_speed > 8:
                 offset_speed = 8
             start_speed -= offset_speed
             
-        if self.parent.level > 10:
-            offset_speed = int(self.parent.level/10)
+        if self.parent.level > 20:
+            offset_speed = int(self.parent.level/20)
             if offset_speed > 8:
                 offset_speed = 8
             end_speed -= offset_speed
