@@ -157,7 +157,8 @@ class socketClient():
                     if 'shape' in server_infor['attack']:
                         shape = server_infor['attack']['shape']
                         if self.interf is not None:
-                            self.interf.create_stone(shape)
+                            # self.interf.create_stone(shape)
+                            self.interf.create_stone(5)
                         
                 else:   
                     self.del_out_user(server_infor)#접속을 해제 한 유저 삭제.                    
