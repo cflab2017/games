@@ -15,7 +15,7 @@ class Gen_Workd():
         self.game_line_dead = game_line_dead
         
         img = pygame.image.load('./images/boom.png')
-        self.img_boom = pygame.transform.scale(img,((40, 40)))
+        self.img_boom = pygame.transform.scale(img,((30, 30)))
         self.rect_boom = self.img_boom.get_rect()
         
         self.creat_delay_tick = 0

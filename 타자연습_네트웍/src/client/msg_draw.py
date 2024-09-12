@@ -1,5 +1,6 @@
 import pygame
 from pygame import Surface
+import pygame.surface
 import pygame.time
 
 class Msg_draw():
@@ -11,6 +12,7 @@ class Msg_draw():
         self.game_line_end = game_line_end
         
         self.mfont100 = pygame.font.SysFont("malgungothic", 100)
+        self.mfont60 = pygame.font.SysFont("malgungothic", 60)
         self.mfont40 = pygame.font.SysFont("malgungothic", 40)
         self.mfont30 = pygame.font.SysFont("malgungothic", 20)
         self.mfont18 = pygame.font.SysFont("malgungothic", 18)
@@ -25,6 +27,8 @@ class Msg_draw():
         self.game_start_msg_tick = 0
         self.game_over_msg_tick = 0
         self.game_timout_msg_tick = 0
+        
+        self.snd_count = pygame.mixer.Sound(f'./sound/shoot.wav')
         
     def drawStatusMsg(self):           
         if self.status_msg_tick == 0:
@@ -83,8 +87,19 @@ class Msg_draw():
             self.screen.blit(img,(x, y))
             y+= 40
             for i,user in enumerate(users):
-                img = self.mfont30.render(f' {i+1}위 {user[1]:7,d} {user[0]}', 1, (255,255,255))
-                self.screen.blit(img,(x, y))
+                if parent.user_name == user[0]:
+                    color = (0,255,0)
+                    img = self.mfont30.render(f' {i+1}위 {user[1]:7,d} {user[0]}', 1, color,(0,0,0))
+                    rect = img.get_rect()
+                    rect.x = x
+                    rect.y = y
+                    # temp_surface = pygame.Surface((rect.width,rect.height))
+                    # temp_surface.fill((0,0,0))
+                    self.screen.blit(img,rect)
+                else:
+                    color = (255,255,255)
+                    img = self.mfont30.render(f' {i+1}위 {user[1]:7,d} {user[0]}', 1, color)
+                    self.screen.blit(img,(x, y))
                 y+= 40
                 
     def display_startGame(self,parent):
@@ -94,6 +109,7 @@ class Msg_draw():
             rect = img.get_rect()
             rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
             rect.centery = self.screen.get_height()/3
+            
             self.screen.blit(img,rect)
             
             if self.game_start_msg_tick == 0:
@@ -101,6 +117,7 @@ class Msg_draw():
             if pygame.time.get_ticks() - self.game_start_msg_tick > 500:
                 self.game_start_msg_tick = pygame.time.get_ticks()
                 parent.game_start_msg_idex += 1
+                self.snd_count.play()
                 if len(parent.game_start_msg) <= parent.game_start_msg_idex:
                     parent.game_start_msg.clear()
                     parent.game_start_msg_idex = 0
@@ -157,11 +174,17 @@ class Msg_draw():
             minute = int((millis/1000)/60)
             millis = int(millis%1000)
             
-            img = self.mfont40.render(f'{minute}:{sec}:{millis:03}', 1, color)
+            img = self.mfont60.render(f'{minute}:{sec}:{millis:03}', 1, color)
             rect = img.get_rect()
             rect.centerx = (self.screen.get_width()-self.msg_win_width)/2
-            rect.centery = self.screen.get_height()/3
-            self.screen.blit(img,rect)
+            rect.centery = self.screen.get_height()/3+100
+            # self.screen.blit(img,rect)
+            
+            temp_surface = pygame.Surface((rect.width,rect.height))
+            temp_surface.fill((0,0,0))
+            temp_surface.set_alpha(100)
+            temp_surface.blit(img,(0,0))
+            self.screen.blit(temp_surface,rect)
             
     def display_combo(self,parent):        
         if parent.com_bo_ellip > 0:
