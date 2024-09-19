@@ -65,8 +65,7 @@ class Tetris():
 
         self.client.set_interf(self.interf)
         self.init_game()
-        self.set_event_dict()
-    
+        self.set_event_dict()    
 
     def init_game(self):
         self.stone.gameover = False
@@ -97,8 +96,7 @@ class Tetris():
                 if event.type == pygame.USEREVENT+2:#사용자 이벤트
                         self.interf.drop()                    
                 if event.type == pygame.USEREVENT+1:#사용자 이벤트
-                        self.stone.drop()
-            
+                        self.stone.drop()            
         key_pressed = pygame.key.get_pressed()
         for key in self.event_dic:
             if key_pressed[key] and self.event_dic[key]['long']:
@@ -107,7 +105,6 @@ class Tetris():
                         self.key_process_stone(key,True)
                         self.event_dic[key]['tick'] = pygame.time.get_ticks()
                 
-
     def key_event(self,key):        
         if key == pygame.K_F5:
             self.draw_line.design_mode += 1
@@ -136,7 +133,9 @@ class Tetris():
                                 
     def key_process_stone(self,key,is_press):    
         if key in self.event_dic:
-            if is_press:
+            if self.is_pause and key != pygame.K_p:
+                pass
+            elif is_press:
                 self.event_dic[key]['btnDraw'].set_alpha(200)
                 if (self.event_dic[key]['ctrl'] is not None) and (self.stone.gameover==False):                    
                     if self.event_dic[key]['long']:
@@ -175,6 +174,9 @@ class Tetris():
             self.btnDraw.draw()
             self.msg.draw(self.is_pause,self.pause_cnt,self.interf.next_stone)
             
+            if self.is_pause and len(self.msg.status_msg)==0:
+                self.msg.status_msg.append(f'일시정지 남은 횟수 {self.pause_cnt}개')
+                            
             if self.stone.gameover == False:
                 self.draw_line.draw(self.board, self.stone, self.interf)
                 self.msg.disp_msg_score()
