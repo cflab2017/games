@@ -20,6 +20,7 @@ class DrawMsg():
         self.cell_size = cell_size
         self.msg_start = rlim+cell_size - 30
         # self.defFont = pygame.font.Font(pygame.font.get_default_font(), 18)
+        self.defFont40 = pygame.font.SysFont('malgungothic', 40)
         self.defFont = pygame.font.SysFont('malgungothic', 20)
         self.defFont18 = pygame.font.SysFont('malgungothic', 18)
         self.click_draw=[]
@@ -31,6 +32,13 @@ class DrawMsg():
         self.snd_dic = {
             'shoot':pygame.mixer.Sound('./sound/shoot.wav'),
         }
+    
+    def disp_msg_f40(self,msg, topleft,color=(255, 255, 255)):
+        x, y = topleft
+        img = self.defFont40.render(msg,False,color,(0, 0, 0))
+        img.set_alpha(100)
+        pos = self.screen.blit(img,(x, y))        
+        return pos
     
     def disp_msg(self,msg, topleft,color=(255, 255, 255)):
         x, y = topleft

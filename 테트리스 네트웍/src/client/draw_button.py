@@ -82,37 +82,47 @@ class Draw_button():
         self.btn2_right_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4)
         self.btn2_right_rect.bottom = self.screen.get_height() - 10 - (40+10)*1
 
-        #################################################################
+        ################################################################# btn1
         image = pygame.image.load('./images/btn_shield.png').convert_alpha()
         self.btn_shield = pygame.transform.scale(image, (40, 40))
         self.btn_shield.set_alpha(100)
         self.btn_shield_rect = self.btn_shield.get_rect()        
         self.btn_shield_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
         self.btn_shield_rect.bottom = self.screen.get_height() - 10 - ((40+10)*3-20)
-        #################################################################
+        ################################################################# btn2
         image = pygame.image.load('./images/btn_boom.png').convert_alpha()
         self.btn_boom = pygame.transform.scale(image, (40, 40))
         self.btn_boom.set_alpha(100)
         self.btn_boom_rect = self.btn_boom.get_rect()        
         self.btn_boom_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_boom_rect.top = self.btn_shield_rect.bottom+5
+        self.btn_boom_rect.top = self.btn_shield_rect.bottom+0-5
         
         image = pygame.image.load('./images/boom.png').convert_alpha()
         self.img_boom = pygame.transform.scale(image, (30, 30))
-        #################################################################
+        ################################################################# btn3
+        image = pygame.image.load('./images/btn_freeze.png').convert_alpha()
+        self.btn_freeze = pygame.transform.scale(image, (40, 40))
+        self.btn_freeze.set_alpha(100)
+        self.btn_freeze_rect = self.btn_freeze.get_rect()        
+        self.btn_freeze_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
+        self.btn_freeze_rect.top = self.btn_boom_rect.bottom+0-5
+        
+        
+
+        ################################################################# btn p
         image = pygame.image.load('./images/btn_pause.png').convert_alpha()
         self.btn_pause = pygame.transform.scale(image, (40, 40))
         self.btn_pause.set_alpha(100)
         self.btn_pause_rect = self.btn_pause.get_rect()        
         self.btn_pause_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_pause_rect.top = self.btn_boom_rect.bottom+5
-        #################################################################
+        self.btn_pause_rect.top = self.btn_freeze_rect.bottom+0-5
+        ################################################################# btn stone
         image = pygame.image.load('./images/btn_stone.png').convert_alpha()
         self.btn_stone = pygame.transform.scale(image, (40, 40))
         self.btn_stone.set_alpha(100)
         self.btn_stone_rect = self.btn_stone.get_rect()        
         self.btn_stone_rect.right = self.screen.get_width() - 10 - (40+10)*(0+4+5)
-        self.btn_stone_rect.top = self.btn_pause_rect.bottom+5
+        self.btn_stone_rect.top = self.btn_pause_rect.bottom+0-5
         
     def disp_msg_1(self,msg, topleft,color=(255, 255, 255)):
         img = self.defFont18.render(msg,False,color,(0, 0, 0))
@@ -154,6 +164,9 @@ class Draw_button():
         self.disp_msg_2('-폭탄 변경',(self.btn_boom_rect.right+2,self.btn_boom_rect.centery),(192,192,192))
         self.screen.blit(self.btn_boom,self.btn_boom_rect)
         self.screen.blit(self.img_boom,(self.btn_boom_rect.right+85,self.btn_boom_rect.y+4))
+        
+        self.disp_msg_2('-얼리기',(self.btn_freeze_rect.right+2,self.btn_freeze_rect.centery),(192,192,192))
+        self.screen.blit(self.btn_freeze,self.btn_freeze_rect)
         
         self.disp_msg_2('-스톤 변경',(self.btn_stone_rect.right+2,self.btn_stone_rect.centery),(192,192,192))
         self.screen.blit(self.btn_stone,self.btn_stone_rect)

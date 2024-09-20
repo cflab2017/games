@@ -50,7 +50,7 @@ class Draw_line():
         rect.height = self.screen.get_height()- rect.top
         pygame.draw.rect(self.screen,(255,255,255),rect, 1)
     
-    def draw_matrix(self,matrix, off_x,off_y,Thickness,outline = (200,200,200),divide = 1, alpha = None):
+    def draw_matrix(self,matrix, off_x,off_y,Thickness,outline = (200,200,200),divide = 1, alpha = None,freeze=False):
         if divide>1:
             x_start_offset = (off_x *self.cell_size)/divide
         else:
@@ -72,7 +72,12 @@ class Draw_line():
                         self.draw_rect(p_x,p_y,color,Thickness,outline,divide,alpha)
                     else:
                         color -= 1
-                        if self.design_mode==0:
+                        if freeze:
+                            img = self.shape.shape['stone'][1]
+                            if divide > 1:
+                                img = pygame.transform.scale(img,(int(self.cell_size/divide),int(self.cell_size/divide)))
+                            self.screen.blit(img, (p_x,p_y,))
+                        elif self.design_mode==0:
                             # color= shape.shape['color'][color]
                             # draw_rect(p_x,p_y,color,Thickness,outline,divide)
                             img = self.shape.shape['color'][color]
@@ -90,7 +95,7 @@ class Draw_line():
                                 img = pygame.transform.scale(img,(int(self.cell_size/divide),int(self.cell_size/divide)))
                             self.screen.blit(img, (p_x,p_y,))
                             
-    def draw(self,board:Board,stone:Stone,interf:Interference):        
+    def draw(self,board:Board,stone:Stone,interf:Interference, freeze):        
         #게임화면 구분선
         pygame.draw.line(self.screen,(255, 255, 255),(self.rlim+1, 0),(self.rlim+1, self.screen.get_height())) 
             
@@ -102,16 +107,16 @@ class Draw_line():
             self.draw_matrix(board.trace_grid, 0, 0,0,True,alpha=20)
             
         #스톤 그리기
-        self.draw_matrix(stone.stone,stone.stone_x, stone.stone_y, 0,True)
+        self.draw_matrix(stone.stone,stone.stone_x, stone.stone_y, 0,True,freeze=freeze)
         
         for cnt in range(len(stone.next_stone)):
-            self.draw_matrix(stone.next_stone[cnt],self.cols+1, 2+(3*cnt), 0,True,2)
+            self.draw_matrix(stone.next_stone[cnt],self.cols+1, 2+(3*cnt), 0,True,2,freeze=freeze)
         
         if len(interf.stone):
-            self.draw_matrix(interf.stone,interf.stone_x, interf.stone_y, 0,True)
+            self.draw_matrix(interf.stone,interf.stone_x, interf.stone_y, 0,True,freeze=freeze)
             if len(interf.next_stone):
                 for cnt in range(len(interf.next_stone)):
-                    self.draw_matrix(interf.next_stone[cnt],self.cols+6, 2+(3*cnt), 0,True,2)
+                    self.draw_matrix(interf.next_stone[cnt],self.cols+6, 2+(3*cnt), 0,True,2,freeze=freeze)
                     if cnt >=2:
                         break
             

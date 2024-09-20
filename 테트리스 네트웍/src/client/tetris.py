@@ -31,6 +31,9 @@ class Tetris():
     rows = 23
     rlim = cell_size*cols
     is_pause = False
+    is_freeze = False
+    freeze_tick_start = 0
+    freeze_tick_end = 0
     pause_cnt = 0
     SCREEN_WIDTH = cell_size*cols + 520
     SCREEN_HEIGHT = cell_size*rows
@@ -92,11 +95,12 @@ class Tetris():
             if event.type == pygame.KEYUP:
                 self.key_process_stone(event.key,False)
                                 
-            if self.is_pause == False:
+            if self.is_pause == False and self.is_freeze == False:
                 if event.type == pygame.USEREVENT+2:#사용자 이벤트
                         self.interf.drop()                    
                 if event.type == pygame.USEREVENT+1:#사용자 이벤트
                         self.stone.drop()            
+                        
         key_pressed = pygame.key.get_pressed()
         for key in self.event_dic:
             if key_pressed[key] and self.event_dic[key]['long']:
@@ -111,29 +115,53 @@ class Tetris():
             self.draw_line.design_mode %= 3
                 
         if key == pygame.K_1:
+            if self.is_pause or self.is_freeze:
+                return
             self.interf.snd_dic['move'].play()
             msg_temp = self.interf.del_stone()
             if msg_temp is not None:
                 self.msg.status_msg.append(f'{msg_temp}')
         
         if key == pygame.K_2:
+            if self.is_pause or self.is_freeze:
+                return
             self.interf.snd_dic['move'].play()
             msg_temp = self.stone.change_boom()
             if msg_temp is not None:
                 self.msg.status_msg.append(f'{msg_temp}')
                 
-        if key == pygame.K_p:
+        if key == pygame.K_3:
+            
             if self.is_pause:
-                self.is_pause = False
+                self.msg.status_msg.append(f'일시정지 중에는 사용할 수 없음')
+            elif self.stone.item_cnt <= 0:
+                self.msg.status_msg.append(f'얼음 교환 권 없음')
+                self.stone.item_cnt = 0
             else:
-                if self.pause_cnt > 0:
-                    self.is_pause = True                    
-                    self.pause_cnt -= 1      
-                    self.msg.status_msg.append(f'일시정지 남은 횟수 {self.pause_cnt}개')
+                self.stone.item_cnt -= 1
+                self.is_freeze = True
+                if self.freeze_tick_start == 0:
+                    self.freeze_tick_start = pygame.time.get_ticks()
+                    self.freeze_tick_end = self.freeze_tick_start + 3000
+                else:
+                    self.freeze_tick_end += 1000
+            
+                
+        if key == pygame.K_p:
+            if self.is_freeze:
+                self.msg.status_msg.append(f'얼음 중에는 사용할 수 없음')
+            else:
+                if self.is_pause:
+                    self.is_pause = False
+                else:
+                    if self.pause_cnt > 0:
+                        self.is_pause = True                    
+                        self.pause_cnt -= 1      
+                        self.msg.status_msg.append(f'일시정지 남은 횟수 {self.pause_cnt}개')
                                 
     def key_process_stone(self,key,is_press):    
         if key in self.event_dic:
-            if self.is_pause and key != pygame.K_p:
+            if self.is_pause and key != pygame.K_p and self.is_freeze==False:
                 pass
             elif is_press:
                 self.event_dic[key]['btnDraw'].set_alpha(200)
@@ -164,6 +192,7 @@ class Tetris():
             pygame.K_p:{'btnDraw':self.btnDraw.btn_pause,'ctrl':self,'long':False, 'tick':0},
             pygame.K_1:{'btnDraw':self.btnDraw.btn_shield,'ctrl':self,'long':False, 'tick':0},
             pygame.K_2:{'btnDraw':self.btnDraw.btn_boom,'ctrl':self,'long':False, 'tick':0},
+            pygame.K_3:{'btnDraw':self.btnDraw.btn_freeze,'ctrl':self,'long':False, 'tick':0},
         }
     
     def run(self):
@@ -174,18 +203,29 @@ class Tetris():
             self.btnDraw.draw()
             self.msg.draw(self.is_pause,self.pause_cnt,self.interf.next_stone)
             
+                
             if self.is_pause and len(self.msg.status_msg)==0:
                 self.msg.status_msg.append(f'일시정지 남은 횟수 {self.pause_cnt}개')
                             
             if self.stone.gameover == False:
-                self.draw_line.draw(self.board, self.stone, self.interf)
+                self.draw_line.draw(self.board, self.stone, self.interf,self.is_freeze)
                 self.msg.disp_msg_score()
                 if self.stone.score != self.stone.score_pre:
                     self.client.send_score(self.user_name, self.stone.score)
                     self.stone.score_pre = self.stone.score
             self.msg.drawStatusMsg()
+
+            if self.is_freeze:
+                ellip = self.freeze_tick_end - pygame.time.get_ticks()
+                if ellip < 0:
+                    self.is_freeze=False
+                    self.freeze_tick_start = 0
+                    self.freeze_tick_end = 0
+                else:
+                    self.msg.disp_msg_f40(f'얼음 남은시간 {ellip}',(self.cell_size, self.cell_size*7),(255,0,0))
+                    
             pygame.display.update() #화면 갱신
-            self.clock.tick(30) #초당 30프레임 
+            self.clock.tick(100) #초당 30프레임 
 
 if __name__ == '__main__':
     game = Tetris()
