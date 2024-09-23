@@ -22,7 +22,7 @@ class DrawMsg():
         # self.defFont = pygame.font.Font(pygame.font.get_default_font(), 18)
         self.defFont40 = pygame.font.SysFont('malgungothic', 40)
         self.defFont = pygame.font.SysFont('malgungothic', 20)
-        self.defFont18 = pygame.font.SysFont('malgungothic', 18)
+        self.defFont18 = pygame.font.SysFont('malgungothic', 17)
         self.click_draw=[]
         self.status_msg = []
         self.status_msg_disp = ''
@@ -70,17 +70,26 @@ class DrawMsg():
         # self.disp_msg(f"최고점수",(self.msg_start, self.cell_size*(line)),(255, 255, 255))  
         # self.disp_msg(f" {score:7,} ({name})",(self.msg_start+100, self.cell_size*(line)),(0, 255, 0)) 
         
-        start_y = self.cell_size*(line) - 20
+        start_y = self.cell_size*(line) - 25
         self.disp_msg(f"[최고점수]",(self.msg_start, start_y),(255, 255, 255))  
         start_y += 30
         for i,key in enumerate(self.client.infor['최고점수']):
             name = self.client.infor['최고점수'][key]['name']
             score = self.client.infor['최고점수'][key]['score']
             date = self.client.infor['최고점수'][key]['date']
-            self.disp_msg(f"{i+1}위 : {score:,}",(self.msg_start+4, start_y),(0, 255, 0)) 
-            start_y += 30
-            self.disp_msg(f"{name}({date})",(self.msg_start+40, start_y),(255, 255, 255)) 
-            start_y += 30
+            
+            if name == self.client.name:
+                color1 = (255, 0, 255)
+                color2 = (255, 0, 255)
+            else:
+                color1 = (0, 255, 0)
+                color2 = (255, 255, 255)
+                
+            rect = self.disp_msg(f"{i+1}위 : {score:,}",(self.msg_start+4, start_y),color1) 
+            self.disp_msg(f"({date})",(rect.right+2, start_y),(255, 255, 255)) 
+            start_y += 26
+            self.disp_msg(f"{name}",(self.msg_start+40, start_y),color2) 
+            start_y += 26
             # self.disp_msg(f"{date}",(self.msg_start+40, start_y),(255, 255, 255)) 
             # start_y += 30
         
@@ -88,7 +97,7 @@ class DrawMsg():
         users = self.client.get_score()
         user_cnt = 0
         start_x = self.msg_start+250        
-        start_y = self.cell_size*(line+user_cnt) - 20        
+        start_y = self.cell_size*(line+user_cnt) - 25        
         pos = self.disp_msg(f"[접속자 순위]",(start_x, start_y),(255,255,255))
         start_y += 30
         user_cnt += 1
@@ -176,7 +185,7 @@ class DrawMsg():
             self.disp_msg_server_high_score(6)
             self.disp_msg_users(6)
                 
-            msg_idex = 15
+            msg_idex = 20
             self.disp_msg(f"최고점수: {self.stone.score_high:,}",(self.msg_start, self.cell_size*msg_idex))
             
             msg_idex += 1

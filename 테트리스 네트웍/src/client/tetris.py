@@ -38,6 +38,9 @@ class Tetris():
     SCREEN_WIDTH = cell_size*cols + 520
     SCREEN_HEIGHT = cell_size*rows
     
+    LANG_KOREAN = 0x0412  # 한국어
+    LANG_ENGLISH = 0x0409  # 영어
+    
     def __init__(self) -> None:                            
         #1.초기화 하기
         pygame.init() #pygame 초기화
@@ -69,7 +72,7 @@ class Tetris():
         self.client.set_interf(self.interf)
         self.init_game()
         self.set_event_dict()    
-
+        
     def init_game(self):
         self.stone.gameover = False
         self.is_pause = False
@@ -84,6 +87,8 @@ class Tetris():
 #이벤트 처리함수
     def eventProcess(self):
         for event in pygame.event.get():#이벤트 가져오기
+            
+            # print(event)
             if event.type == QUIT: #종료버튼?
                 self.isActive = False
             if event.type == pygame.KEYDOWN:#키 눌림?                    
@@ -94,6 +99,13 @@ class Tetris():
                         
             if event.type == pygame.KEYUP:
                 self.key_process_stone(event.key,False)
+                
+            if event.type == pygame.TEXTINPUT:
+                print(event.text)                
+                if event.text in 'ㅈㅁㄴㅇ':
+                    if len(self.msg.status_msg)==0:
+                        self.msg.status_msg.append(f'키보드 변경!! 영문으로 변경!!')
+                    self.stone.snd_dic['destory'].play()  
                                 
             if self.is_pause == False and self.is_freeze == False:
                 if event.type == pygame.USEREVENT+2:#사용자 이벤트

@@ -34,6 +34,26 @@ class socketServer():
             'name':None,
             'score':0,
             'date':None},
+        5:{
+            'name':None,
+            'score':0,
+            'date':None},
+        6:{
+            'name':None,
+            'score':0,
+            'date':None},
+        7:{
+            'name':None,
+            'score':0,
+            'date':None},
+        8:{
+            'name':None,
+            'score':0,
+            'date':None},
+        9:{
+            'name':None,
+            'score':0,
+            'date':None},
     }
     
     infor = {
@@ -72,21 +92,36 @@ class socketServer():
             if os.path.isfile(self.user_file_name): #불러올 파일이 있는가?
                 with open(self.user_file_name, 'rb') as fr:
                     high_score_dict = pickle.load(fr) #딕셔너리로 변환
-                    if 0 in high_score_dict:
-                        for key in self.high_score_dict:
-                            if key not in high_score_dict:
-                                high_score_dict[key] = {
-                                'name':None,
-                                'score':0,
-                                'date':None}
-                        self.high_score_dict = high_score_dict
-                        
-                    else:
-                        if 'name' in high_score_dict:
-                            self.high_score_dict[0]['name'] = high_score_dict['name']
-                            self.high_score_dict[0]['score'] = high_score_dict['score']
-                    self.infor.update({'최고점수' : self.high_score_dict})
+                    for key in high_score_dict:
+                        if key in self.high_score_dict:
+                            self.high_score_dict[key] = high_score_dict[key]
+                            if 'name' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['name'] = None
+                            if 'score' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['score'] = 0
+                            if 'date' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['date'] = None
+                            else:
+                                dat = str(self.high_score_dict[key]['date'])
+                                if dat.find('2024')>-1:
+                                    dat = dat[2:-1]
+                                    self.high_score_dict[key]['date'] = dat   
                     
+                    # if 0 in high_score_dict:
+                    #     for key in self.high_score_dict:
+                    #         if key not in high_score_dict:
+                    #             high_score_dict[key] = {
+                    #             'name':None,
+                    #             'score':0,
+                    #             'date':None}
+                    #     self.high_score_dict = high_score_dict
+                        
+                    # else:
+                    #     if 'name' in high_score_dict:
+                    #         self.high_score_dict[0]['name'] = high_score_dict['name']
+                    #         self.high_score_dict[0]['score'] = high_score_dict['score']
+                            
+                    self.infor.update({'최고점수' : self.high_score_dict})                    
         
         if state == 'w':  
             with open(self.user_file_name, 'wb') as fw:
@@ -130,7 +165,7 @@ class socketServer():
                 # break
             if self.infor['최고점수'][key]['name'] == name:
                 if self.infor['최고점수'][key]['score'] < score:
-                    date_str = f'{date.year}.{date.month}.{date.day}'
+                    date_str = f'{date.year%100}.{date.month}.{date.day}'
                     self.infor['최고점수'][key]['score'] = score
                     self.infor['최고점수'][key]['date'] = date_str
                     is_find = 2
@@ -144,7 +179,7 @@ class socketServer():
                 score_temp.append(list(self.infor['최고점수'][key].values()))
                 
             if is_find == 1:
-                date_str = f'{date.year}.{date.month}.{date.day}'
+                date_str = f'{date.year%100}.{date.month}.{date.day}'
                 score_temp.append([name,score,date_str])
             score_temp.sort(key=lambda x:-x[1])
             

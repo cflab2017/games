@@ -39,12 +39,12 @@ class Draw_line():
         pygame.draw.rect(self.screen,(255,255,255),rect, 1)
         
         rect.top = rect.bottom
-        rect.height = 360
+        rect.height = 360+200
         pygame.draw.rect(self.screen,(255,255,255),rect, 1)
         
-        rect.top = rect.bottom
-        rect.height = 200
-        pygame.draw.rect(self.screen,(255,255,255),rect, 1)
+        # rect.top = rect.bottom
+        # rect.height = 200
+        # pygame.draw.rect(self.screen,(255,255,255),rect, 1)
         
         rect.top = rect.bottom
         rect.height = self.screen.get_height()- rect.top
