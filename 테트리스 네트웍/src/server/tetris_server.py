@@ -104,7 +104,7 @@ class socketServer():
                             else:
                                 dat = str(self.high_score_dict[key]['date'])
                                 if dat.find('2024')>-1:
-                                    dat = dat[2:-1]
+                                    dat = dat[2:]
                                     self.high_score_dict[key]['date'] = dat   
                     
                     # if 0 in high_score_dict:
@@ -121,7 +121,8 @@ class socketServer():
                     #         self.high_score_dict[0]['name'] = high_score_dict['name']
                     #         self.high_score_dict[0]['score'] = high_score_dict['score']
                             
-                    self.infor.update({'최고점수' : self.high_score_dict})                    
+                    self.infor.update({'최고점수' : self.high_score_dict})      
+                    print(self.high_score_dict)              
         
         if state == 'w':  
             with open(self.user_file_name, 'wb') as fw:
