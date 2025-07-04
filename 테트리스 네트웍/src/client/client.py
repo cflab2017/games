@@ -145,7 +145,7 @@ class socketClient():
         while True:
             try:
                 data = client_socket.recv(1024).decode()
-                
+                print(f"[{data}]")
                 server_infor = json.loads(data)         
                 if 'response' in server_infor:
                     

@@ -106,7 +106,11 @@ class socketServer():
                                 if dat.find('2024')>-1:
                                     dat = dat[2:]
                                     self.high_score_dict[key]['date'] = dat   
-                    
+                                    
+                            if 'name' in self.high_score_dict[key]:
+                                name = self.high_score_dict[key]['name']
+                                if len(name)>6:
+                                    self.high_score_dict[key]['name'] = name[0:6]
                     # if 0 in high_score_dict:
                     #     for key in self.high_score_dict:
                     #         if key not in high_score_dict:
