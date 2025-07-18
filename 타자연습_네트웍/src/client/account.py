@@ -1,7 +1,8 @@
-import pygame
+﻿import pygame
 from pygame.locals import *
 import pygame.time
 import random
+import re
 
 class Account():
     def __init__(self, screen) -> None:
@@ -15,6 +16,12 @@ class Account():
         self.img_bg = pygame.transform.scale(img_bg,(screen.get_width(), screen.get_height()))
         self.cursor_tick = pygame.time.get_ticks()
         
+    def contains_special_char(self,text):
+        # 특수문자 정규표현식: 영어, 숫자, 공백을 제외한 나머지
+        # return bool(re.search(r'[^a-zA-Z0-9\s]', text))
+        return bool(re.search(r'[^\uAC00-\uD7A3a-zA-Z0-9\s]', text))
+
+        
     def eventProcess(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -22,9 +29,15 @@ class Account():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     self.msg_inbox = self.msg_inbox[0:-1]
-                if event.key == pygame.K_RETURN:
-                    if self.msg_inbox is not None and len(self.msg_inbox.replace(" ","")) > 1:
-                        if self.msg_inbox != '같은 이름 있음':
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    if self.msg_inbox is not None:
+                        if self.contains_special_char(self.msg_inbox):
+                            self.lable = '특수문자는 입력 할 수 없어요.'  
+                        elif len(self.msg_inbox.replace(" ","")) <= 1:
+                            self.lable = '한글자 이상 입력하세요.'   
+                        elif len(self.msg_inbox) > 6:
+                            self.lable = '너무 긴 이름은 입력 할 수 없어요'   
+                        else:
                             self.isRun = False
                 else:
                     pass

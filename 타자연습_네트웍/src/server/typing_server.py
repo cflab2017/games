@@ -106,12 +106,33 @@ class socketServer():
             if os.path.isfile(self.user_file_name): #불러올 파일이 있는가?
                 with open(self.user_file_name, 'rb') as fr:
                     high_score_dict = pickle.load(fr) #딕셔너리로 변환
-                    if 0 in high_score_dict:
-                        self.high_score_dict = high_score_dict
-                    else:
-                        if 'name' in high_score_dict:
-                            self.high_score_dict[0]['name'] = high_score_dict['name']
-                            self.high_score_dict[0]['score'] = high_score_dict['score']
+                    for key in high_score_dict:
+                        if key in self.high_score_dict:
+                            self.high_score_dict[key] = high_score_dict[key]
+                            if 'name' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['name'] = None
+                            if 'score' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['score'] = 0
+                            if 'date' not in self.high_score_dict[key]:
+                                self.high_score_dict[key]['date'] = None
+                            else:
+                                dat = str(self.high_score_dict[key]['date'])
+                                if dat.find('2024')>-1:
+                                    dat = dat[2:]
+                                    self.high_score_dict[key]['date'] = dat   
+                                    
+                            if 'name' in self.high_score_dict[key]:
+                                name = self.high_score_dict[key]['name']
+                                if len(name)>6:
+                                    self.high_score_dict[key]['name'] = name[0:6]
+                    
+                    # if 0 in high_score_dict:
+                    #     self.high_score_dict = high_score_dict
+                    # else:
+                    #     if 'name' in high_score_dict:
+                    #         self.high_score_dict[0]['name'] = high_score_dict['name']
+                    #         self.high_score_dict[0]['score'] = high_score_dict['score']
+                            
                     self.infor.update({'최고점수' : self.high_score_dict})
                     
         
