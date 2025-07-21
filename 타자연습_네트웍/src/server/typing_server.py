@@ -124,7 +124,7 @@ class socketServer():
                             if 'name' in self.high_score_dict[key]:
                                 name = self.high_score_dict[key]['name']
                                 if len(name)>6:
-                                    self.high_score_dict[key]['name'] = name[0:6]
+                                    self.high_score_dict[key]['name'] = name[0:10]
                     
                     # if 0 in high_score_dict:
                     #     self.high_score_dict = high_score_dict

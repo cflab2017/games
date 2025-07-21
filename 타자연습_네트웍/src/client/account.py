@@ -35,7 +35,7 @@ class Account():
                             self.lable = '특수문자는 입력 할 수 없어요.'  
                         elif len(self.msg_inbox.replace(" ","")) <= 1:
                             self.lable = '한글자 이상 입력하세요.'   
-                        elif len(self.msg_inbox) > 6:
+                        elif len(self.msg_inbox) > 10:
                             self.lable = '너무 긴 이름은 입력 할 수 없어요'   
                         else:
                             self.isRun = False
