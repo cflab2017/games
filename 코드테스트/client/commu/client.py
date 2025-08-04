@@ -1,0 +1,110 @@
+from _thread import *
+import socket
+import time
+import json
+import traceback
+
+class socketClient():
+    
+    HOST = '127.0.0.1'
+    PORT = 9995
+    
+    def __init__(self,parent):
+        self.parent = parent 
+        self.identity = None
+        self.name = None
+        self.response = None
+        
+        self.HOST = self.get_host_ip()          
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect((self.HOST, self.PORT))
+        self.client_run()
+        # self.send_request('test')
+    
+    def get_host_ip(self):        
+        with open("./commu/host.txt", "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.replace('\n','')
+                line = line.replace(' ','')
+                if line.find('#')>=0:
+                    continue
+                if len(line.split('.')) != 4:
+                    print(line)
+                    continue
+                print(line)
+                return line
+             
+    def set_bind_output(self, output):
+        self.output = output
+    def set_bind_content(self, content):
+        self.content = content
+        
+    def send_request_sign(self, name):        
+        json_object = {
+            'sign':{
+                'name':name,
+                }
+            }
+        self.response = None
+        json_string = json.dumps(json_object)
+        self.client_socket.send(json_string.encode())
+        
+    def send_request(self, code):        
+        json_object = {
+            'request':{
+                'name':self.name,
+                'level':self.parent.level,
+                'code':code,
+                }
+            }
+        self.response = None
+        json_string = json.dumps(json_object)
+        self.client_socket.send(json_string.encode())
+        
+    def client_run(self):
+        #서버로부터 오는 메세지를 대기하는 쓰레드 생성
+        start_new_thread(self.recv_data, (self.client_socket,))     
+
+    #서버로 부터 메세지를 받는다.    
+    def recv_data(self,client_socket):
+        while True:
+            try:
+                data = client_socket.recv(1024).decode()
+                # print(f"{data}")
+                server_infor = json.loads(data)    
+                print(server_infor)     
+                if 'sign' in server_infor:                    
+                    if 'identity' in server_infor['sign']:
+                        self.identity = server_infor['sign']['identity']
+                        self.name = server_infor['sign']['name']
+                        self.response = server_infor['sign']  
+                elif 'response' in server_infor:                 
+                    self.output.add_msg('\n')   
+                    
+                    self.output.add_msg('----서버메세지----')   
+                    self.output.add_msg(server_infor['response']['result'])              
+                    self.output.add_msg('\n')   
+                    if self.parent.level < server_infor['response']['level']:
+                        self.parent.level = server_infor['response']['level']
+                        self.output.add_msg(f'레벨업!! level : {self.parent.level}')
+                        
+                    self.content.clear_msg()
+                    msg = f"레벨 : {self.parent.level}\n"
+                    self.content.add_msg(str(msg))
+                    for msg in server_infor['response']['question']:
+                        self.content.add_msg(str(msg))
+                # print(f"서버메세제:{server_infor}")
+            except Exception:
+                err_msg = traceback.format_exc()
+                print(err_msg) 
+    
+    def run(self):
+        while True:
+            pass
+
+
+# if __name__ == '__main__':
+#     cli = socketClient(None)
+#     cli.run()
+    

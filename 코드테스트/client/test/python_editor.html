@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Python 웹 에디터</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      background-color: #1e1e1e;
+      color: white;
+      font-family: Consolas, monospace;
+    }
+    #editor {
+      height: 60vh;
+      width: 100%;
+    }
+    #output {
+      height: 30vh;
+      width: 100%;
+      background-color: #111;
+      padding: 10px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    #runBtn {
+      background-color: #007acc;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #runBtn:hover {
+      background-color: #005a9e;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="runBtn">실행하기 ▶</button>
+  <div id="editor"></div>
+  <div id="output">[실행 결과]</div>
+
+  <!-- Monaco Editor -->
+  <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+
+  <script>
+    let editor;
+    let pyodide;
+
+    // Monaco Editor 로드
+    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.45.0/min/vs' }});
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: [
+          'def say_hello():',
+          '    print("안녕하세요! 파이썬 에디터입니다.")',
+          '',
+          'say_hello()'
+        ].join('\n'),
+        language: 'python',
+        theme: 'vs-dark',
+        automaticLayout: true,
+        fontSize: 15
+      });
+    });
+
+    // Pyodide 로드
+    async function loadPyodideAndPackages() {
+      pyodide = await loadPyodide();
+    }
+    loadPyodideAndPackages();
+
+    // 실행 버튼 클릭 시
+    document.getElementById('runBtn').addEventListener('click', async () => {
+      const code = editor.getValue();
+      const outputDiv = document.getElementById('output');
+      outputDiv.textContent = '[실행 중...]\n';
+
+      try {
+        let result = await pyodide.runPythonAsync(code);
+        outputDiv.textContent += '[완료]\n\n' + (result ?? '');
+      } catch (err) {
+        outputDiv.textContent += '[오류 발생]\n\n' + err;
+      }
+    });
+  </script>
+</body>
+</html>
