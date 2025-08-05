@@ -53,9 +53,11 @@ class PythonEditor:
         self.ed_output.set_client(self.client)
         self.client.set_bind_output(self.ed_output)
         self.client.set_bind_content(self.ed_content)
+        self.client.set_bind_input(self.ed_input)
         
         self.client.send_request('start')
         
+
 
 if __name__ == "__main__":
     root = tk.Tk()

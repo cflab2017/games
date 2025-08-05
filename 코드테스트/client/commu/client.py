@@ -35,6 +35,9 @@ class socketClient():
                 print(line)
                 return line
              
+    def set_bind_input(self, ed_input):
+        self.ed_input = ed_input
+        
     def set_bind_output(self, output):
         self.output = output
     def set_bind_content(self, content):
@@ -79,18 +82,27 @@ class socketClient():
                         self.identity = server_infor['sign']['identity']
                         self.name = server_infor['sign']['name']
                         self.response = server_infor['sign']  
+                        # self.ed_input.clear_msg()
+                        # self.ed_input.add_msg("#코드를 여기에 작성하세요")
                 elif 'response' in server_infor:                 
                     self.output.add_msg('\n')   
                     
-                    self.output.add_msg('----서버메세지----')   
+                    msg = '============================\n'
+                    msg += f"\t서버메세지\n"
+                    msg += '============================\n'
+                    self.output.add_msg(msg)   
                     self.output.add_msg(server_infor['response']['result'])              
                     self.output.add_msg('\n')   
                     if self.parent.level < server_infor['response']['level']:
                         self.parent.level = server_infor['response']['level']
-                        self.output.add_msg(f'레벨업!! level : {self.parent.level}')
+                        self.ed_input.clear_msg()
+                        self.ed_input.add_msg("#코드를 여기에 작성하세요")
+                        # self.output.add_msg(f'레벨업!! level : {self.parent.level}')
                         
                     self.content.clear_msg()
-                    msg = f"레벨 : {self.parent.level}\n"
+                    msg = '============================\n'
+                    msg += f"\t\t 레벨 : [ {self.parent.level} ]\n"
+                    msg += '============================\n'
                     self.content.add_msg(str(msg))
                     for msg in server_infor['response']['question']:
                         self.content.add_msg(str(msg))

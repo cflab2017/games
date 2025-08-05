@@ -37,8 +37,17 @@ class EditorInput:
         for tag, conf in self.token_tags.items():
             self.text.tag_configure(str(tag), **conf)
             
+        self.clear_msg()
+        self.add_msg("#코드를 여기에 작성하세요")
+            
     def set_bind_frame(self,ed_output):
         self.ed_output = ed_output
+        
+    def clear_msg(self):
+        self.text.delete("1.0", tk.END)
+
+    def add_msg(self,msg):
+        self.text.insert(tk.END, msg+"\n")
         
     def ignore_a_key(self,event):
         self.ed_output.run_code_thread()

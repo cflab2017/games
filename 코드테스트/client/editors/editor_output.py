@@ -75,20 +75,19 @@ class EditorOutput:
 
         try:
             exec(code, {"input": editor_input})
-            print('------------')
-            print('프로그램 종료')
-            print('------------')
+            print()
+            print('============================')
+            print('서버로 코드를 전송합니다.')
+            print('============================')
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
             self.input_mode = False
             if self.client is not None:
                 self.client.send_request(code)
         except Exception as e:
-            print('------------')
+            print('============================')
             print("오류:", e)
-            print('------------')
-            print('프로그램 종료')
-            print('------------')
+            print('============================')
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
             self.input_mode = False

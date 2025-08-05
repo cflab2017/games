@@ -34,7 +34,7 @@ class ToolBar:
         
     def get_level(self):
         level = self.entry_level.get()
-        print(f"입력된 값: {level}")
+        # print(f"입력된 값: {level}")
         # self.entry_level.delete(0, tk.END) # 입력 필드 초기화
         return level
     

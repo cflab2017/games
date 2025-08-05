@@ -19,6 +19,8 @@ class EditorConnect:
         }
         
         self.listbox = tk.Listbox(self.frame, 
+                                  width=40,
+                                  height=15,
                                 font=("Consolas", 20), 
                                 bg="#1E1E1E", 
                                 fg="#D4D4D4", )

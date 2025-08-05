@@ -95,5 +95,6 @@ class Account():
                     self.isRun = True
                     self.lable = '같은 ID가 게임 중입니다.'      
                     self.msg_inbox = '' 
-            self.clock.tick(100)            
+            self.clock.tick(100)          
+        pygame.quit()  
         return self.msg_inbox,True

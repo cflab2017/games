@@ -13,7 +13,7 @@ from pygments.styles import get_style_by_name
 from editors.textnumbers import *
     
 class EditorInput:
-    from editor import PythonEditor
+    # from editor import PythonEditor
     def __init__(self,frame):
         self.frame = frame
         # self.style = get_style_by_name("monokai")

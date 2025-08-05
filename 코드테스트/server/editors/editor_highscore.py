@@ -15,6 +15,8 @@ class EditorHighScore:
         self.frame = frame
                 
         self.listbox = tk.Listbox(self.frame, 
+                                  width=40,
+                                  height=15,
                                 font=("Consolas", 20), 
                                 bg="#1E1E1E", 
                                 fg="#D4D4D4", )
@@ -30,7 +32,7 @@ class EditorHighScore:
         
         for key, value in data.items():
             if value['name'] is not None:
-                self.listbox.insert(tk.END, f" {key+1}등:: {value['name']} : {value['score']}점 ({value['date']})")
+                self.listbox.insert(tk.END, f" {key+1}. [{value['date']}] [레벨: {value['score']:03}] {value['name']}")
 
     # def update_item(self,key,name,level):
     #     """새 항목 추가"""

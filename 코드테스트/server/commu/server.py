@@ -11,13 +11,14 @@ import os.path
 import datetime as dt
 
 from commu.stdoutredirector import *
-from question import Questions
+from commu.code_exec import CodeExec
+from question import *
 import threading
-
 
 class socketServer():
     from editors.editor_connect import EditorConnect
     from editors.editor_highscore import EditorHighScore
+    from editors.editor_input import EditorInput
     from editors.toolbar import ToolBar
     client_sockets = {} #클라이언트 목록
     HOST = '127.0.0.1'
@@ -154,6 +155,7 @@ class socketServer():
         identity = int(identity)
         if identity not in self.infor:
             self.infor[identity] = {}
+            self.infor[identity]['exec'] = CodeExec(self,identity,self.ed_input,self.ed_connect)
             
     def score_sort(self, name, score):
         if score <= 1:
@@ -168,7 +170,7 @@ class socketServer():
                 # break
             if self.infor['최고점수'][key]['name'] == name:
                 if self.infor['최고점수'][key]['score'] < score:
-                    date_str = f'{date.year%100}.{date.month}.{date.day}'
+                    date_str = f'{date.year%100}.{date.month:02}.{date.day:02}'
                     self.infor['최고점수'][key]['score'] = score
                     self.infor['최고점수'][key]['date'] = date_str
                     is_find = 2
@@ -182,7 +184,7 @@ class socketServer():
                 score_temp.append(list(self.infor['최고점수'][key].values()))
                 
             if is_find == 1:
-                date_str = f'{date.year%100}.{date.month}.{date.day}'
+                date_str = f'{date.year%100}.{date.month:02}.{date.day:02}'
                 score_temp.append([name,score,date_str])
             score_temp.sort(key=lambda x:-x[1])
             
@@ -195,7 +197,7 @@ class socketServer():
             self.update_store_dic('w')
             self.ed_score.refresh_listbox(self.high_score_dict)
             
-    def set_bind_input(self, ed_input):
+    def set_bind_input(self, ed_input:EditorInput):
         self.ed_input = ed_input
         
     def set_bind_toolbar(self, ed_toolbar:ToolBar):
@@ -232,65 +234,18 @@ class socketServer():
                 return mu
         
         return None
-        
+    
+    # def handler_exec(signum, frame):
+    #     raise TimeoutError("Execution timed out!")
+    
     def send_to_client(self, client, values,identity,start_level):
         if 'request' in values:
             name = values['request']['name']
             level = values['request']['level']
             code = values['request']['code']
-            if code == 'start':
-                result = '시작'
-                level = start_level
-            else:
-                mu = self.check_must(level, code)
-                if mu is not None:
-                    result = f'실패 (반드시 사용되어야 하는 것 :{mu})'
-                else:
-                    output = []
-                    sys.stdout = StdoutRedirector(output)
-                    sys.stderr = StdoutRedirector(output)
-                    try:
-                        exec(code)
-                    except Exception as e:
-                        print('------------')
-                        print("오류:", e)
-                        print('------------')
-                    finally:
-                        # print()
-                        print('------------')
-                        print('프로그램 종료')
-                        print('------------')
-                        sys.stdout = sys.__stdout__
-                        sys.stderr = sys.__stderr__
-                        self.input_mode = False
-                        
-                    print(f'level:{level}')
-                    result = '실패'
-                    print(output)
-                    try:
-                        cnt =0
-                        for i,an in enumerate(Questions.que[level-1]['answ']):
-                            while output[cnt] == '\n':
-                                cnt += 1
-                                 
-                            if output[cnt] != str(an):
-                                result = f'실패 (결과값:{output[i]} != {an})'
-                                break
-                            cnt += 1
-                        else:
-                            result = '성공'
-                            msg = f'{name}님이 {level}번 문제를 해결했습니다.'
-                            self.ed_input.add_msg(msg)
-                            level += 1
-                            self.ed_connect.update_item(identity,name,level)
-                            self.score_sort(name,level)
-                    except Exception as ex:
-                        result = f'실패 (결과값:{ex})'
-                        
-                    
-            if level > len(Questions.que):
-                level = 1
-                
+            
+            result,level = self.infor[identity]['exec'].run(code,level,start_level)
+                            
             json_object = {
                 'response':{
                     'name':name,
@@ -327,7 +282,8 @@ class socketServer():
                             'identity':identity,
                             'name':name
                             }
-                        }                    
+                        }
+                    self.infor[identity]['exec'].name = name
                     json_string = json.dumps(response)
                     client_socket.send(json_string.encode())
                 
