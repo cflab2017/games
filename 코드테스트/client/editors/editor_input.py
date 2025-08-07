@@ -1,10 +1,23 @@
 
 
+import os
 import tkinter as tk
 from tkinter import scrolledtext
 import tkinter.font as tkfont
 
-import jedi
+
+try:
+    import jedi
+except:
+    os.system('pip install jedi')
+    import jedi
+    
+try:
+    import pygments
+except:
+    os.system('pip install pygments')
+    import pygments
+    
 from pygments import lex
 from pygments.lexers import PythonLexer
 from pygments.token import Token
