@@ -11,7 +11,8 @@ import tkinter.font as tkfont
 from editors.stdoutredirector import *
     
 class EditorOutput:
-    def __init__(self, frame, ed_input):
+    def __init__(self, parent,frame, ed_input):
+        self.parent = parent
         self.frame = frame
         self.ed_input = ed_input
         self.client = None
@@ -27,8 +28,8 @@ class EditorOutput:
             font=("Consolas", 12), undo=True,
             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white"
         )
-        self.output.config(font=("malgungulim", 12))  # 기본: 영어
-        self.output.configure(font=("malgungulim", 12, "normal"))
+        self.output.config(font=("malgungulim", 16, "bold"))  # 기본: 영어
+        self.output.configure(font=("malgungulim", 16, "normal", "bold"))
         
         self.output.tag_configure("title", font=("malgungulim", 16, "bold"), foreground="red", background="yellow",justify='center')   
         self.output.tag_configure("highlight", font=("malgungulim", 16, "bold"), foreground="blue", background="yellow",justify='center')   
@@ -99,7 +100,8 @@ class EditorOutput:
             self.input_mode = False
             if self.client is not None:
                 self.add_msg('')
-                self.add_highlight('서버로 코드를 전송합니다.')
+                # self.add_highlight('서버로 코드를 전송합니다.')
+                self.parent.show_popup("코드가 서버로 전송되었습니다.", duration=1000)
                 self.client.send_request(code)
         except Exception as e:
             print('============================')

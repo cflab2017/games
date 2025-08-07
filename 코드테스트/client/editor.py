@@ -45,7 +45,7 @@ class PythonEditor:
         self.frame3_2.pack(side="right", fill="both", expand=1,padx=10, pady=(10, 0))
         
         self.ed_input = EditorInput(self.frame1)
-        self.ed_output = EditorOutput(self.frame3_1,self.ed_input)
+        self.ed_output = EditorOutput(self,self.frame3_1,self.ed_input)
         self.ed_content = EditorContent(self,self.frame3_2)
         self.toolbar = ToolBar(self.frame2,self.ed_output)
         
@@ -63,7 +63,7 @@ class PythonEditor:
         popup.overrideredirect(True)  # ← 제목 표시줄 제거
 
         # 팝업 크기
-        popup_width = 400
+        popup_width = 600
         popup_height = 400
 
         # root(메인 창)의 위치와 크기 가져오기
@@ -82,7 +82,7 @@ class PythonEditor:
         popup.resizable(False, False)
 
         # 내용 표시
-        label = tk.Label(popup, text=message, font=("malgungulim", 20))
+        label = tk.Label(popup, text=message, font=("malgungulim", 30, "bold"), bg="white", fg="red")
         label.pack(expand=True)
 
         # 자동 종료 타이머

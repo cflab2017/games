@@ -82,9 +82,10 @@ class EditorInput:
         
         self.text = tk.Text(self.frame,  wrap=tk.WORD,
                             width=100, height=22, font=("Consolas", 12),  undo=True,
+   
                             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 12))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 12, "normal"))
+        self.text.config(font=("malgungulim", 16,"bold"))  # 기본: 영어
+        self.text.configure(font=("malgungulim", 16, "normal","bold"))
         self.text.bind("<KeyRelease>", self.on_key_release)
         self.text.bind("<Control-space>", self.show_autocomplete)
         self.text.bind("<<Modified>>", self.on_text_modified)
