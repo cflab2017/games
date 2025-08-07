@@ -11,10 +11,9 @@ import tkinter.font as tkfont
 from editors.stdoutredirector import *
     
 class EditorOutput:
-    def __init__(self, parent,frame, ed_input):
+    def __init__(self, parent,frame):
         self.parent = parent
         self.frame = frame
-        self.ed_input = ed_input
         self.client = None
         
         self.input_mode = False
@@ -53,6 +52,9 @@ class EditorOutput:
             self.output.insert(tk.END, "\n")
             return "break"
     
+    def set_bind_input(self,ed_input):
+        self.ed_input = ed_input
+        
     def set_client(self,client):
         self.client = client
 

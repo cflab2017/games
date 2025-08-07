@@ -93,7 +93,7 @@ class EditorContent:
         self.uniscrollbar["command"] = self.scroll_both
         self.text["yscrollcommand"] = self.update_scroll_both
 
-        self.text.pack(side="right", fill="both",padx=10, pady=(10, 10))
+        self.text.pack(side="right", fill="both",expand=1,padx=10, pady=(10, 10))
         
         
     def on_text_modified(self, event=None):

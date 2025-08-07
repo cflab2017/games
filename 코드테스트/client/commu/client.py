@@ -110,6 +110,7 @@ class socketClient():
                     # msg += '============================\n'
                     self.content.add_msg(str(msg))
                     for msg in server_infor['response']['question']:
+                        msg = str(msg)
                         if msg.find('출력 결과')>-1:
                             self.content.add_msg('\n')
                             self.content.add_highlight(msg)

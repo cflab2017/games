@@ -53,7 +53,7 @@ class EditorInput:
         self.clear_msg()
         self.add_msg("#코드를 여기에 작성하세요")
             
-    def set_bind_frame(self,ed_output):
+    def set_bind_output(self,ed_output):
         self.ed_output = ed_output
         
     def clear_msg(self):
