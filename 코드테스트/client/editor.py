@@ -16,6 +16,7 @@ class PythonEditor:
     
     def __init__(self, root):
         self.root = root
+        root.geometry("1024x800")
         self.root.title("파이썬 코드 에디터 (입력/출력 포함)")    
         
         self.level = 1   
@@ -28,33 +29,62 @@ class PythonEditor:
         if self.isRun == False:
             return
 #########################################################################        
-        self.frame2=tk.Frame(self.root, width=140,relief="solid", bd=1)
-        self.frame2.pack(padx=10, pady=(10, 0), fill="both")         
-        self.toolbar = ToolBar(self.frame2)        
+        self.frame1=tk.Frame(self.root,relief="solid", bd=1)
+        self.frame1.pack(padx=10, pady=(10, 0), fill="both")         
+        self.toolbar = ToolBar(self.frame1)        
 #########################################################################
-        self.frame1=tk.Frame(self.root, width=140,relief="solid", bd=1)
-        self.frame1.pack(padx=10, pady=(10, 0), fill="both", expand=1) 
+#########################################################################    
+        self.frame0=tk.Frame(self.root)        
+        self.frame0.pack(fill="both", expand=1) 
         
-        self.ed_input = EditorInput(self.frame1)
+        self.frame2=tk.Frame(self.frame0,
+                             width=10,
+                             relief="solid", bd=1)
+        
+        self.frame2.pack(side="left", padx=10, pady=(10, 10), fill="both", expand=1) 
+        self.frame2.pack_propagate(False)
 #########################################################################
         
-        self.frame3=tk.Frame(self.root, width=140,relief="solid", bd=1)
-        self.frame3.pack(padx=10, pady=(10, 0), fill="both", expand=0)    
+        self.frame2_1=tk.Frame(self.frame2, 
+                             width=10,
+                             height=100,)
+              
+        self.frame2_1.pack(fill="both", expand=1)          
+        self.frame2_1.pack_propagate(False)
+        self.ed_input = EditorInput(self.frame2_1)
+        
+        self.frame2_2=tk.Frame(self.frame2, 
+                             width=10,
+                             height=100,)   
+        self.frame2_2.pack(fill="both", expand=1)    
+        self.frame2_2.pack_propagate(False) 
+        self.ed_output = EditorOutput(self,self.frame2_2)
+        
+        
+        
+        
+#########################################################################    
+#########################################################################    
+        self.frame3=tk.Frame(self.frame0, 
+                             width=10,
+                             relief="solid", bd=1)
+        self.frame3.pack(side="right", padx=10, pady=(10, 10), fill="both", expand=1)  
+        self.frame3.pack_propagate(False)  
 #########################################################################    
         
-        self.frame3_1=tk.Frame(self.frame3, relief="solid", bd=1)
-        self.frame3_1.pack(side="left", fill="both", expand=1,padx=10, pady=(10, 0))
+        self.frame3_1=tk.Frame(self.frame3, 
+                             width=10,)
+        self.frame3_1.pack(side="left", fill="both", expand=1)    
+        self.frame3_1.pack_propagate(False)     
+           
+        self.ed_content = EditorContent(self,self.frame3_1) 
         
-        self.ed_output = EditorOutput(self,self.frame3_1)
+#########################################################################       
 #########################################################################
-        self.frame3_2=tk.Frame(self.frame3, relief="solid", bd=1)
-        self.frame3_2.pack(side="right", fill="both", expand=1,padx=10, pady=(10, 0))
-        
-        self.ed_content = EditorContent(self,self.frame3_2)        
-#########################################################################
+
         self.ed_input.set_bind_output(self.ed_output)
         self.ed_output.set_bind_input(self.ed_input)
-        self.toolbar.set_bind_output(self.ed_output)
+        self.toolbar.set_bind_output(self.ed_output,self.name)
         
         self.ed_output.set_client(self.client)
         

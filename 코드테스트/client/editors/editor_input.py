@@ -33,7 +33,8 @@ class EditorInput:
         
         self.scroll_text()
         self.number_widget()
-        self.text.bind('<Shift-Return>', self.ignore_a_key)
+        self.text.bind('<Shift-Return>', self.ignore_shift_enter_key)
+        self.text.bind('<Alt-Return>', self.ignore_alt_enter_key)
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -62,8 +63,12 @@ class EditorInput:
     def add_msg(self,msg):
         self.text.insert(tk.END, msg+"\n")
         
-    def ignore_a_key(self,event):
+    def ignore_shift_enter_key(self,event):
         self.ed_output.run_code_thread()
+        return "break"
+    
+    def ignore_alt_enter_key(self,event):
+        self.ed_output.only_run_code_thread()
         return "break"
     
     def scroll_both(self, action, position):
@@ -78,14 +83,15 @@ class EditorInput:
     def scroll_text(self):
 
         self.uniscrollbar = tk.Scrollbar(self.frame, width=20, relief="flat")
-        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=10, pady=(10, 0))       
+        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=0, pady=(10, 10))       
         
         self.text = tk.Text(self.frame,  wrap=tk.WORD,
-                            width=100, height=22, font=("Consolas", 12),  undo=True,
+                            # width=5, 
+                            height=22, font=("Consolas", 12),  undo=True,
    
                             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 16,"bold"))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 16, "normal","bold"))
+        self.text.config(font=("malgungulim", 16))  # 기본: 영어
+        self.text.configure(font=("malgungulim", 16, "normal"))
         self.text.bind("<KeyRelease>", self.on_key_release)
         self.text.bind("<Control-space>", self.show_autocomplete)
         self.text.bind("<<Modified>>", self.on_text_modified)
@@ -98,7 +104,7 @@ class EditorInput:
         self.uniscrollbar["command"] = self.scroll_both
         self.text["yscrollcommand"] = self.update_scroll_both
 
-        self.text.pack(side="right", fill="both", expand=1,padx=10, pady=(10, 0))
+        self.text.pack(side="left", fill="both", expand=1,padx=10, pady=(10, 10))
         
     def number_widget(self):
         pass

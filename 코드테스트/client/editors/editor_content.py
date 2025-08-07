@@ -21,8 +21,8 @@ class EditorContent:
         
         self.scroll_text()
         self.text.bind('<Shift-Return>', self.ignore_a_key)   
-        self.text.tag_configure("title", font=("malgungulim", 16, "bold"), foreground="red", background="yellow",justify='center')   
-        self.text.tag_configure("highlight", font=("malgungulim", 16, "bold"), foreground="blue", background="yellow",justify='center')   
+        self.text.tag_configure("title", font=("malgungulim", 16,'bold'), foreground="red", background="white",justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", 16,'bold'), foreground="blue", background="white",justify='center')   
         
         
         self.token_tags = {
@@ -75,14 +75,14 @@ class EditorContent:
     def scroll_text(self):
 
         self.uniscrollbar = tk.Scrollbar(self.frame, width=20, relief="flat")
-        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=10, pady=(10, 10))       
+        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=0, pady=(10, 10))       
         
         self.text = tk.Text(self.frame,  wrap=tk.WORD,
                             # width=100, height=22, 
                             font=("Consolas", 12),  undo=True,
                             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 16, "bold"))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 16, "normal", "bold"))
+        self.text.config(font=("malgungulim", 16))  # 기본: 영어
+        self.text.configure(font=("malgungulim", 16, "normal"))
         self.text.bind("<<Modified>>", self.on_text_modified)
         
         font = tkfont.Font(font=self.text['font'])

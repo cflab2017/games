@@ -53,12 +53,13 @@ class socketClient():
         json_string = json.dumps(json_object)
         self.client_socket.send(json_string.encode())
         
-    def send_request(self, code):        
+    def send_request(self, code, input_list=[]):        
         json_object = {
             'request':{
                 'name':self.name,
                 'level':self.parent.level,
                 'code':code,
+                'input':input_list,
                 }
             }
         self.response = None
@@ -113,7 +114,7 @@ class socketClient():
                         msg = str(msg)
                         if msg.find('출력 결과')>-1:
                             self.content.add_msg('\n')
-                            self.content.add_highlight(msg)
+                            self.content.add_highlight('아래와 같이 출력하세요.')
                             self.content.add_msg('\n')
                         else:
                             self.content.add_msg(str(msg))
