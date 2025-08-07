@@ -18,7 +18,7 @@ class Account():
         self.isRun = True
         self.isQuit = False
         self.font = pygame.font.SysFont("malgungothic", 30)
-        img_bg = pygame.image.load('./login/images/bg.jpg')
+        img_bg = pygame.image.load('./login/images/bg1.jpg')
         self.img_bg = pygame.transform.scale(img_bg,(self.screen.get_width(), self.screen.get_height()))
         self.cursor_tick = pygame.time.get_ticks()
         

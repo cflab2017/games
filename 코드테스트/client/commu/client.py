@@ -87,12 +87,15 @@ class socketClient():
                 elif 'response' in server_infor:                 
                     self.output.add_msg('\n')   
                     
-                    msg = '============================\n'
-                    msg += f"\t서버메세지\n"
-                    msg += '============================\n'
-                    self.output.add_msg(msg)   
-                    self.output.add_msg(server_infor['response']['result'])              
+                    # msg = '============================\n'
+                    # msg += f"\t서버메세지\n"
+                    # msg += '============================\n'
+                    # self.output.add_msg(msg)            
+                    # self.output.add_msg('\n')   
+                    self.output.add_highlight('서버메세지')     
                     self.output.add_msg('\n')   
+                    self.output.add_msg(server_infor['response']['result'])     
+                    
                     if self.parent.level < server_infor['response']['level']:
                         self.parent.level = server_infor['response']['level']
                         self.ed_input.clear_msg()
@@ -100,12 +103,18 @@ class socketClient():
                         # self.output.add_msg(f'레벨업!! level : {self.parent.level}')
                         
                     self.content.clear_msg()
-                    msg = '============================\n'
-                    msg += f"\t\t 레벨 : [ {self.parent.level} ]\n"
-                    msg += '============================\n'
+                    msg = '\n'
+                    # msg = '============================\n'
+                    # msg += f"\t\t 레벨 : [ {self.parent.level} ]\n"
+                    # msg += '============================\n'
                     self.content.add_msg(str(msg))
                     for msg in server_infor['response']['question']:
-                        self.content.add_msg(str(msg))
+                        if msg.find('출력 결과')>-1:
+                            self.content.add_msg('\n')
+                            self.content.add_highlight(msg)
+                            self.content.add_msg('\n')
+                        else:
+                            self.content.add_msg(str(msg))
                 # print(f"서버메세제:{server_infor}")
             except Exception:
                 err_msg = traceback.format_exc()

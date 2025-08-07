@@ -46,7 +46,7 @@ class PythonEditor:
         
         self.ed_input = EditorInput(self.frame1)
         self.ed_output = EditorOutput(self.frame3_1,self.ed_input)
-        self.ed_content = EditorContent(self.frame3_2)
+        self.ed_content = EditorContent(self,self.frame3_2)
         self.toolbar = ToolBar(self.frame2,self.ed_output)
         
         self.ed_input.set_bind_frame(self.ed_output)

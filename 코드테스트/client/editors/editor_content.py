@@ -14,16 +14,20 @@ from editors.textnumbers import *
     
 class EditorContent:
     # from editor import PythonEditor
-    def __init__(self,frame):
+    def __init__(self,parent,frame):
+        self.parent = parent
         self.frame = frame
         # self.style = get_style_by_name("monokai")
         
         self.scroll_text()
-        self.text.bind('<Shift-Return>', self.ignore_a_key)
+        self.text.bind('<Shift-Return>', self.ignore_a_key)   
+        self.text.tag_configure("title", font=("malgungulim", 16, "bold"), foreground="red", background="yellow",justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", 16, "bold"), foreground="blue", background="yellow",justify='center')   
+        
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
-            Token.Name: {"foreground": "#9CDCFE"},
+            # Token.Name: {"foreground": "#9CDCFE"},
             Token.Name.Variable: {"foreground": "#569CD6"},
             Token.Name.Function: {"foreground": "#DCDCAA"},
             Token.Name.Class: {"foreground": "#4EC9B0"},
@@ -37,10 +41,22 @@ class EditorContent:
             self.text.tag_configure(str(tag), **conf)
             
     def clear_msg(self,):
+        self.text.config(state="normal")
         self.text.delete("1.0", tk.END)
+        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level}]\n", "title")
+        
+        self.text.config(state="disabled")
+        
+    def add_highlight(self, msg):
+        self.text.config(state="normal")
+        self.text.insert(tk.END, msg+"\n", "highlight")
+        self.text.config(state="disabled")
+        
+    def add_msg(self,msg):  
+        self.text.config(state="normal")
+        self.text.insert(tk.END, msg+"\n")  
+        self.text.config(state="disabled")
 
-    def add_msg(self,msg):
-        self.text.insert(tk.END, msg+"\n")
         
     def set_bind_frame(self,ed_output):
         self.ed_output = ed_output
@@ -82,10 +98,11 @@ class EditorContent:
         
     def on_text_modified(self, event=None):
         self.text.edit_modified(False)  # 중요: 플래그 초기화
-        self.highlight_code()
+        # self.highlight_code()
     
     def on_key_release(self, event=None):
-        self.highlight_code()
+        pass
+        # self.highlight_code()
 
     # def highlight_code(self):
     #     code = self.text.get("1.0", tk.END)

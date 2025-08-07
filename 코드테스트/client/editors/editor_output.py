@@ -29,16 +29,20 @@ class EditorOutput:
         )
         self.output.config(font=("malgungulim", 12))  # 기본: 영어
         self.output.configure(font=("malgungulim", 12, "normal"))
+        
+        self.output.tag_configure("title", font=("malgungulim", 16, "bold"), foreground="red", background="yellow",justify='center')   
+        self.output.tag_configure("highlight", font=("malgungulim", 16, "bold"), foreground="blue", background="yellow",justify='center')   
+        
         self.output.pack(padx=10, pady=(0, 10), fill="both", expand=1)
         # self.output.pack(side="left", fill="y", expand=1)
         # self.output.pack(fill="both", expand=1)
         self.output.bind("<Return>", self.capture_input)
         
-    def tab_pressed(self,event:tk.Event) -> str:
-        # Insert the 4 spaces
-        self.text.insert("insert", " "*4)
-        # Prevent the default tkinter behaviour
-        return "break"
+    # def tab_pressed(self,event:tk.Event) -> str:
+    #     # Insert the 4 spaces
+    #     self.text.insert("insert", " "*4)
+    #     # Prevent the default tkinter behaviour
+    #     return "break"
 
     def capture_input(self, event=None):
         if self.input_mode:
@@ -50,7 +54,16 @@ class EditorOutput:
     
     def set_client(self,client):
         self.client = client
+
+    def clear_msg(self,):
+        self.output.delete("1.0", tk.END)
+        self.output.insert(tk.END, f"코드 실행 결과\n", "title")
         
+        
+    def add_highlight(self, msg):
+        self.output.insert(tk.END, msg+"\n", "highlight")
+        
+         
     def add_msg(self,msg):
         self.output.insert(tk.END, msg+"\n")
         
@@ -59,7 +72,9 @@ class EditorOutput:
 
     def run_code(self):
         code = self.ed_input.text.get("1.0", tk.END)
-        self.output.delete("1.0", tk.END)
+        # self.output.delete("1.0", tk.END)
+        self.clear_msg()
+        self.add_msg('')
 
         # stdout redirect
         sys.stdout = StdoutRedirector(self.output)
@@ -75,14 +90,16 @@ class EditorOutput:
 
         try:
             exec(code, {"input": editor_input})
-            print()
-            print('============================')
-            print('서버로 코드를 전송합니다.')
-            print('============================')
+            # print()
+            # print('============================')
+            # print('서버로 코드를 전송합니다.')
+            # print('============================')
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
             self.input_mode = False
             if self.client is not None:
+                self.add_msg('')
+                self.add_highlight('서버로 코드를 전송합니다.')
                 self.client.send_request(code)
         except Exception as e:
             print('============================')
