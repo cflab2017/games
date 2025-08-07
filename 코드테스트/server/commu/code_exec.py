@@ -12,7 +12,7 @@ def run_code_in_process(code, input_list,queue):
     output = io.StringIO()
     input_cnt = 0
 
-    print('---sssss---------')
+    # print('---sssss---------')
     def custom_input(prompt="입력: "):
         nonlocal input_cnt
         response = ''
