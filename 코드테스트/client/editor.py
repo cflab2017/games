@@ -57,7 +57,36 @@ class PythonEditor:
         
         self.client.send_request('start')
         
+    def show_popup(self,message, duration=2000):  # duration은 밀리초(ms)
+        popup = tk.Toplevel(self.root)
+        popup.title("알림")
+        popup.overrideredirect(True)  # ← 제목 표시줄 제거
 
+        # 팝업 크기
+        popup_width = 400
+        popup_height = 400
+
+        # root(메인 창)의 위치와 크기 가져오기
+        self.root.update_idletasks()  # 위치 정보 갱신
+        root_x = self.root.winfo_rootx()
+        root_y = self.root.winfo_rooty()
+        root_width = self.root.winfo_width()
+        root_height = self.root.winfo_height()
+
+        # 메인창 중심을 기준으로 팝업 위치 계산
+        x = root_x + (root_width // 2) - (popup_width // 2)
+        y = root_y + (root_height // 2) - (popup_height // 2)
+
+        # 팝업 위치 설정
+        popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
+        popup.resizable(False, False)
+
+        # 내용 표시
+        label = tk.Label(popup, text=message, font=("malgungulim", 20))
+        label.pack(expand=True)
+
+        # 자동 종료 타이머
+        popup.after(duration, popup.destroy)
 
 if __name__ == "__main__":
     root = tk.Tk()

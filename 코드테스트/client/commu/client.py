@@ -100,6 +100,7 @@ class socketClient():
                         self.parent.level = server_infor['response']['level']
                         self.ed_input.clear_msg()
                         self.ed_input.add_msg("#코드를 여기에 작성하세요")
+                        self.parent.show_popup(f'레벨업!! level : {self.parent.level}')
                         # self.output.add_msg(f'레벨업!! level : {self.parent.level}')
                         
                     self.content.clear_msg()
