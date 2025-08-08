@@ -327,7 +327,15 @@ class Questions:
                    '\t그 외: F',
                        
                    '[힌트]',   
+                   "elif는 조건 우선순위가 있습니다.",
+                   "",
                    "score = int(input('입력 : '))",    
+                   "if score > 50:",
+                   "\tprint('aaa')",
+                   "elif score > 40:",
+                   "\tprint('bbb')",
+                   "else:",
+                   "\tprint('ccc')",
                    
                    '출력 결과',                   
                    '입력 : 78',
