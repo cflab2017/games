@@ -16,8 +16,10 @@ class PythonEditor:
     
     def __init__(self, root):
         self.root = root
-        root.geometry("1024x800")
+        root.geometry("1224x860")
         self.root.title("파이썬 코드 에디터 (입력/출력 포함)")    
+        # self.bg_image = tk.PhotoImage(file="./images/bg2.png")
+        
         
         self.level = 1   
 
@@ -30,8 +32,12 @@ class PythonEditor:
             return
 #########################################################################        
         self.frame1=tk.Frame(self.root,relief="solid", bd=1)
-        self.frame1.pack(padx=10, pady=(10, 0), fill="both")         
-        self.toolbar = ToolBar(self.frame1)        
+        self.frame1.pack(padx=10, pady=(10, 0), fill="both")      
+        
+        # bg_label = tk.Label(self.frame1, image=self.bg_image)
+        # bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+           
+        self.toolbar = ToolBar(self,self.frame1)        
 #########################################################################
 #########################################################################    
         self.frame0=tk.Frame(self.root)        

@@ -30,13 +30,12 @@ def run_code_in_process(code, input_list,queue):
         with redirect_stdout(output):
             exec(code, {"input": custom_input})
     except Exception as e:
-        print('------------')
         print("오류:", e, file=output)
-        print('------------')
     finally:
-        print('------------')
-        print('프로그램 종료', file=output)
-        print('------------')
+        pass
+        # print('------------')
+        # print('프로그램 종료', file=output)
+        # print('------------')
     #     sys.stdout = sys.__stdout__
     #     sys.stderr = sys.__stderr__
     # print(output_list)
@@ -68,6 +67,18 @@ class CodeExec:
         return None
        
             
+    def check_list(self, inputs):        
+        if len(inputs) > 0:
+            if isinstance(inputs[0], list):
+                return True
+        return False
+    
+    def safe_remove(self,lst, value):
+        if value in lst:
+            lst.remove(value)
+            return True
+        return False
+            # lst = [x for x in lst if x != value]
         
     def run(self, code:str,level:int,start_level:int):
         self.level = level
@@ -84,24 +95,45 @@ class CodeExec:
             else:
                 output = []
                 
-                queue = multiprocessing.Queue()
                 inputs = Questions.que[level - 1]['input']
-                p = multiprocessing.Process(target=run_code_in_process, args=(code,inputs.copy(),queue))
-                p.start()
-                p.join(timeout=2)  # 5초 제한
+                if self.check_list(inputs):
+                    for input_item in inputs:                            
+                        queue = multiprocessing.Queue()                    
+                        p = multiprocessing.Process(target=run_code_in_process, args=(code,input_item.copy(),queue))
+                        p.start()
+                        p.join(timeout=2)  # 5초 제한
 
-                if p.is_alive():
-                    print("실행 시간 초과, 프로세스 종료")
-                    p.terminate()
-                    p.join()
+                        if p.is_alive():
+                            print("실행 시간 초과, 프로세스 종료")
+                            p.terminate()
+                            p.join()
+                            
+                        if not queue.empty():
+                            # result = queue.get()
+                            output += str(queue.get()).split('\n')
+                            # print("실행결과:\n", result)
+                else:
+                    queue = multiprocessing.Queue()
+                    p = multiprocessing.Process(target=run_code_in_process, args=(code,inputs.copy(),queue))
+                    p.start()
+                    p.join(timeout=2)  # 5초 제한
+
+                    if p.is_alive():
+                        print("실행 시간 초과, 프로세스 종료")
+                        p.terminate()
+                        p.join()
                     
-                if not queue.empty():
-                    # result = queue.get()
-                    output = str(queue.get()).split('\n')
-                    # print("실행결과:\n", result)
+                    if not queue.empty():
+                        # result = queue.get()
+                        output = str(queue.get()).split('\n')
+                        # print("실행결과:\n", result)
                 
-                print(f'level:{self.level}')
-                print(output)
+                # print(f'level:{self.level}')
+                
+                while self.safe_remove(output, ''):  # 빈 문자열 제거
+                    pass
+                # self.safe_remove(output, '\n')  # 빈 문자열 제거
+                # print(output)
                 try:
                     cnt =0
                     for i,an in enumerate(Questions.que[level-1]['answ']):

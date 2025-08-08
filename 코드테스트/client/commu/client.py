@@ -112,7 +112,11 @@ class socketClient():
                     self.content.add_msg(str(msg))
                     for msg in server_infor['response']['question']:
                         msg = str(msg)
-                        if msg.find('출력 결과')>-1:
+                        if msg.find('힌트')>-1:
+                            self.content.add_msg('\n')
+                            self.content.add_highlight('힌트')
+                            self.content.add_msg('\n')
+                        elif msg.find('출력 결과')>-1:
                             self.content.add_msg('\n')
                             self.content.add_highlight('아래와 같이 출력하세요.')
                             self.content.add_msg('\n')

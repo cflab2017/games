@@ -81,8 +81,8 @@ class EditorContent:
                             # width=100, height=22, 
                             font=("Consolas", 12),  undo=True,
                             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 16))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 16, "normal"))
+        self.text.config(font=("malgungulim", 13))  # 기본: 영어
+        self.text.configure(font=("malgungulim", 13, "normal"))
         self.text.bind("<<Modified>>", self.on_text_modified)
         
         font = tkfont.Font(font=self.text['font'])
