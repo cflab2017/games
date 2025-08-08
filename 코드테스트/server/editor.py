@@ -39,7 +39,7 @@ class PythonEditor:
         
         self.ed_input = EditorInput(self.frame1)
         self.ed_connect = EditorConnect(self.frame3_1,self.ed_input)
-        self.ed_highscore = EditorHighScore(self.frame3_2)
+        self.ed_highscore = EditorHighScore(self,self.frame3_2)
         self.toolbar = ToolBar(self.frame2,self.ed_connect)
         
         self.server = socketServer(self.ed_input)
