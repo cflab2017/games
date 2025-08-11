@@ -3,19 +3,22 @@ import socket
 import time
 import json
 import traceback
+import winsound
 
 class socketClient():
     
     HOST = '127.0.0.1'
     PORT = 9995
     
-    def __init__(self,parent):
+    def __init__(self,parent,host):
         self.parent = parent 
         self.identity = None
         self.name = None
         self.response = None
-        
-        self.HOST = self.get_host_ip()          
+        if host == None:
+            self.HOST = self.get_host_ip()      
+        else:
+            self.HOST = host    
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.HOST, self.PORT))
         self.client_run()
@@ -32,7 +35,7 @@ class socketClient():
                 if len(line.split('.')) != 4:
                     print(line)
                     continue
-                print(line)
+                # print(line)
                 return line
              
     def set_bind_input(self, ed_input):
@@ -69,7 +72,13 @@ class socketClient():
     def client_run(self):
         #서버로부터 오는 메세지를 대기하는 쓰레드 생성
         start_new_thread(self.recv_data, (self.client_socket,))     
+        
+    def dingdong(self):
+        winsound.PlaySound("./sounds/dingdong.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
+    def ttaeng(self):
+        winsound.PlaySound("./sounds/ding.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+        
     #서버로 부터 메세지를 받는다.    
     def recv_data(self,client_socket):
         while True:
@@ -77,7 +86,7 @@ class socketClient():
                 data = client_socket.recv(1024).decode()
                 # print(f"{data}")
                 server_infor = json.loads(data)    
-                print(server_infor)     
+                # print(server_infor)     
                 if 'sign' in server_infor:                    
                     if 'identity' in server_infor['sign']:
                         self.identity = server_infor['sign']['identity']
@@ -95,13 +104,22 @@ class socketClient():
                     # self.output.add_msg('\n')   
                     self.output.add_highlight('서버메세지')     
                     self.output.add_msg('\n')   
-                    self.output.add_msg(server_infor['response']['result'])     
+                    msg = server_infor['response']['result']
+                    msg = str(msg)
+                    self.output.add_msg(msg)     
+                    if msg.find('실패')>-1:
+                        # self.ttaeng()
+                        start_new_thread(self.ttaeng,())
                     
                     if self.parent.level < server_infor['response']['level']:
                         self.parent.level = server_infor['response']['level']
                         self.ed_input.clear_msg()
                         self.ed_input.add_msg("#코드를 여기에 작성하세요")
-                        self.parent.show_popup(f'레벨업!! level : {self.parent.level}')
+                        if msg.find('정답')>-1:
+                            
+                            start_new_thread(self.dingdong,())
+                            # self.dingdong()
+                            self.parent.show_popup(f'레벨업!! level : {self.parent.level}')
                         # self.output.add_msg(f'레벨업!! level : {self.parent.level}')
                         
                     self.content.clear_msg()

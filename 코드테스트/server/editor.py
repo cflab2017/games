@@ -12,7 +12,7 @@ from commu.server import *
 
 class PythonEditor:
 
-    def __init__(self, root):
+    def __init__(self, root, host = None):
         self.root = root
         self.root.title("파이썬 코드 에디터 (입력/출력 포함)")    
         
@@ -42,7 +42,7 @@ class PythonEditor:
         self.ed_highscore = EditorHighScore(self,self.frame3_2)
         self.toolbar = ToolBar(self.frame2,self.ed_connect)
         
-        self.server = socketServer(self.ed_input)
+        self.server = socketServer(self.ed_input,host)
         self.ed_input.set_bind_frame(self.ed_connect)
         # self.ed_output.set_client(self.client)
         self.server.set_bind_input(self.ed_input)

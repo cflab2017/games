@@ -76,9 +76,12 @@ class socketServer():
         '최고점수':high_score_dict
         }
     
-    def __init__(self,ed_input):
-        print('>> Server Start 버전02')     
-        self.HOST = self.get_host_ip()     
+    def __init__(self,ed_input,host):
+        # print('>> Server Start 버전02')     
+        if host == None:
+            self.HOST = self.get_host_ip()     
+        else:
+            self.HOST = host
         self.update_store_dic('r')                      
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -97,9 +100,9 @@ class socketServer():
                 if line.find('#')>=0:
                     continue
                 if len(line.split('.')) != 4:
-                    print(line)
+                    # print(line)
                     continue
-                print(line)
+                # print(line)
                 return line
     
     def check_same_name(self,identity,name):
@@ -112,7 +115,7 @@ class socketServer():
         for key in self.infor:
             if key == '최고점수' or identity == key:
                 continue
-            print(self.infor,self.infor[key])
+            # print(self.infor,self.infor[key])
             if 'name' not in self.infor[key]:
                 continue
             if self.infor[key]['name'] is None:
@@ -142,14 +145,14 @@ class socketServer():
                                 if name is not None and len(name)>10:
                                     self.high_score_dict[key]['name'] = name[0:10]                            
                     self.infor.update({'최고점수' : self.high_score_dict})      
-                    print(self.high_score_dict)              
+                    # print(self.high_score_dict)              
         
         if state == 'w':  
             with open(self.user_file_name, 'wb') as fw:
                 self.high_score_dict = self.infor['최고점수']
                 pickle.dump(self.high_score_dict,fw)
-                print('최고점수')
-                print(self.high_score_dict)
+                # print('최고점수')
+                # print(self.high_score_dict)
                 
     def add_infor(self, identity):
         identity = int(identity)

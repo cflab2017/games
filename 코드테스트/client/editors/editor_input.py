@@ -18,15 +18,25 @@ except:
     os.system('pip install pygments')
     import pygments
     
+import winsound  # 윈도우 전용
+from _thread import *
+import time as ott
+
 from pygments import lex
 from pygments.lexers import PythonLexer
 from pygments.token import Token
 from pygments.styles import get_style_by_name
 
 from editors.textnumbers import *
-    
+# 1옥타브: C, C#, D, D#, E, F, F#, G, G#, A, A#, B
+pitch = {'c_': 523, 'cs': 554, 'd_': 587, 'ds': 622, 'e_': 659,
+         'f_': 698, 'fs': 740, 'g_': 784, 'gs': 831, 'a_': 880,
+         'as': 932, 'b_': 988}
+lasting = 40
+
 class EditorInput:
-    from editor import PythonEditor
+    # from editor import PythonEditor
+    play_memody = []
     def __init__(self,frame):
         self.frame = frame
         # self.style = get_style_by_name("monokai")
@@ -35,6 +45,7 @@ class EditorInput:
         self.number_widget()
         self.text.bind('<Shift-Return>', self.ignore_shift_enter_key)
         self.text.bind('<Alt-Return>', self.ignore_alt_enter_key)
+        self.text.bind("<Key>", self.key_sound)
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -53,7 +64,27 @@ class EditorInput:
             
         self.clear_msg()
         self.add_msg("#코드를 여기에 작성하세요")
-            
+        
+        start_new_thread(self.thread_play, (self.play_memody, ))
+
+    def thread_play(self,play_memody):
+        
+        while True:
+            ott.sleep(0.1)
+            if len(play_memody):
+                # print(play_memody)
+                for memody in play_memody:
+                    winsound.Beep(pitch[memody], lasting)
+                    # self.key_sound(memody)
+                play_memody.clear()
+                
+    def key_sound(self,event):
+        # keycode를 기반으로 주파수 생성 (100~2000Hz 범위)
+        # freq = 200 + (event.keycode * 10) % 1800
+        # winsound.Beep(freq, 50)  # 0.05초 재생
+        # print(f"키: {event.keysym}, 코드: {event.keycode}, 주파수: {freq}Hz")
+        self.play_memody.append('g_')
+        
     def set_bind_output(self,ed_output):
         self.ed_output = ed_output
         
@@ -169,7 +200,7 @@ class EditorInput:
         if len(codetemp[0])>1 and len(codetemp)>1:
             if codetemp[0][0]==' ':
                 self.text.delete("1.0", "1.1")
-                print('aaaaa')
+                # print('aaaaa')
 
         code = code.rstrip()
         if not code.strip():

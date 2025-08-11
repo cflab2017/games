@@ -14,7 +14,7 @@ from login.account import *
 class PythonEditor:
     from login.account import Account
     
-    def __init__(self, root):
+    def __init__(self, root, host= None):
         self.root = root
         root.geometry("1224x860")
         self.root.title("파이썬 코드 에디터 (입력/출력 포함)")    
@@ -23,7 +23,7 @@ class PythonEditor:
         
         self.level = 1   
 
-        self.client = socketClient(self)
+        self.client = socketClient(self,host)
         # cli.run()
     
         account = Account()
