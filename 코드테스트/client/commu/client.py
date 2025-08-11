@@ -115,6 +115,9 @@ class socketClient():
                         self.parent.level = server_infor['response']['level']
                         self.ed_input.clear_msg()
                         self.ed_input.add_msg("#코드를 여기에 작성하세요")
+                        self.ed_input.set_focus()
+                        
+                        
                         if msg.find('정답')>-1:
                             
                             start_new_thread(self.dingdong,())

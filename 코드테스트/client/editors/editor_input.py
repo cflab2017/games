@@ -46,6 +46,7 @@ class EditorInput:
         self.text.bind('<Shift-Return>', self.ignore_shift_enter_key)
         self.text.bind('<Alt-Return>', self.ignore_alt_enter_key)
         self.text.bind("<Key>", self.key_sound)
+        self.text.tag_configure("highlight", font=("malgungulim", 16,'bold'), foreground="red", background="white",justify='center')   
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -64,9 +65,16 @@ class EditorInput:
             
         self.clear_msg()
         self.add_msg("#코드를 여기에 작성하세요")
+        self.set_focus()
         
         start_new_thread(self.thread_play, (self.play_memody, ))
 
+        
+    def add_highlight(self, msg):
+        self.clear_msg()
+        self.text.insert(tk.END, msg+"\n", "highlight")
+        self.text.insert(tk.END, "\n")
+        
     def thread_play(self,play_memody):
         
         while True:
@@ -91,9 +99,17 @@ class EditorInput:
     def clear_msg(self):
         self.text.delete("1.0", tk.END)
 
-    def add_msg(self,msg):
-        self.text.insert(tk.END, msg+"\n")
-        
+    def add_msg(self,msg:str):
+        if msg.find('코드를')>-1:
+            self.add_highlight(msg)
+        else:
+            self.text.insert(tk.END, msg+"\n")
+    
+    def set_focus(self):        
+        self.text.see(tk.END)              # 스크롤을 마지막으로 이동
+        self.text.mark_set("insert", tk.END)  # 커서를 마지막 위치로 이동
+        self.text.focus()                  # 포커스 주기 (필요 시)
+                        
     def ignore_shift_enter_key(self,event):
         self.ed_output.run_code_thread()
         return "break"
