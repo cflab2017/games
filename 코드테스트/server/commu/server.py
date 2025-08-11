@@ -89,6 +89,7 @@ class socketServer():
         self.server_socket.listen()
         threading.Thread(target=self.server_run, daemon=True).start()
         self.ed_input = ed_input
+        self.last = len(Questions.que)
         # self.server_run()
     
     def get_host_ip(self):        
@@ -254,6 +255,7 @@ class socketServer():
                     'name':name,
                     'level':level,
                     'result':result,
+                    'last':self.last,
                     'question':Questions.que[level-1]['ques']
                     }
                 }
@@ -283,7 +285,8 @@ class socketServer():
                     response = {
                         'sign':{
                             'identity':identity,
-                            'name':name
+                            'name':name,
+                            'last':self.last,
                             }
                         }
                     self.infor[identity]['exec'].name = name

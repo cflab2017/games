@@ -14,6 +14,7 @@ class EditorOutput:
     def __init__(self, parent,frame):
         self.parent = parent
         self.frame = frame
+        self.font_size = self.parent.font_size
         self.client = None
         
         self.input_mode = False
@@ -22,22 +23,26 @@ class EditorOutput:
         self.input_ready = threading.Event()
         self.input_list = []
         
+        color = self.rgb_to_hex(208,223,211) 
+        color_font = self.rgb_to_hex(36,53,40) 
+        
         self.text = scrolledtext.ScrolledText(
             self.frame, 
             # width=100, height=22, 
             font=("Consolas", 12), undo=True,
             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white"
         )
-        self.text.config(font=("malgungulim", 16))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 16, "normal"))
+        self.text.config(font=("malgungulim", self.font_size))  # 기본: 영어
+        self.text.configure(font=("malgungulim", self.font_size, "normal"))
         
-        self.text.tag_configure("title", font=("malgungulim", 16,'bold'), foreground="red", background="white",justify='center')   
-        self.text.tag_configure("highlight", font=("malgungulim", 16,'bold'), foreground="blue", background="white",justify='center')   
+        self.text.tag_configure("title", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
         
         self.text.pack(padx=10, pady=(0, 10), fill="both", expand=1)
         # self.text.pack(side="left", fill="y", expand=1)
         # self.text.pack(fill="both", expand=1)
         self.text.bind("<Return>", self.capture_input)
+        self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
         self.clear_msg()
         
     # def tab_pressed(self,event:tk.Event) -> str:
@@ -46,6 +51,16 @@ class EditorOutput:
     #     # Prevent the default tkinter behaviour
     #     return "break"
 
+            
+    def on_ctrl_mousewheel(self,event):
+        if event.state & 0x0004:  # Ctrl key mask
+            delta = 1 if event.delta > 0 else -1
+            self.font_size = max(8, self.font_size + delta)  # 최소 글꼴 크기 8
+            if self.font_size > 30:
+                self.font_size = 30
+            self.text.configure(font=("malgungulim", self.font_size, "normal"))
+        # else:
+        #     print("Regular scroll")   
     def capture_input(self, event=None):
         if self.input_mode:
             last_line = self.text.get("end-2l", "end-1c").split(self.input_prompt)[-1]

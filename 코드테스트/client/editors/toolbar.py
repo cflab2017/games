@@ -10,6 +10,7 @@ class ToolBar:
     def __init__(self,parent,frame):
         # self.frame = frame
         self.parent = parent
+        self.font_size = self.parent.font_size
         
         self.frame=tk.Frame(frame, height=100,relief="solid", bd=0)
         self.frame.pack(padx=10, pady=(10, 10), fill="both", expand=1) 
@@ -17,29 +18,38 @@ class ToolBar:
                 
         
     def set_bind_output(self,ed_output,name):
-        self.label = tk.Label(self.frame, text="타이머: 0초", font=("Helvetica", 20,"bold"), foreground="green")
+        
+        color = self.rgb_to_hex(208,223,211) 
+        color_font = self.rgb_to_hex(36,53,40)
+        color_font2 = self.rgb_to_hex(94,43,56)
+        color_font3 = self.rgb_to_hex(196,26,81)
+        
+        self.label = tk.Label(self.frame, text="타이머: 0초", font=("Helvetica", 20,"bold"), foreground=color_font3)
         self.label.pack(side="left", fill="none", expand=0, anchor='center')
         self.update_timer()
         
         self.ed_output = ed_output
         run_btn = tk.Button(self.frame, text="▶ 실행해보기(Alt+Enter)", command=self.ed_output.only_run_code_thread)
-        run_btn.config(font=("malgungulim", 16, "bold"))  # 기본: 영어
-        run_btn.configure(font=("malgungulim", 16, "normal", "bold"), foreground="blue")
+        run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
+        run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font, background=color)
         run_btn.pack(side="left", fill="none", expand=0, anchor='center',padx=10)
         
         
         run_btn = tk.Button(self.frame, text="▶ 확인받기(Shift+Enter)", command=self.ed_output.run_code_thread)
-        run_btn.config(font=("malgungulim", 16, "bold"))  # 기본: 영어
-        run_btn.configure(font=("malgungulim", 16, "normal", "bold"), foreground="red")
+        run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
+        run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
         
         
         name_label = tk.Label(self.frame, text=f' 접속 : {name}')        
-        name_label.config(font=("malgungulim", 16, "bold"))  # 기본: 영어
-        name_label.configure(font=("malgungulim", 16, "normal", "bold"))
+        name_label.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
+        name_label.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font)
         name_label.pack(side="left", fill="none", expand=0, anchor='center',padx=10)
         
         
+    def rgb_to_hex(self,r, g, b):
+        return f'#{r:02x}{g:02x}{b:02x}'
+    
     def update_timer(self):
         self.seconds += 1
         hrs = self.seconds // 3600

@@ -92,6 +92,7 @@ class socketClient():
                         self.identity = server_infor['sign']['identity']
                         self.name = server_infor['sign']['name']
                         self.response = server_infor['sign']  
+                        self.parent.last_level = server_infor['sign']['last']
                         # self.ed_input.clear_msg()
                         # self.ed_input.add_msg("#코드를 여기에 작성하세요")
                 elif 'response' in server_infor:                 
@@ -113,6 +114,7 @@ class socketClient():
                     
                     if self.parent.level < server_infor['response']['level']:
                         self.parent.level = server_infor['response']['level']
+                        self.parent.last_level = server_infor['response']['last']
                         self.ed_input.clear_msg()
                         self.ed_input.add_msg("#코드를 여기에 작성하세요")
                         self.ed_input.set_focus()

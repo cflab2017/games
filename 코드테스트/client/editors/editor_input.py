@@ -37,8 +37,10 @@ lasting = 40
 class EditorInput:
     # from editor import PythonEditor
     play_memody = []
-    def __init__(self,frame):
+    def __init__(self,parent,frame):
         self.frame = frame
+        self.parent = parent
+        self.font_size = self.parent.font_size
         # self.style = get_style_by_name("monokai")
         
         self.scroll_text()
@@ -46,7 +48,15 @@ class EditorInput:
         self.text.bind('<Shift-Return>', self.ignore_shift_enter_key)
         self.text.bind('<Alt-Return>', self.ignore_alt_enter_key)
         self.text.bind("<Key>", self.key_sound)
-        self.text.tag_configure("highlight", font=("malgungulim", 16,'bold'), foreground="red", background="white",justify='center')   
+        self.text.bind("<KeyPress-BackSpace>", self.on_backspace)  # Backspace
+        self.text.bind("<Delete>", self.on_delete_key)              # Delete 키
+        self.text.bind("<Control-a>", self.on_ctrl_a)               # Ctrl+A 전체 선택
+        self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
+
+        color = self.rgb_to_hex(208,223,211) 
+        color_font = self.rgb_to_hex(36,53,40) 
+        
+        self.text.tag_configure("highlight", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -63,12 +73,55 @@ class EditorInput:
         for tag, conf in self.token_tags.items():
             self.text.tag_configure(str(tag), **conf)
             
+        
+        start_new_thread(self.thread_play, (self.play_memody, ))
+        self.ini_input_value()
+        
+            
+    def on_ctrl_mousewheel(self,event):
+        if event.state & 0x0004:  # Ctrl key mask
+            delta = 1 if event.delta > 0 else -1
+            self.font_size = max(8, self.font_size + delta)  # 최소 글꼴 크기 8
+            if self.font_size > 30:
+                self.font_size = 30
+            self.text.configure(font=("malgungulim", self.font_size, "normal"))
+        # else:
+        #     print("Regular scroll")   
+        
+    def ini_input_value(self):
         self.clear_msg()
         self.add_msg("#코드를 여기에 작성하세요")
         self.set_focus()
         
-        start_new_thread(self.thread_play, (self.play_memody, ))
+    def on_backspace(self,event):
+        # 현재 커서 위치가 첫 줄이라면 삭제 막기
+        idx = self.text.index(tk.INSERT)  # 현재 커서 위치 (ex: '1.0', '2.3')
+        line, col = map(int, idx.split('.'))
+        if line == 1 or (line==2 and col == 0):
+            return "break"  # 이벤트 차단(Backspace 무시)
 
+    def on_delete(self,event):
+        # 삭제 키도 첫 줄에서 막기 (선택 삭제 등)
+        try:
+            start = self.text.index("sel.first")
+            line, col = map(int, start.split('.'))
+            # print(line)
+            if line == 1:
+                # 선택 영역에 첫 줄 포함되면 삭제 못 하게 막기
+                # return "break"
+                self.ini_input_value()
+        except tk.TclError:
+            # 선택 영역 없으면 무시
+            pass
+
+    def on_ctrl_a(self,event):
+        # Ctrl + A 처리 (전체 선택)
+        self.text.tag_add(tk.SEL, "1.0", tk.END)
+        return "break"
+
+    def on_delete_key(self,event):
+        # Delete 키도 첫 줄 포함 선택 삭제 못 하게 막기
+        return self.on_delete(event)
         
     def add_highlight(self, msg):
         self.clear_msg()
@@ -104,6 +157,9 @@ class EditorInput:
             self.add_highlight(msg)
         else:
             self.text.insert(tk.END, msg+"\n")
+    
+    def rgb_to_hex(self,r, g, b):
+        return f'#{r:02x}{g:02x}{b:02x}'
     
     def set_focus(self):        
         self.text.see(tk.END)              # 스크롤을 마지막으로 이동
@@ -275,7 +331,6 @@ class EditorInput:
 
         if not completions:
             return
-
         popup = tk.Toplevel(self.frame)
         popup.overrideredirect(True)
         popup.geometry(f"+{self.frame.winfo_pointerx()}+{self.frame.winfo_pointery()}")
@@ -288,7 +343,40 @@ class EditorInput:
 
         def insert_completion(event):
             selected = listbox.get(tk.ACTIVE)
-            self.text.insert(tk.INSERT, selected)
+            
+            # print(code, row,col)
+            # delete_start = f"{row}.{0}"
+            delete_start = f"{row}.0"
+            delete_end = f"{row}.end"  # 현재 줄의 끝까지만 삭제
+            self.text.delete(delete_start, delete_end)
+            
+            # cursor_index = self.text.index(tk.INSERT)
+            # line_number = cursor_index.split('.')[0]
+
+            # # 해당 줄의 텍스트 가져오기
+            # line_start = f"{line_number}.0"
+            # line_end = f"{line_number}.end"
+            # line_text = self.text.get(line_start, line_end)
+
+            # # 마지막 공백 위치 찾기
+            # last_space_pos = line_text.rfind(" ")
+
+            # if last_space_pos != -1:
+            #     # 공백 앞 단어 삭제
+            #     word_start = line_text.rfind(" ", 0, last_space_pos - 1) + 1
+            #     delete_start = f"{line_number}.{word_start}"
+            #     delete_end = f"{line_number}.{last_space_pos}"
+            #     self.text.delete(delete_start, delete_end)
+
+            #     # 공백 다음 위치에 삽입
+            #     insert_index = f"{line_number}.{last_space_pos + 1}"
+            # else:
+            #     # 공백이 없으면 줄 전체 삭제 후 맨 앞에 삽입
+            #     self.text.delete(line_start, line_end)
+            #     insert_index = f"{line_number}.0"
+
+            self.text.insert(delete_start, selected)
+            # self.text.insert(tk.INSERT, selected)
             popup.destroy()
 
         listbox.bind("<Return>", insert_completion)

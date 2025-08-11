@@ -17,11 +17,13 @@ class PythonEditor:
     def __init__(self, root, host= None):
         self.root = root
         root.geometry("1224x860")
-        self.root.title("파이썬 코드 에디터 (입력/출력 포함)")    
+        self.root.title("코딩나우 코딩연습")    
         # self.bg_image = tk.PhotoImage(file="./images/bg2.png")
         
+        self.font_size = 20
         
         self.level = 1   
+        self.last_level = 0
 
         self.client = socketClient(self,host)
         # cli.run()
@@ -57,7 +59,7 @@ class PythonEditor:
               
         self.frame2_1.pack(fill="both", expand=1)          
         self.frame2_1.pack_propagate(False)
-        self.ed_input = EditorInput(self.frame2_1)
+        self.ed_input = EditorInput(self,self.frame2_1)
         
         self.frame2_2=tk.Frame(self.frame2, 
                              width=10,

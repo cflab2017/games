@@ -17,13 +17,18 @@ class EditorContent:
     def __init__(self,parent,frame):
         self.parent = parent
         self.frame = frame
+        self.font_size = self.parent.font_size
         # self.style = get_style_by_name("monokai")
         
-        self.scroll_text()
-        self.text.bind('<Shift-Return>', self.ignore_a_key)   
-        self.text.tag_configure("title", font=("malgungulim", 16,'bold'), foreground="red", background="white",justify='center')   
-        self.text.tag_configure("highlight", font=("malgungulim", 16,'bold'), foreground="blue", background="white",justify='center')   
+        color = self.rgb_to_hex(208,223,211) 
+        color_font = self.rgb_to_hex(36,53,40) 
         
+        self.scroll_text()
+        self.text.tag_configure("title", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        
+        self.text.bind('<Shift-Return>', self.ignore_a_key)  
+        self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -40,10 +45,20 @@ class EditorContent:
         for tag, conf in self.token_tags.items():
             self.text.tag_configure(str(tag), **conf)
             
+    def on_ctrl_mousewheel(self,event):
+        if event.state & 0x0004:  # Ctrl key mask
+            delta = 1 if event.delta > 0 else -1
+            self.font_size = max(8, self.font_size + delta)  # 최소 글꼴 크기 8
+            if self.font_size > 30:
+                self.font_size = 30
+            self.text.configure(font=("malgungulim", self.font_size, "normal"))
+        # else:
+        #     print("Regular scroll")   
+        
     def clear_msg(self,):
         self.text.config(state="normal")
         self.text.delete("1.0", tk.END)
-        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level}]\n", "title")
+        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level} / {self.parent.last_level}]\n", "title")
         
         self.text.config(state="disabled")
         
@@ -81,8 +96,8 @@ class EditorContent:
                             # width=100, height=22, 
                             font=("Consolas", 12),  undo=True,
                             bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 13))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 13, "normal"))
+        self.text.config(font=("malgungulim", self.font_size))  # 기본: 영어
+        self.text.configure(font=("malgungulim", self.font_size, "normal"))
         self.text.bind("<<Modified>>", self.on_text_modified)
         
         font = tkfont.Font(font=self.text['font'])
@@ -104,6 +119,9 @@ class EditorContent:
         pass
         # self.highlight_code()
 
+    def rgb_to_hex(self,r, g, b):
+        return f'#{r:02x}{g:02x}{b:02x}'
+    
     # def highlight_code(self):
     #     code = self.text.get("1.0", tk.END)
     #     self.text.tag_remove("Token", "1.0", tk.END)
