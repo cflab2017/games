@@ -53,8 +53,8 @@ class socketClient():
                 }
             }
         self.response = None
-        json_string = json.dumps(json_object)
-        self.client_socket.send(json_string.encode())
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        self.client_socket.sendall(json_string.encode())
         
     def send_request(self, code, input_list=[]):        
         json_object = {
@@ -66,8 +66,8 @@ class socketClient():
                 }
             }
         self.response = None
-        json_string = json.dumps(json_object)
-        self.client_socket.send(json_string.encode())
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        self.client_socket.sendall(json_string.encode())
         
     def client_run(self):
         #서버로부터 오는 메세지를 대기하는 쓰레드 생성

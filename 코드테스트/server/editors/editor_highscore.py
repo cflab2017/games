@@ -156,7 +156,7 @@ class EditorHighScore:
                         del self.high_score_dict[key]
                         last_key = list(self.high_score_dict.keys())[-1]
                         for i in range(key, last_key):
-                            print(f"i: {i}, last_key: {last_key}")
+                            # print(f"i: {i}, last_key: {last_key}")
                             self.high_score_dict[i] = self.high_score_dict.pop(i + 1)
                         self.refresh_listbox(self.high_score_dict)
                         self.parent.server.update_store_dic('w')

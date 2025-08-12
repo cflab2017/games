@@ -46,7 +46,7 @@ class EditorConnect:
             value = self.listbox.get(selection[0])
             value = re.findall(r'\[(.*?)\]', value)
             
-            print(f"{value}")
+            # print(f"{value}")
             name = value[0]
             
             level = simpledialog.askinteger("레벨 입력", "레벨을 입력하세요:")
@@ -54,7 +54,7 @@ class EditorConnect:
             if level is not None:
                 try:
                     level = int(level)
-                    print(name,level)
+                    # print(name,level)
                     self.parent.server.send_client_level(name,level)
                 except Exception as ex:
                     print(ex)
@@ -87,7 +87,7 @@ class EditorConnect:
         """딕셔너리 내용을 Listbox에 새로 표시"""
         self.listbox.delete(0, tk.END)  # 기존 항목 제거
         self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
-        print(self.data)
+        # print(self.data)
         for key, value in self.data.items():
             self.listbox.insert(tk.END, f" [{value['name']}] : 레벨{value['level']}")
 

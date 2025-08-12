@@ -61,8 +61,15 @@ class CodeExec:
             
     def check_must(self,level, code):
         for mu in Questions.que[level-1]['must']:
-            if mu not in code:
-                return mu
+            if isinstance(mu, list):
+                for m in mu:
+                    if m in code:
+                        break
+                else:
+                    return mu[0]
+            else:
+                if mu not in code:
+                    return mu
         
         return None
        

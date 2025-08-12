@@ -262,7 +262,7 @@ class socketServer():
                 'question':Questions.que[level-1]['ques']
                 }
             }
-        print(json_object)
+        # print(json_object)
         self.response = None
         json_string = json.dumps(json_object)
         client.send(json_string.encode())
@@ -285,8 +285,9 @@ class socketServer():
                     }
                 }
             self.response = None
-            json_string = json.dumps(json_object)
-            client.send(json_string.encode())
+            # print(json_object)
+            json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+            client.sendall(json_string.encode())
             
     
     #접속된 client마다 각각 쓰레드가 생성된다.
