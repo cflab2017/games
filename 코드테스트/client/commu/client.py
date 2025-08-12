@@ -15,6 +15,7 @@ class socketClient():
         self.identity = None
         self.name = None
         self.response = None
+        self.ed_ranking = None
         if host == None:
             self.HOST = self.get_host_ip()      
         else:
@@ -37,7 +38,10 @@ class socketClient():
                     continue
                 # print(line)
                 return line
-             
+            
+    def set_bind_Ranking(self,ed_ranking):
+        self.ed_ranking = ed_ranking
+        
     def set_bind_input(self, ed_input):
         self.ed_input = ed_input
         
@@ -45,6 +49,14 @@ class socketClient():
         self.output = output
     def set_bind_content(self, content):
         self.content = content
+        
+    def send_request_ranking(self):        
+        json_object = {
+            'ranking':0
+            }
+        self.response = None
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        self.client_socket.sendall(json_string.encode())
         
     def send_request_sign(self, name):        
         json_object = {
@@ -95,6 +107,10 @@ class socketClient():
                         self.parent.last_level = server_infor['sign']['last']
                         # self.ed_input.clear_msg()
                         # self.ed_input.add_msg("#코드를 여기에 작성하세요")
+                elif 'ranking' in server_infor:   
+                    # print(server_infor)
+                    if self.ed_ranking is not None:
+                        self.ed_ranking.refresh_listbox(server_infor['ranking'])
                 elif 'response' in server_infor:                 
                     self.output.add_msg('\n')   
                     

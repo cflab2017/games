@@ -200,6 +200,7 @@ class socketServer():
         #     #파일에 저장하기
             self.update_store_dic('w')
             self.ed_score.refresh_listbox(self.high_score_dict)
+            self.send_infor_to_all()
             
     def set_bind_input(self, ed_input:EditorInput):
         self.ed_input = ed_input
@@ -215,11 +216,20 @@ class socketServer():
         self.ed_score.refresh_listbox(self.high_score_dict)
         
     #접속한 모든 유저에게 새로 접속한 정보를 보낸다.
-    def send_infor_to_all(self):        
-        json_string = json.dumps(self.infor)        
-        for identity in self.client_sockets:
-            client = self.client_sockets[identity]
-            client.send(json_string.encode())
+    def send_infor_to_all(self, client = None):       
+        
+        json_object = {
+            'ranking':self.high_score_dict
+            }         
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)   
+        json_string = json_string.encode()
+        
+        if client is not None:
+            client.sendall(json_string)
+        else:
+            for identity in self.client_sockets:
+                client = self.client_sockets[identity]
+                client.sendall(json_string)
     
     def send_client_level(self, name,level):
         for identity in self.infor:
@@ -264,8 +274,8 @@ class socketServer():
             }
         # print(json_object)
         self.response = None
-        json_string = json.dumps(json_object)
-        client.send(json_string.encode())
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        client.sendall(json_string.encode())
             
     def send_to_client(self, client, values,identity,start_level):
         if 'request' in values:
@@ -305,6 +315,8 @@ class socketServer():
                 # print(f"클라이언트에서 받은 메세지 : {data}")
                 
                 values = json.loads(data)
+                if 'ranking' in values:
+                    self.send_infor_to_all(client_socket)
                 if 'sign' in values:
                     name = values['sign']['name']
                     name = self.check_same_name(identity,name)
@@ -319,6 +331,7 @@ class socketServer():
                     self.infor[identity]['exec'].name = name
                     json_string = json.dumps(response)
                     client_socket.send(json_string.encode())
+                    self.send_infor_to_all()
                 
                 if 'request' in values:
                     name = values['request']['name']                    

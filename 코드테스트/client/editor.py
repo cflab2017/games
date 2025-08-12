@@ -6,6 +6,7 @@ import tkinter.font as tkfont
 from editors.editor_input import *
 from editors.editor_output import *
 from editors.editor_content import *
+from editors.editor_rangking import *
 from editors.toolbar import *
 
 from commu.client import *
@@ -16,7 +17,7 @@ class PythonEditor:
     
     def __init__(self, root, host= None):
         self.root = root
-        root.geometry("1224x860")
+        root.geometry("1800x860")
         self.root.title("코딩나우 코딩연습")    
         # self.bg_image = tk.PhotoImage(file="./images/bg2.png")
         
@@ -33,60 +34,75 @@ class PythonEditor:
         if self.isRun == False:
             return
 #########################################################################        
-        self.frame1=tk.Frame(self.root,relief="solid", bd=1)
-        self.frame1.pack(padx=10, pady=(10, 0), fill="both")      
+        self.frame0=tk.Frame(self.root,relief="solid", bd=1)
+        self.frame0.pack(padx=10, pady=(10, 0), fill="both")
+              
         
         # bg_label = tk.Label(self.frame1, image=self.bg_image)
         # bg_label.place(x=0, y=0, relwidth=1, relheight=1)
            
-        self.toolbar = ToolBar(self,self.frame1)        
+        self.toolbar = ToolBar(self,self.frame0)        
 #########################################################################
 #########################################################################    
-        self.frame0=tk.Frame(self.root)        
-        self.frame0.pack(fill="both", expand=1) 
+        self.frame1=tk.Frame(self.root)        
+        self.frame1.pack(fill="both", expand=1) 
         
-        self.frame2=tk.Frame(self.frame0,
-                             width=10,
-                             relief="solid", bd=1)
+        # self.frame1_1=tk.Frame(self.frame1,relief="solid", bd=1)        
+        # self.frame1_1.pack(side="left", padx=10, pady=(10, 10), fill="both", expand=1) 
+        # self.frame1_1.pack_propagate(False)
+#########################################################################  
+
+        # self.frame1_2=tk.Frame(self.frame1,relief="solid", bd=1)        
+        # self.frame1_2.pack(side="left", padx=10, pady=(10, 10), fill="both", expand=1) 
+        # self.frame1_2.pack_propagate(False)
         
-        self.frame2.pack(side="left", padx=10, pady=(10, 10), fill="both", expand=1) 
-        self.frame2.pack_propagate(False)
-#########################################################################
-        
-        self.frame2_1=tk.Frame(self.frame2, 
-                             width=10,
-                             height=100,)
+        # self.frame2_3=tk.Frame(self.frame1_2)
+        # self.frame2_3.pack(fill="both", expand=1)  
+        # self.frame2_3.pack_propagate(False)          
+        # self.ed_ranking = EditorRanking(self,self.frame2_3)  
               
+#########################################################################  
+        self.frame1_1=tk.Frame(self.frame1,relief="solid", bd=1)        
+        self.frame1_1.pack(side="left", padx=10, pady=(10, 10), fill="both", expand=1) 
+        self.frame1_1.pack_propagate(False)
+#########################################################################  
+        self.frame2_1=tk.Frame(self.frame1_1)              
         self.frame2_1.pack(fill="both", expand=1)          
         self.frame2_1.pack_propagate(False)
-        self.ed_input = EditorInput(self,self.frame2_1)
         
-        self.frame2_2=tk.Frame(self.frame2, 
-                             width=10,
-                             height=100,)   
+        self.frame2_1_1=tk.Frame(self.frame2_1)              
+        self.frame2_1_1.pack(side="left", fill="both", expand=1)          
+        self.frame2_1_1.pack_propagate(False)        
+        self.ed_input = EditorInput(self,self.frame2_1_1)
+        
+        self.frame2_1_2=tk.Frame(self.frame2_1)              
+        self.frame2_1_2.pack(side="left", fill="both", expand=1)          
+        self.frame2_1_2.pack_propagate(False)    
+        self.ed_ranking = EditorRanking(self,self.frame2_1_2) 
+        
+        self.frame2_2=tk.Frame(self.frame1_1)   
         self.frame2_2.pack(fill="both", expand=1)    
         self.frame2_2.pack_propagate(False) 
-        self.ed_output = EditorOutput(self,self.frame2_2)
-        
-        
-        
+        self.ed_output = EditorOutput(self,self.frame2_2)              
         
 #########################################################################    
 #########################################################################    
-        self.frame3=tk.Frame(self.frame0, 
-                             width=10,
+        self.frame3=tk.Frame(self.frame1, 
+                        #      width=400,
                              relief="solid", bd=1)
         self.frame3.pack(side="right", padx=10, pady=(10, 10), fill="both", expand=1)  
         self.frame3.pack_propagate(False)  
-#########################################################################    
-        
-        self.frame3_1=tk.Frame(self.frame3, 
-                             width=10,)
-        self.frame3_1.pack(side="left", fill="both", expand=1)    
-        self.frame3_1.pack_propagate(False)     
-           
+#########################################################################   
+        self.frame3_1=tk.Frame(self.frame3)
+        self.frame3_1.pack(side="left", fill="both", expand=1)  
+        self.frame3_1.pack_propagate(False)          
         self.ed_content = EditorContent(self,self.frame3_1) 
         
+        
+        # self.frame3_2=tk.Frame(self.frame3)
+        # self.frame3_2.pack(side="left", fill="both", expand=1)  
+        # self.frame3_2.pack_propagate(False)          
+        # self.ed_ranking = EditorRanking(self,self.frame3_2)    
 #########################################################################       
 #########################################################################
 
@@ -99,9 +115,12 @@ class PythonEditor:
         self.client.set_bind_output(self.ed_output)
         self.client.set_bind_content(self.ed_content)
         self.client.set_bind_input(self.ed_input)
+        self.client.set_bind_Ranking(self.ed_ranking)
         
         self.client.send_request('start')
+        self.client.send_request_ranking()
         
+     
     def show_popup(self,message, duration=2000):  # duration은 밀리초(ms)
         popup = tk.Toplevel(self.root)
         popup.title("알림")
