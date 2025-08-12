@@ -140,7 +140,7 @@ class CodeExec:
                         while output[cnt] == '\n':
                             cnt += 1
                                 
-                        if output[cnt] != str(an):
+                        if str(output[cnt]).replace(' ', '') != str(an).replace(' ', ''):
                             result = f'실패 (결과값:{output[i]} != {an})'
                             break
                         cnt += 1
