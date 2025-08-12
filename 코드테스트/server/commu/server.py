@@ -73,7 +73,7 @@ class socketServer():
     }
     
     infor = {
-        '최고점수':high_score_dict
+        # '최고점수':high_score_dict
         }
     
     def __init__(self,ed_input,host):
@@ -145,12 +145,12 @@ class socketServer():
                                 name = self.high_score_dict[key]['name']
                                 if name is not None and len(name)>10:
                                     self.high_score_dict[key]['name'] = name[0:10]                            
-                    self.infor.update({'최고점수' : self.high_score_dict})      
+                    # self.infor.update({'최고점수' : self.high_score_dict})      
                     # print(self.high_score_dict)              
         
         if state == 'w':  
             with open(self.user_file_name, 'wb') as fw:
-                self.high_score_dict = self.infor['최고점수']
+                # self.high_score_dict = self.high_score_dict
                 pickle.dump(self.high_score_dict,fw)
                 # print('최고점수')
                 # print(self.high_score_dict)
@@ -168,15 +168,15 @@ class socketServer():
         score -=1 
         is_find = 0 
         date = dt.datetime.now()
-        for key in self.infor['최고점수']:
-            if self.infor['최고점수'][key]['score'] < score:
+        for key in self.high_score_dict:
+            if self.high_score_dict[key]['score'] < score:
                 is_find = 1
                 # break
-            if self.infor['최고점수'][key]['name'] == name:
-                if self.infor['최고점수'][key]['score'] < score:
+            if self.high_score_dict[key]['name'] == name:
+                if self.high_score_dict[key]['score'] < score:
                     date_str = f'{date.year%100}.{date.month:02}.{date.day:02}'
-                    self.infor['최고점수'][key]['score'] = score
-                    self.infor['최고점수'][key]['date'] = date_str
+                    self.high_score_dict[key]['score'] = score
+                    self.high_score_dict[key]['date'] = date_str
                     is_find = 2
                 else:
                     is_find = 0
@@ -184,18 +184,18 @@ class socketServer():
             
         if is_find:
             score_temp = []
-            for key in self.infor['최고점수']:
-                score_temp.append(list(self.infor['최고점수'][key].values()))
+            for key in self.high_score_dict:
+                score_temp.append(list(self.high_score_dict[key].values()))
                 
             if is_find == 1:
                 date_str = f'{date.year%100}.{date.month:02}.{date.day:02}'
                 score_temp.append([name,score,date_str])
             score_temp.sort(key=lambda x:-x[1])
             
-            for i,key in enumerate(self.infor['최고점수']):
-                self.infor['최고점수'][key]['name'] = score_temp[i][0]
-                self.infor['최고점수'][key]['score'] = score_temp[i][1]
-                self.infor['최고점수'][key]['date'] = score_temp[i][2]
+            for i,key in enumerate(self.high_score_dict):
+                self.high_score_dict[key]['name'] = score_temp[i][0]
+                self.high_score_dict[key]['score'] = score_temp[i][1]
+                self.high_score_dict[key]['date'] = score_temp[i][2]
             
         #     #파일에 저장하기
             self.update_store_dic('w')
@@ -220,7 +220,17 @@ class socketServer():
         for identity in self.client_sockets:
             client = self.client_sockets[identity]
             client.send(json_string.encode())
-                                    
+    
+    def send_client_level(self, name,level):
+        for identity in self.infor:
+            try:
+                if self.infor[identity]['name'] == name:
+                    client = self.client_sockets[identity]
+                    self.send_to_level_client(client,name,level)
+                    break
+            except Exception as ex:
+                print(ex)
+                    
     #client가 접속되는지 기다리고 쓰레드를 생서한다.
     def server_run(self):
         while True:
@@ -241,7 +251,22 @@ class socketServer():
     
     # def handler_exec(signum, frame):
     #     raise TimeoutError("Execution timed out!")
-    
+    def send_to_level_client(self, client,name, level):
+                            
+        json_object = {
+            'response':{
+                'name':name,
+                'level':level,
+                'result':'',
+                'last':self.last,
+                'question':Questions.que[level-1]['ques']
+                }
+            }
+        print(json_object)
+        self.response = None
+        json_string = json.dumps(json_object)
+        client.send(json_string.encode())
+            
     def send_to_client(self, client, values,identity,start_level):
         if 'request' in values:
             name = values['request']['name']
@@ -263,7 +288,7 @@ class socketServer():
             json_string = json.dumps(json_object)
             client.send(json_string.encode())
             
-        
+    
     #접속된 client마다 각각 쓰레드가 생성된다.
     def thread_client(self,client_socket, identity):
         name = None
@@ -289,6 +314,7 @@ class socketServer():
                             'last':self.last,
                             }
                         }
+                    self.infor[identity]['name'] = name
                     self.infor[identity]['exec'].name = name
                     json_string = json.dumps(response)
                     client_socket.send(json_string.encode())

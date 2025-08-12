@@ -8,9 +8,9 @@ from tkinter import messagebox
 import tkinter as tk
 from tkinter import scrolledtext
 import tkinter.font as tkfont
+from tkinter import simpledialog, messagebox
 
 from editors.stdoutredirector import *
-from tkinter import simpledialog, messagebox
 
 class PasswordPopup(tk.Toplevel):
     def __init__(self, parent):
@@ -56,7 +56,8 @@ class EditorHighScore:
         
 # 우클릭 메뉴 생성
         self.context_menu = Menu(self.frame, tearoff=0)
-        self.context_menu.add_command(label="삭제", command=self.menu_action)
+        self.context_menu.add_command(label="레벨", command=self.menu_action_level)
+        self.context_menu.add_command(label="삭제", command=self.menu_action_remove)
         
         self.listbox.bind('<<ListboxSelect>>', self.on_select)
         self.listbox.bind('<Button-3>', self.show_context_menu)  # Windows: Button-3, Mac: Button-2
@@ -114,8 +115,28 @@ class EditorHighScore:
         else:
             messagebox.showerror("오류", "비밀번호 불일치")
             return False
+        
+    def menu_action_level(self):
+        selection = self.listbox.curselection()
+        if selection:
+            value = self.listbox.get(selection[0])
+            value = str(value).replace(']','').split("[")
+            # print(f"{value}")
+            name = value[3]
+            
+            level = simpledialog.askinteger("레벨 입력", "레벨을 입력하세요:")
+            # print(level)
+            if level is not None:
+                try:
+                    level = int(level)
+                    self.parent.server.send_client_level(name,level)
+                except Exception as ex:
+                    print(ex)
+            #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")
+            # else:
+            #     messagebox.showwarning("입력 취소", "숫자 입력이 취소되었습니다.")
          
-    def menu_action(self):
+    def menu_action_remove(self):
         
         if self.check_password('4321') is False:
             return
@@ -127,8 +148,8 @@ class EditorHighScore:
             # print(f"{value}")
             name = value[3]
             
-            print(f"{name}")
-            print(self.high_score_dict)
+            # print(f"{name}")
+            # print(self.high_score_dict)
             try:
                 for key in self.high_score_dict:
                     if self.high_score_dict[key]['name'] == name:
