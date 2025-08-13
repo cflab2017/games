@@ -34,7 +34,7 @@ class socketClient():
                 if line.find('#')>=0:
                     continue
                 if len(line.split('.')) != 4:
-                    print(line)
+                    # print(line)
                     continue
                 # print(line)
                 return line
@@ -53,6 +53,14 @@ class socketClient():
     def send_request_ranking(self):        
         json_object = {
             'ranking':0
+            }
+        self.response = None
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        self.client_socket.sendall(json_string.encode())
+        
+    def send_request_complete_level(self, level = 0):        
+        json_object = {
+            'levels':level
             }
         self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
@@ -107,6 +115,16 @@ class socketClient():
                         self.parent.last_level = server_infor['sign']['last']
                         # self.ed_input.clear_msg()
                         # self.ed_input.add_msg("#코드를 여기에 작성하세요")
+                elif 'levels' in server_infor:   
+                    # print(server_infor)
+                    levels = server_infor['levels']['level']
+                    code = server_infor['levels']['code']
+                    if len(code)>0:
+                        self.ed_input.add_code_msg(code)
+                    else:
+                        self.ed_input.levels_code_list(levels)
+                    
+                    
                 elif 'ranking' in server_infor:   
                     # print(server_infor)
                     if self.ed_ranking is not None:

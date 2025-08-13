@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 from tkinter import scrolledtext
 import tkinter.font as tkfont
+from tkinter import simpledialog, messagebox
 
 
 try:
@@ -37,6 +38,7 @@ lasting = 40
 class EditorInput:
     # from editor import PythonEditor
     play_memody = []
+    code_level = -1
     def __init__(self,parent,frame):
         self.frame = frame
         self.parent = parent
@@ -78,6 +80,9 @@ class EditorInput:
         self.ini_input_value()
         
             
+    def set_client(self,client):
+        self.client = client
+        
     def on_ctrl_mousewheel(self,event):
         if event.state & 0x0004:  # Ctrl key mask
             delta = 1 if event.delta > 0 else -1
@@ -378,7 +383,84 @@ class EditorInput:
             self.text.insert(delete_start, selected)
             # self.text.insert(tk.INSERT, selected)
             popup.destroy()
-
         listbox.bind("<Return>", insert_completion)
         listbox.bind("<Escape>", lambda e: popup.destroy())
         listbox.focus_set()
+        
+    def get_user_code(self):
+        self.code_level = -1
+        self.open_popup()
+        self.client.send_request_complete_level()
+    
+    def levels_code_list(self, levels):        
+        self.listbox_code.delete(0, tk.END)  # 기존 항목 제거
+        levels.sort()
+        for level in levels:
+            self.listbox_code.insert(tk.END, f"레벨 {level}")
+            
+    def open_popup(self):
+        name = self.parent.name
+        self.code_sel_name = name
+        popup = tk.Toplevel(self.parent.root)
+        popup.title(f"{name}님의 코드 제출 결과")
+        popup.geometry("800x800")
+        popup.attributes('-topmost', True)
+
+        # 좌측 Listbox
+        list_frame = tk.Frame(popup, width = 150)
+        list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)    
+        list_frame.pack_propagate(False)
+
+        self.listbox_code = tk.Listbox(list_frame,
+                                font=("Consolas", 20), 
+                                bg="#1E1E1E", 
+                                fg="#D4D4D4", )
+        
+        self.listbox_code.bind('<<ListboxSelect>>', self.on_select_code)
+        self.listbox_code.pack(side=tk.LEFT, fill=tk.Y)
+
+        # 스크롤바 연결
+        scrollbar = tk.Scrollbar(list_frame, orient="vertical", command=self.listbox_code.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox_code.config(yscrollcommand=scrollbar.set)
+
+        # for level in self.server.users[name]:
+        #     self.listbox_code.insert(tk.END, f"레벨 {level}")
+
+        # 우측 Text
+        self.text_code = tk.Text(popup, wrap="word",
+                                font=("Consolas", 20), 
+                                bg="#1E1E1E", 
+                                fg="#D4D4D4", )
+        self.text_code.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+    
+    def on_select_code(self,event):
+        selection = self.listbox_code.curselection()
+        if selection:
+            index = selection[0]
+            value = self.listbox_code.get(index)
+            value = str(value).replace('레벨','')
+            value = value.replace(' ','')
+            level = int(value)
+            if self.code_level == level:
+                # print('pass')
+                return
+            
+            self.code_level = level
+            name  = self.code_sel_name
+            # code = self.server.users[name][level]['code']
+            self.clear_code_msg()
+            self.client.send_request_complete_level(level)
+            # self.add_code_msg(code)            
+            # print(f"선택된 항목: {value}")
+            
+    def clear_code_msg(self):
+        self.text_code.config(state="normal")
+        self.text_code.delete("1.0", tk.END)
+        self.text_code.config(state="disabled")
+        
+    def add_code_msg(self,msg):
+        self.clear_code_msg()
+        self.text_code.config(state="normal")
+        self.text_code.insert(tk.END, msg+"\n")
+        self.text_code.config(state="disabled")

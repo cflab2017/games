@@ -155,9 +155,19 @@ class CodeExec:
                         result = '정답입니다.'
                         msg = f'{self.name}님이 {level}번 문제를 해결했습니다.'
                         self.ed_input.add_msg(msg)
+                        
+                        if self.name not in self.parent.users:
+                            self.parent.users[self.name] = {}
+                        self.parent.users[self.name][self.level] = {}
+                        self.parent.users[self.name][self.level]['code'] = code
+                        self.parent.update_store_users_dic('w', self.name)
+                        # print('users:',self.parent.users)
+                        
                         self.level += 1
                         self.ed_connect.update_item(self.identity,self.name,self.level)
                         self.parent.score_sort(self.name,self.level)
+                        
+                            
                 except Exception as ex:
                     result = f'실패 (결과값:{ex})'
                     

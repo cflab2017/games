@@ -51,12 +51,13 @@ class EditorHighScore:
                                 fg="#D4D4D4", )
         self.listbox.config(font=("malgungulim", 20))  # 기본: 영어
         self.listbox.configure(font=("malgungulim", 20, "normal"))
-        self.listbox.pack(padx=10, pady=(0, 10), fill="both", expand=1)
+        self.listbox.pack(padx=10, pady=(10, 10), fill="both", expand=1)
         self.high_score_dict = None
         
 # 우클릭 메뉴 생성
         self.context_menu = Menu(self.frame, tearoff=0)
-        self.context_menu.add_command(label="레벨", command=self.menu_action_level)
+        self.context_menu.add_command(label="코드제출", command=self.menu_action_level)
+        self.context_menu.add_separator()
         self.context_menu.add_command(label="삭제", command=self.menu_action_remove)
         
         self.listbox.bind('<<ListboxSelect>>', self.on_select)
@@ -65,6 +66,9 @@ class EditorHighScore:
         # self.refresh_listbox()
         
 
+    def set_bind_server(self, server):
+        self.server = server
+        
     def refresh_listbox(self, data):
         self.listbox.delete(0, tk.END)  # 기존 항목 제거
         # self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
@@ -115,6 +119,75 @@ class EditorHighScore:
         else:
             messagebox.showerror("오류", "비밀번호 불일치")
             return False
+    
+    def open_popup(self,name):
+        # print(self.server.users)
+        if name not in self.server.users:
+            messagebox.showinfo("검색 결과", f"검색된 내용이 없습니다.")
+            return
+        self.code_sel_name = name
+        popup = tk.Toplevel(self.parent.root)
+        popup.title(f"{name}님의 코드 제출 결과")
+        popup.geometry("800x800")
+        popup.attributes('-topmost', True)
+
+        # 좌측 Listbox
+        list_frame = tk.Frame(popup, width = 150)
+        list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)    
+        list_frame.pack_propagate(False)
+
+        self.listbox_code = tk.Listbox(list_frame,
+                                font=("Consolas", 20), 
+                                bg="#1E1E1E", 
+                                fg="#D4D4D4",  )
+        
+        self.listbox_code.bind('<<ListboxSelect>>', self.on_select_code)
+        self.listbox_code.pack(side=tk.LEFT, fill=tk.Y)
+
+        # 스크롤바 연결
+        scrollbar = tk.Scrollbar(list_frame, orient="vertical", command=self.listbox_code.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox_code.config(yscrollcommand=scrollbar.set)
+
+        levels = list(self.server.users[name].keys())
+        levels.sort()
+        
+        
+        for level in levels:
+            self.listbox_code.insert(tk.END, f" 레벨 {level}")
+
+        # 우측 Text
+        self.text_code = tk.Text(popup, wrap="word",
+                                font=("Consolas", 20), 
+                                bg="#1E1E1E", 
+                                fg="#D4D4D4", )
+        self.text_code.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+    
+    def on_select_code(self,event):
+        # 선택된 항목 확인
+        selection = self.listbox_code.curselection()
+        if selection:
+            index = selection[0]
+            value = self.listbox_code.get(index)
+            value = str(value).replace('레벨','')
+            value = value.replace(' ','')
+            level = int(value)
+            name  = self.code_sel_name
+            code = self.server.users[name][level]['code']
+            self.clear_code_msg()
+            self.add_code_msg(code)
+            
+            # print(f"선택된 항목: {value}")
+            
+    def clear_code_msg(self,):
+        self.text_code.config(state="normal")
+        self.text_code.delete("1.0", tk.END)
+        self.text_code.config(state="disabled")
+        
+    def add_code_msg(self,msg):
+        self.text_code.config(state="normal")
+        self.text_code.insert(tk.END, msg+"\n")
+        self.text_code.config(state="disabled")
         
     def menu_action_level(self):
         selection = self.listbox.curselection()
@@ -123,15 +196,17 @@ class EditorHighScore:
             value = str(value).replace(']','').split("[")
             # print(f"{value}")
             name = value[3]
+            self.open_popup(name)
             
-            level = simpledialog.askinteger("레벨 입력", "레벨을 입력하세요:")
-            # print(level)
-            if level is not None:
-                try:
-                    level = int(level)
-                    self.parent.server.send_client_level(name,level)
-                except Exception as ex:
-                    print(ex)
+            # level = simpledialog.askinteger("레벨 입력", "레벨을 입력하세요:")
+            # # print(level)
+            # if level is not None:
+            #     try:
+            #         level = int(level)
+            #         self.parent.server.send_client_level(name,level)
+            #     except Exception as ex:
+            #         print(ex)
+                    
             #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")
             # else:
             #     messagebox.showwarning("입력 취소", "숫자 입력이 취소되었습니다.")

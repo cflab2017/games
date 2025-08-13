@@ -78,7 +78,7 @@ class EditorRanking:
         self.text.delete("0.0", tk.END)
         # self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
         self.high_score_dict = data
-        print(self.high_score_dict)
+        # print(self.high_score_dict)
         
         for key, value in self.high_score_dict.items():
             if value['name'] is not None:

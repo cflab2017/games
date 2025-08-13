@@ -16,6 +16,9 @@ class ToolBar:
         self.frame.pack(padx=10, pady=(10, 10), fill="both", expand=1) 
         self.seconds = 0
                 
+    def set_bind_input(self,ed_input):
+        self.ed_input = ed_input
+        
         
     def set_bind_output(self,ed_output,name):
         
@@ -40,6 +43,10 @@ class ToolBar:
         run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
         
+        run_btn = tk.Button(self.frame, text="▶ 코드가져오기", command=self.ed_input.get_user_code)
+        run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
+        run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
+        run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
         
         name_label = tk.Label(self.frame, text=f' 접속 : {name}')        
         name_label.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어

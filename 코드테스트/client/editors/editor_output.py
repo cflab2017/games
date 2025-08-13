@@ -109,7 +109,9 @@ class EditorOutput:
         return f'#{r:02x}{g:02x}{b:02x}'
 
     def run_code(self, send_request):
-        code = self.ed_input.text.get("1.0", tk.END)
+        code = self.ed_input.text.get("2.0", tk.END)
+        code = str(code).replace('\n\n', '\n')
+        # print(code)
         # self.text.delete("1.0", tk.END)
         self.clear_msg()
         self.add_msg('')

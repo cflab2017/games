@@ -1,232 +1,161 @@
 
+import sys
+import threading
+import queue
 
+import re
 import tkinter as tk
 from tkinter import scrolledtext
 import tkinter.font as tkfont
+from tkinter import Menu
+from tkinter import messagebox
+from tkinter import simpledialog, messagebox
 
-import jedi
-from pygments import lex
-from pygments.lexers import PythonLexer
-from pygments.token import Token
-from pygments.styles import get_style_by_name
-
-from editors.textnumbers import *
+from editors.stdoutredirector import *
     
 class EditorInput:
-    # from editor import PythonEditor
-    def __init__(self,frame):
+    def __init__(self,parent, frame):
         self.frame = frame
-        # self.style = get_style_by_name("monokai")
+        self.parent = parent
         
-        self.scroll_text()
-        self.number_widget()
-        self.text.bind('<Shift-Return>', self.ignore_a_key)
-        
-        self.token_tags = {
-            Token.Keyword: {"foreground": "#569CD6"},
-            Token.Name: {"foreground": "#9CDCFE"},
-            Token.Name.Variable: {"foreground": "#569CD6"},
-            Token.Name.Function: {"foreground": "#DCDCAA"},
-            Token.Name.Class: {"foreground": "#4EC9B0"},
-            Token.Comment: {"foreground": "#6A9955"},
-            Token.String: {"foreground": "#CE9178"},
-            Token.Number: {"foreground": "#B5CEA8"},
-            Token.Operator: {"foreground": "#D4D4D4"},
-            Token.Name.Builtin: {"foreground": "#C586C0"},
+        self.data = {
         }
-        for tag, conf in self.token_tags.items():
-            self.text.tag_configure(str(tag), **conf)
-            
-    def clear_msg(self,):
-        self.text.delete("1.0", tk.END)
-
+        
+        self.color_bg = self.rgb_to_hex(208,223,211) 
+        self.color_font = self.rgb_to_hex(36,53,40)  
+        
+        self.listbox = tk.Listbox(self.frame, 
+                                  width=25,
+                                #   height=15,
+                                font=("Consolas", 20), 
+                                bg="#1E1E1E", 
+                                fg="#D4D4D4", )
+        self.listbox.config(font=("malgungulim", 20))  # 기본: 영어
+        self.listbox.configure(font=("malgungulim", 20, "normal"))
+             
+        
+        self.listbox.pack(padx=10, pady=(10, 10), fill="both", expand=1)
+        self.refresh_listbox()
+        self.add_highlight('현재 상황')
+        
+# 우클릭 메뉴 생성
+        # self.context_menu = Menu(self.frame, tearoff=0)
+        # self.context_menu.add_command(label="레벨", command=self.menu_action_level)
+        
+        # self.listbox.bind('<<ListboxSelect>>', self.on_select)
+        # self.listbox.bind('<Button-3>', self.show_context_menu)  # Windows: Button-3, Mac: Button-2
+        
+    def rgb_to_hex(self,r, g, b):
+        return f'#{r:02x}{g:02x}{b:02x}'
+    
+    def set_bind_input(self, ed_input):
+        self.ed_input = ed_input
+        
+    def set_bind_out_print(self, out_print):
+        self.out_print = out_print
+        
+    def add_highlight(self, msg):
+        # self.listbox.config(state="normal")
+        self.listbox.insert(tk.END, msg+"\n")
+        # self.listbox.itemconfig(0, {'fg': 'blue', 'bg': 'lightyellow'})
+        
+        self.listbox.itemconfig(0, {'fg': self.color_font, 'bg': self.color_bg})
+        # self.listbox.config(state="disabled")
+        
     def add_msg(self,msg):
-        # self.text.insert(tk.END, msg+"\n")
-        self.text.insert("1.0", msg+"\n")
-        
-        end_index = self.text.index("end-1c")  # "end"는 항상 마지막 줄 다음을 가리킴
-        line_count = int(end_index.split('.')[0])
-        if line_count > 10:
-            self.text.delete("10.0", "10.end")
-        
-    def set_bind_frame(self,ed_output):
-        self.ed_output = ed_output
-        
-    def ignore_a_key(self,event):
-        self.ed_output.run_code_thread()
-        return "break"
-    
-    def scroll_both(self, action, position):
-        self.text.yview_moveto(position)
-        self.linenumber.yview_moveto(position)
-    
-    def update_scroll_both(self, first, last, type=None):
-        self.text.yview_moveto(first)
-        self.linenumber.yview_moveto(first)
-        self.uniscrollbar.set(first, last)
-        
-    def scroll_text(self):
-
-        self.uniscrollbar = tk.Scrollbar(self.frame, width=20, relief="flat")
-        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=10, pady=(10, 0))       
-        
-        self.text = tk.Text(self.frame,  wrap=tk.WORD,
-                            width=100, height=22, font=("Consolas", 12),  undo=True,
-                            bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 12))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 12, "normal"))
-        self.text.bind("<KeyRelease>", self.on_key_release)
-        self.text.bind("<Control-space>", self.show_autocomplete)
-        self.text.bind("<<Modified>>", self.on_text_modified)
-        
-        font = tkfont.Font(font=self.text['font'])
-        tab = font.measure('    ')
-        self.text.config(tabs=tab)
-        self.text.config(spacing1=0, spacing2=1, spacing3=1)
-
-        self.uniscrollbar["command"] = self.scroll_both
-        self.text["yscrollcommand"] = self.update_scroll_both
-
-        self.text.pack(side="right", fill="both", expand=1,padx=10, pady=(10, 0))
-        
-    def number_widget(self):
-        pass
-        self.linenumber = TextNumbers(self.frame, self.text,  width=20,relief="flat", state="disabled", justify="right",)
-
-        self.uniscrollbar["command"] = self.scroll_both
-        self.linenumber["yscrollcommand"] = self.update_scroll_both
-        self.linenumber.pack(side="right", fill="y", expand=0,padx=00, pady=(10, 0))
-        
-    def on_text_modified(self, event=None):
-        self.text.edit_modified(False)  # 중요: 플래그 초기화
-        self.highlight_code()
-    
-    def on_key_release(self, event=None):
-        self.highlight_code()
-
-    # def highlight_code(self):
-    #     code = self.text.get("1.0", tk.END)
-    #     self.text.tag_remove("Token", "1.0", tk.END)
-    #     for tag in self.token_tags:
-    #         self.text.tag_remove(str(tag), "1.0", tk.END)
-
-    #     idx = "1.0"
-    #     for token, content in lex(code, PythonLexer()):
-    #         end_idx = self.text.index(f"{idx}+{len(content)}c")
-    #         self.text.tag_add(str(token), idx, end_idx)
-    #         idx = end_idx
-    
-    # def highlight_code(self, event=None):
-    #     code = self.text.get("1.0", tk.END)
-    #     self.text.tag_remove("Token", "1.0", tk.END)
-    #     for tag in self.token_tags:
-    #         self.text.tag_remove(str(tag), "1.0", tk.END)
-
-    #     index = "1.0"
-    #     for token, content in lex(code, PythonLexer()):
-    #         # 토큰이 비어있으면 스킵
-    #         if not content.strip():
-    #             index = self.text.index(f"{index}+{len(content)}c")
-    #             continue
-
-    #         lines = content.split('\n')
-    #         for i, line in enumerate(lines):
-    #             if line:
-    #                 start_idx = index
-    #                 end_idx = self.text.index(f"{start_idx}+{len(line)}c")
-    #                 if token in self.token_tags:
-    #                     self.text.tag_add(str(token), start_idx, end_idx)
-    #                 index = end_idx
-
-    #             if i < len(lines) - 1:
-    #                 index = self.text.index(f"{index} +1line linestart")
-
-    def highlight_code(self, event=None):
-        code = self.text.get("1.0", tk.END)
-
-        # ✅ 첫 줄이 \n만 있는 경우 보정
-        codetemp = code.split('\n')
-        if len(codetemp[0])==0 and len(codetemp)>1:
-            code = " " + code
-            self.text.insert("1.0", " ")
-        if len(codetemp[0])>1 and len(codetemp)>1:
-            if codetemp[0][0]==' ':
-                self.text.delete("1.0", "1.1")
-                # print('aaaaa')
-
-        code = code.rstrip()
-        if not code.strip():
-            self.text.tag_remove("Token", "1.0", tk.END)
-            return
-
-        self.text.mark_set("range_start", "1.0")
-        self.text.tag_remove("Token", "1.0", tk.END)
-        
-        for tag in self.token_tags:
-            self.text.tag_remove(str(tag), "1.0", tk.END)
-        self.text.tag_remove("DefinedVariable", "1.0", tk.END)
+        # self.listbox.config(state="normal")
+        # self.listbox.delete(0, tk.END)  # 기존 항목 제거
+        # self.listbox.insert(tk.END, msg+'\n')
+        self.listbox.insert(1, msg+'\n')
+        if self.listbox.size() > 20:
+            self.listbox.delete(tk.END)  # 마지막 항목 삭제
+        # self.listbox.config(state="disabled")
             
-        # 기본 하이라이팅
-        for token, content in lex(code, PythonLexer()):
-            self.text.mark_set("range_end", f"range_start + {len(content)}c")
-            if token in self.token_tags:
-                self.text.tag_add(str(token), "range_start", "range_end")
-            self.text.mark_set("range_start", "range_end")
-
-        # 변수 목록 추출 (jedi 사용)
+            
+    def menu_action_level(self):
+        selection = self.listbox.curselection()
+        if selection:
+            value = self.listbox.get(selection[0])
+            value = re.findall(r'\[(.*?)\]', value)
+            
+            # print(f"{value}")
+            name = value[0]
+            
+            level = simpledialog.askinteger("레벨 입력", "레벨을 입력하세요:")
+            # print(level)
+            if level is not None:
+                try:
+                    level = int(level)
+                    # print(name,level)
+                    self.parent.server.send_client_level(name,level)
+                except Exception as ex:
+                    print(ex)
+            #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")
+            # else:
+            #     messagebox.showwarning("입력 취소", "숫자 입력이 취소되었습니다.")
+            
+    def on_select(self,event):
+        # 선택된 항목 확인
+        selection = self.listbox.curselection()
+        if selection:
+            index = selection[0]
+            value = self.listbox.get(index)
+            # print(f"선택된 항목: {value}")
+        
+    def show_context_menu(self,event):
+        # 우클릭 위치에서 해당 항목 선택
         try:
-            script = jedi.Script(code)
-            definitions = script.get_names(all_scopes=True, definitions=True)
-            variables = [d for d in definitions if d.type == 'statement']
-            variable_names = set(d.name for d in variables)
-        except Exception:
-            variable_names = set()
+            index = self.listbox.nearest(event.y)
+            self.listbox.selection_clear(0, tk.END)
+            self.listbox.selection_set(index)
+            self.listbox.activate(index)
+            
+            # 팝업 메뉴 띄우기
+            self.context_menu.post(event.x_root, event.y_root)
+        except:
+            pass
+        
+    def refresh_listbox(self):
+        """딕셔너리 내용을 Listbox에 새로 표시"""
+        self.listbox.delete(0, tk.END)  # 기존 항목 제거
+        self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
+        # print(self.data)
+        for key, value in self.data.items():
+            self.listbox.insert(tk.END, f" [{value['name']}] : 레벨{value['level']}")
 
-        # 변수 색 적용
-        for var_name in variable_names:
-            start = "1.0"
-            while True:
-                pos = self.text.search(rf'\y{var_name}\y', start, tk.END, regexp=True)
-                if not pos:
-                    break
-                end = f"{pos}+{len(var_name)}c"
-                self.text.tag_add("DefinedVariable", pos, end)
-                if pos == end:
-                    break  # 무한 루프 방지
-                start = end
+    def update_item(self,key,name,level):
+        """새 항목 추가"""
+        if key in self.data:
+            self.data[key]['level'] = level
+        else:
+            self.data[key] = {
+                'name':name,
+                'level':level
+            }
+        self.refresh_listbox()
 
-        # 변수 색상 정의
-        self.text.tag_configure("DefinedVariable", foreground="#9CDCFE")  # VSCode 하늘색
-    
-    def show_autocomplete(self, event=None):
-        index = self.text.index(tk.INSERT)
-        row, col = map(int, index.split("."))
-        code = self.text.get("1.0", tk.END)
+    def delete_item(self,key):
+        if key in self.data:
+            del self.data[key]
+        self.refresh_listbox()
+        
+        
+    # def delete_item(self):
+    #     """선택한 항목 삭제"""
+    #     selection = self.listbox.curselection()
+    #     if selection:
+    #         item_text = self.listbox.get(selection[0])
+    #         key = item_text.split(" : ")[0]  # key만 추출
+    #         if key in self.data:
+    #             del self.data[key]
+    #         self.refresh_listbox()
 
-        try:
-            script = jedi.Script(code)
-            completions = script.complete(line=row, column=col)
-        except Exception:
-            return
-
-        if not completions:
-            return
-
-        popup = tk.Toplevel(self.frame)
-        popup.overrideredirect(True)
-        popup.geometry(f"+{self.frame.winfo_pointerx()}+{self.frame.winfo_pointery()}")
-
-        listbox = tk.Listbox(popup, font=("Consolas", 12), height=min(6, len(completions)))
-        listbox.pack()
-
-        for c in completions:
-            listbox.insert(tk.END, c.name)
-
-        def insert_completion(event):
-            selected = listbox.get(tk.ACTIVE)
-            self.text.insert(tk.INSERT, selected)
-            popup.destroy()
-
-        listbox.bind("<Return>", insert_completion)
-        listbox.bind("<Escape>", lambda e: popup.destroy())
-        listbox.focus_set()
+    # def update_item(self):
+    #     """선택한 항목의 값 업데이트"""
+    #     selection = self.listbox.curselection()
+    #     if selection:
+    #         item_text = self.listbox.get(selection[0])
+    #         key = item_text.split(" : ")[0]
+    #         if key in self.data:
+    #             self.data[key] = self.data[key] + " (수정됨)"
+    #         self.refresh_listbox()

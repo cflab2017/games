@@ -72,9 +72,8 @@ class socketServer():
             'date':None},
     }
     
-    infor = {
-        # '최고점수':high_score_dict
-        }
+    infor = {}
+    users = {}
     
     def __init__(self,ed_input,host):
         # print('>> Server Start 버전02')     
@@ -144,7 +143,9 @@ class socketServer():
                             if 'name' in self.high_score_dict[key]:
                                 name = self.high_score_dict[key]['name']
                                 if name is not None and len(name)>10:
-                                    self.high_score_dict[key]['name'] = name[0:10]                            
+                                    self.high_score_dict[key]['name'] = name[0:10]   
+                                    
+                                self.update_store_users_dic('r', name)
                     # self.infor.update({'최고점수' : self.high_score_dict})      
                     # print(self.high_score_dict)              
         
@@ -154,6 +155,18 @@ class socketServer():
                 pickle.dump(self.high_score_dict,fw)
                 # print('최고점수')
                 # print(self.high_score_dict)
+    
+    
+    def update_store_users_dic(self, state, name):
+        filename = f'./users/user_{name}.pickle'
+        if state == 'r':
+            if os.path.isfile(filename): #불러올 파일이 있는가?
+                with open(filename, 'rb') as fr:
+                    users_dict = pickle.load(fr) #딕셔너리로 변환
+                    self.users[name] =   users_dict
+        if state == 'w':  
+            with open(filename, 'wb') as fw:
+                pickle.dump(self.users[name],fw)
                 
     def add_infor(self, identity):
         identity = int(identity)
@@ -261,6 +274,26 @@ class socketServer():
     
     # def handler_exec(signum, frame):
     #     raise TimeoutError("Execution timed out!")
+    def send_to_levels_client(self, client,name, level):
+        levels = []
+        code = ''
+        if name in self.users:
+            for lev in self.users[name]:
+                levels.append(lev)
+            if level>0 and level in self.users[name]:
+                code = self.users[name][level]['code']
+        
+        json_object = {
+            'levels':{
+                'level':levels,
+                'code':code,
+                }
+            }
+        # print(json_object)
+        self.response = None
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        client.sendall(json_string.encode())
+            
     def send_to_level_client(self, client,name, level):
                             
         json_object = {
@@ -315,6 +348,9 @@ class socketServer():
                 # print(f"클라이언트에서 받은 메세지 : {data}")
                 
                 values = json.loads(data)
+                if 'levels' in values:
+                    self.send_to_levels_client(client_socket,name,values['levels'])
+                        
                 if 'ranking' in values:
                     self.send_infor_to_all(client_socket)
                 if 'sign' in values:

@@ -107,10 +107,14 @@ class PythonEditor:
 #########################################################################
 
         self.ed_input.set_bind_output(self.ed_output)
+        self.ed_input.set_client(self.client)
+        
         self.ed_output.set_bind_input(self.ed_input)
+        self.ed_output.set_client(self.client)
+        
+        self.toolbar.set_bind_input(self.ed_input)
         self.toolbar.set_bind_output(self.ed_output,self.name)
         
-        self.ed_output.set_client(self.client)
         
         self.client.set_bind_output(self.ed_output)
         self.client.set_bind_content(self.ed_content)
