@@ -138,12 +138,20 @@ class socketServer():
                 with open(filename, 'rb') as fr:
                     login_dict = pickle.load(fr)
                     self.login_dict =  login_dict
+                    
+                high_names = [item['name'] for item in self.high_score_dict.values() if item['name'] is not None]
+                
+                # print(high_names)
                 names = []
                 for name in self.login_dict:
                     if self.login_dict[name] is None:
                         names.append(name)
+                    elif name not in high_names:
+                        names.append(name)
+                        
                 for name in names:
                     del self.login_dict[name]
+                print(self.login_dict)
         if state == 'w':  
             with open(filename, 'wb') as fw:
                 pickle.dump(self.login_dict,fw)
