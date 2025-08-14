@@ -15,10 +15,8 @@ from login.account import *
 class PythonEditor:
     from login.account import Account
     
-    def __init__(self, root, host= None):
-        self.root = root
-        root.geometry("1800x860")
-        self.root.title("코딩나우 코딩연습")    
+    def __init__(self, host= None):
+           
         # self.bg_image = tk.PhotoImage(file="./images/bg2.png")
         
         self.font_size = 20
@@ -33,6 +31,10 @@ class PythonEditor:
         self.name, self.isRun = account.run(self.client)
         if self.isRun == False:
             return
+
+        self.root = tk.Tk()
+        self.root.geometry("1800x860")
+        self.root.title("코딩나우 코딩연습") 
 #########################################################################        
         self.frame0=tk.Frame(self.root,relief="solid", bd=1)
         self.frame0.pack(padx=10, pady=(10, 0), fill="both")
@@ -157,7 +159,6 @@ class PythonEditor:
         popup.after(duration, popup.destroy)
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = PythonEditor(root)
+    app = PythonEditor()
     if app.isRun:
-        root.mainloop()
+        app.root.mainloop()

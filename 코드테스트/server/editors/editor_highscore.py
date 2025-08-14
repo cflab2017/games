@@ -58,6 +58,7 @@ class EditorHighScore:
         self.context_menu = Menu(self.frame, tearoff=0)
         self.context_menu.add_command(label="코드제출", command=self.menu_action_level)
         self.context_menu.add_separator()
+        self.context_menu.add_command(label="비밀번호 초기화", command=self.menu_action_remove_password)
         self.context_menu.add_command(label="삭제", command=self.menu_action_remove)
         
         self.listbox.bind('<<ListboxSelect>>', self.on_select)
@@ -73,8 +74,12 @@ class EditorHighScore:
         self.listbox.delete(0, tk.END)  # 기존 항목 제거
         # self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
         self.high_score_dict = data
+        keys = list(self.high_score_dict.keys())
+        keys.sort()
         
-        for key, value in self.high_score_dict.items():
+        
+        for key in keys:
+            value = self.high_score_dict[key]
             if value['name'] is not None:
                 self.listbox.insert(tk.END, f" {key+1}. [{value['date']}] [레벨: {value['score']:03}] [{value['name']}]")
 
@@ -210,10 +215,23 @@ class EditorHighScore:
             #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")
             # else:
             #     messagebox.showwarning("입력 취소", "숫자 입력이 취소되었습니다.")
-         
+            
+    def menu_action_remove_password(self): 
+        if self.check_password('0000') is False:
+            return       
+        selection = self.listbox.curselection()
+        if selection:
+            value = self.listbox.get(selection[0])
+            value = str(value).replace(']','').split("[")
+            # print(f"{value}")
+            name = value[3]
+            if name in self.parent.server.login_dict:
+                del self.parent.server.login_dict[name]
+                self.parent.server.update_login_dic('w')
+            
     def menu_action_remove(self):
         
-        if self.check_password('4321') is False:
+        if self.check_password('0000') is False:
             return
             
         selection = self.listbox.curselection()

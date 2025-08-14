@@ -14,6 +14,7 @@ class socketClient():
         self.parent = parent 
         self.identity = None
         self.name = None
+        self.password_ok = 0
         self.response = None
         self.ed_ranking = None
         if host == None:
@@ -66,10 +67,11 @@ class socketClient():
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         self.client_socket.sendall(json_string.encode())
         
-    def send_request_sign(self, name):        
+    def send_request_sign(self, name, password):        
         json_object = {
             'sign':{
                 'name':name,
+                'password':password,
                 }
             }
         self.response = None
@@ -103,7 +105,7 @@ class socketClient():
     def recv_data(self,client_socket):
         while True:
             try:
-                data = client_socket.recv(1024).decode()
+                data = client_socket.recv(4096).decode()
                 # print(f"{data}")
                 server_infor = json.loads(data)    
                 # print(server_infor)     
@@ -113,6 +115,7 @@ class socketClient():
                         self.name = server_infor['sign']['name']
                         self.response = server_infor['sign']  
                         self.parent.last_level = server_infor['sign']['last']
+                        self.password_ok = server_infor['sign']['password_ok']
                         # self.ed_input.clear_msg()
                         # self.ed_input.add_msg("#코드를 여기에 작성하세요")
                 elif 'levels' in server_infor:   

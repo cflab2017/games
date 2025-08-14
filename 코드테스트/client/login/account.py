@@ -5,6 +5,8 @@ import pygame.time
 import pygame.font
 import random
 import re
+import tkinter as tk
+from tkinter import simpledialog
 
 class Account():
     from commu.client import socketClient
@@ -21,7 +23,39 @@ class Account():
         img_bg = pygame.image.load('./images/bg1.jpg')
         self.img_bg = pygame.transform.scale(img_bg,(self.screen.get_width(), self.screen.get_height()))
         self.cursor_tick = pygame.time.get_ticks()
+
+    
+    def popup_input(self,prompt="비밀번호를 입력하세요:"):
+        def on_ok(event=None):
+            nonlocal value
+            value = entry.get()
+            win.destroy()
+
+        value = None
+        win = tk.Tk()
+        # 화면 크기 구하기
+        screen_width = win.winfo_screenwidth()
+        screen_height = win.winfo_screenheight()
+
+        # 팝업 크기 예상값 (약 300x100)
+        popup_w, popup_h = 300, 100
+        x = (screen_width // 2) - (popup_w // 2)
+        y = (screen_height // 2) - (popup_h // 2)
         
+        win.geometry(f"300x100+{x}+{y}")  # 위치 지정
+        win.title("비밀번호")
+
+        tk.Label(win, text=prompt).pack(pady=5)
+        entry = tk.Entry(win)
+        entry.pack(pady=5)
+        entry.focus()
+        entry.bind("<Return>", on_ok)
+
+        tk.Button(win, text="확인", command=on_ok).pack(pady=5)
+
+        win.mainloop()
+        return value
+
     def contains_special_char(self,text):
         # 특수문자 정규표현식: 영어, 숫자, 공백을 제외한 나머지
         # return bool(re.search(r'[^a-zA-Z0-9\s]', text))
@@ -88,13 +122,21 @@ class Account():
             self.display_box()
             pygame.display.update() #화면 갱신
             if self.isRun == False:
-                client.send_request_sign(self.msg_inbox)
+                self.password = self.popup_input()
+                
+                client.send_request_sign(self.msg_inbox,self.password)
                 while client.response == None:
                     pygame.time.wait(100)
                 if client.name == None:
                     self.isRun = True
                     self.lable = '같은 ID가 게임 중입니다.'      
                     self.msg_inbox = '' 
+                if client.password_ok == 0:
+                    self.isRun = True
+                    self.lable = '비밀번호가 다릅니다.'      
+                    self.msg_inbox = '' 
             self.clock.tick(100)          
         pygame.quit()  
         return self.msg_inbox,True
+
+

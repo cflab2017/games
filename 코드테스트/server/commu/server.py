@@ -29,51 +29,10 @@ class socketServer():
     #     }
     
     user_file_name = 'user_score.pickle'
-    high_score_dict = {
-        0:{
-            'name':None,
-            'score':0,
-            'date':None},
-        1:{
-            'name':None,
-            'score':0,
-            'date':None},
-        2:{
-            'name':None,
-            'score':0,
-            'date':None},
-        3:{
-            'name':None,
-            'score':0,
-            'date':None},
-        4:{
-            'name':None,
-            'score':0,
-            'date':None},
-        5:{
-            'name':None,
-            'score':0,
-            'date':None},
-        6:{
-            'name':None,
-            'score':0,
-            'date':None},
-        7:{
-            'name':None,
-            'score':0,
-            'date':None},
-        8:{
-            'name':None,
-            'score':0,
-            'date':None},
-        9:{
-            'name':None,
-            'score':0,
-            'date':None},
-    }
-    
+    high_score_dict = {}
     infor = {}
     users = {}
+    login_dict = {}
     
     def __init__(self,ed_input,host):
         # print('>> Server Start 버전02')     
@@ -81,7 +40,12 @@ class socketServer():
             self.HOST = self.get_host_ip()     
         else:
             self.HOST = host
-        self.update_store_dic('r')                      
+        
+        for i in range(1,21):
+            self.high_score_dict[i] = {'name':None, 'score':0, 'date':None}  
+        self.update_store_dic('r')
+        self.update_login_dic('r')
+        
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT))
@@ -155,8 +119,7 @@ class socketServer():
                 pickle.dump(self.high_score_dict,fw)
                 # print('최고점수')
                 # print(self.high_score_dict)
-    
-    
+        
     def update_store_users_dic(self, state, name):
         filename = f'./users/user_{name}.pickle'
         if state == 'r':
@@ -167,6 +130,17 @@ class socketServer():
         if state == 'w':  
             with open(filename, 'wb') as fw:
                 pickle.dump(self.users[name],fw)
+                        
+    def update_login_dic(self,state):
+        filename = f'./users/login.pickle'
+        if state == 'r':
+            if os.path.isfile(filename):
+                with open(filename, 'rb') as fr:
+                    login_dict = pickle.load(fr)
+                    self.login_dict =  login_dict
+        if state == 'w':  
+            with open(filename, 'wb') as fw:
+                pickle.dump(self.login_dict,fw)
                 
     def add_infor(self, identity):
         identity = int(identity)
@@ -348,18 +322,39 @@ class socketServer():
                     self.send_infor_to_all(client_socket)
                 if 'sign' in values:
                     name = values['sign']['name']
+                    password = values['sign']['password']
                     name = self.check_same_name(identity,name)
+                    print(self.login_dict)
+                    
+                    password_ok = 1
+                    if name is not None:
+                        if name in self.login_dict:
+                            if self.login_dict[name] != password:
+                                password_ok = 0
+                                print(name,':',self.login_dict[name])
+                        else:
+                            self.login_dict[name] = password
+                    else:
+                        password_ok = 0
+                            
                     response = {
                         'sign':{
                             'identity':identity,
                             'name':name,
                             'last':self.last,
+                            'password_ok':password_ok
                             }
                         }
-                    self.infor[identity]['name'] = name
-                    self.infor[identity]['exec'].name = name
-                    json_string = json.dumps(response)
-                    client_socket.send(json_string.encode())
+                    
+                    # print(response)
+                    
+                    if name is not None:
+                        self.infor[identity]['name'] = name
+                        self.infor[identity]['exec'].name = name
+                        self.update_login_dic('w')
+                    
+                    json_string = json.dumps(response, ensure_ascii=False, default=str)
+                    client_socket.sendall(json_string.encode())
                     self.send_infor_to_all()
                 
                 if 'request' in values:
