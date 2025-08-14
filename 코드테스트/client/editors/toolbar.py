@@ -43,7 +43,7 @@ class ToolBar:
         run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
         
-        run_btn = tk.Button(self.frame, text="▶ 코드가져오기", command=self.ed_input.get_user_code)
+        run_btn = tk.Button(self.frame, text="▶ 제출한 코드 확인하기", command=self.ed_input.get_user_code)
         run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
         run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')

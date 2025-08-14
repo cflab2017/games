@@ -72,7 +72,29 @@ class CodeExec:
                     return mu
         
         return None
-       
+    
+    def check_not_used(self,level,code):
+        
+        if 'nused' not in Questions.que[level-1]:
+            return None
+        
+        code_lines = code.replace(' ', '')
+        # code_lines = code_lines.split('\n')
+        
+        for nused in Questions.que[level-1]['nused']:
+            if nused in code_lines:
+                return nused        
+        return None
+    # def check_not_used(self,level,code):
+        
+    #     code_lines = code.replace(' ', '')
+    #     code_lines = code_lines.split('\n')
+        
+    #     for nused in Questions.que[level-1]['nused']:
+    #         for line in code_lines:
+    #             if nused in line:
+    #                 return nused        
+    #     return None
             
     def check_list(self, inputs):        
         if len(inputs) > 0:
@@ -97,8 +119,11 @@ class CodeExec:
             self.level = start_level
         else:
             mu = self.check_must(level, code)
+            used = self.check_not_used(level, code)
             if mu is not None:
                 result = f'실패 (반드시 사용되어야 하는 것 :{mu})'
+            elif used is not None:
+                result = f'실패 (사용하면 안되는 것 :{used})'
             else:
                 output = []
                 

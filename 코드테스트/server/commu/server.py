@@ -264,14 +264,7 @@ class socketServer():
             print("연결된 수 : ", len(self.client_sockets))            
             
             start_new_thread(self.thread_client, (client_socket, addr[1])) #클라이언트 쓰레드 생성
-            
-    def check_must(self,level, code):
-        for mu in Questions.que[level-1]['must']:
-            if mu not in code:
-                return mu
         
-        return None
-    
     # def handler_exec(signum, frame):
     #     raise TimeoutError("Execution timed out!")
     def send_to_levels_client(self, client,name, level):
