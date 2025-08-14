@@ -5,7 +5,7 @@ import traceback
 
 import sys
 import queue
-
+import copy
 import pickle
 import os.path
 import datetime as dt
@@ -40,9 +40,11 @@ class socketServer():
             self.HOST = self.get_host_ip()     
         else:
             self.HOST = host
-        
-        for i in range(1,21):
+            
+        self.high_max = 20
+        for i in range(0,self.high_max):
             self.high_score_dict[i] = {'name':None, 'score':0, 'date':None}  
+            
         self.update_store_dic('r')
         self.update_login_dic('r')
         
@@ -110,7 +112,10 @@ class socketServer():
                                     self.high_score_dict[key]['name'] = name[0:10]   
                                     
                                 self.update_store_users_dic('r', name)
-                    # self.infor.update({'최고점수' : self.high_score_dict})      
+                    self.high_score_refresh()
+
+                                
+                # self.infor.update({'최고점수' : self.high_score_dict})      
                     # print(self.high_score_dict)              
         
         if state == 'w':  
@@ -119,7 +124,40 @@ class socketServer():
                 pickle.dump(self.high_score_dict,fw)
                 # print('최고점수')
                 # print(self.high_score_dict)
-        
+                
+    def high_score_refresh(self):
+        is_change = False
+        none_cnt = -1
+        for key in range(self.high_max):
+                if key not in  self.high_score_dict:
+                    self.high_score_dict[key] = {'name':None, 'score':0, 'date':None}
+                    is_change = True
+                if self.high_score_dict[key]['name'] == None:
+                    if none_cnt == -1:
+                        none_cnt = key                
+        if none_cnt > -1:  
+            cnt =  none_cnt                         
+            for key in range(none_cnt+1,self.high_max):
+                if self.high_score_dict[key]['name'] is not None:
+                    self.high_score_dict[cnt] = copy.deepcopy(self.high_score_dict[key])
+                    self.high_score_dict[key] = {'name':None, 'score':0, 'date':None}
+                    cnt += 1
+                    is_change = True
+                    
+        if len(self.high_score_dict) >= self.high_max:
+            keys = []
+            for key in self.high_score_dict:
+                if key >= self.high_max:
+                    keys.append(key)
+            for key in keys:
+                del self.high_score_dict[key]
+                is_change = True
+                
+        if is_change:
+            self.update_store_dic('w')
+        # print(self.high_score_dict)  
+            
+              
     def update_store_users_dic(self, state, name):
         filename = f'./users/user_{name}.pickle'
         if state == 'r':

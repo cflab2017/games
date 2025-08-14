@@ -133,7 +133,19 @@ class EditorHighScore:
         self.code_sel_name = name
         popup = tk.Toplevel(self.parent.root)
         popup.title(f"{name}님의 코드 제출 결과")
-        popup.geometry("800x800")
+        
+                # 화면 크기 구하기
+        screen_width = self.parent.root.winfo_screenwidth()
+        screen_height = self.parent.root.winfo_screenheight()
+
+        # 팝업 크기 예상값 (약 300x100)
+        popup_w, popup_h = 300, 100
+        x = (screen_width // 2) - (popup_w // 2)
+        y = (screen_height // 2) - (popup_h // 2)
+        
+        popup.geometry(f"800x800+{x}+{y}")  # 위치 지정
+        
+        
         popup.attributes('-topmost', True)
 
         # 좌측 Listbox
@@ -247,12 +259,10 @@ class EditorHighScore:
                 for key in self.high_score_dict:
                     if self.high_score_dict[key]['name'] == name:
                         del self.high_score_dict[key]
-                        last_key = list(self.high_score_dict.keys())[-1]
-                        for i in range(key, last_key):
-                            # print(f"i: {i}, last_key: {last_key}")
-                            self.high_score_dict[i] = self.high_score_dict.pop(i + 1)
+                        
+                        self.parent.server.high_score_refresh()
                         self.refresh_listbox(self.high_score_dict)
-                        self.parent.server.update_store_dic('w')
+                        
                         break
             except Exception as e:
                 print(f"Error: {e}")
