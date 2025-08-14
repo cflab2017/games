@@ -129,18 +129,27 @@ class Account():
             pygame.display.update() #화면 갱신
             if self.isRun == False:
                 self.password = self.popup_input()
-                
-                client.send_request_sign(self.msg_inbox,self.password)
-                while client.response == None:
-                    pygame.time.wait(100)
-                if client.name == None:
+                if self.contains_special_char(self.password):
+                    self.lable = '특수문자는 입력 할 수 없어요.'  
                     self.isRun = True
-                    self.lable = '같은 ID가 게임 중입니다.'      
-                    self.msg_inbox = '' 
-                if client.password_ok == 0:
+                elif len(self.password.replace(" ","")) <= 1:
+                    self.lable = '한글자 이상 입력하세요.'   
                     self.isRun = True
-                    self.lable = '비밀번호가 다릅니다.'      
-                    # self.msg_inbox = '' 
+                elif len(self.password) > 10:
+                    self.lable = '너무 긴 비밀번호는 입력 할 수 없어요' 
+                    self.isRun = True
+                else:                  
+                    client.send_request_sign(self.msg_inbox,self.password)
+                    while client.response == None:
+                        pygame.time.wait(100)
+                    if client.name == None:
+                        self.isRun = True
+                        self.lable = '같은 ID가 게임 중입니다.'      
+                        self.msg_inbox = '' 
+                    if client.password_ok == 0:
+                        self.isRun = True
+                        self.lable = '비밀번호가 다릅니다.'      
+                        # self.msg_inbox = '' 
             self.clock.tick(100)          
         pygame.quit()  
         return self.msg_inbox,True

@@ -138,6 +138,9 @@ class socketServer():
                 with open(filename, 'rb') as fr:
                     login_dict = pickle.load(fr)
                     self.login_dict =  login_dict
+                    for name in self.login_dict:
+                        if self.login_dict[name] is None:
+                            del self.login_dict[name]
         if state == 'w':  
             with open(filename, 'wb') as fw:
                 pickle.dump(self.login_dict,fw)
