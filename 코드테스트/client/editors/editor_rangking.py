@@ -80,12 +80,15 @@ class EditorRanking:
         self.high_score_dict = data
         # print(self.high_score_dict)
         keys = list(self.high_score_dict.keys())
-        keys.sort()        
+        keys = [int(key) for key in keys]
+        keys.sort()
+        keys = [str(key) for key in keys]
+        print(keys)
         
         for key in keys:
             value = self.high_score_dict[key]
             if value['name'] is not None:
-                self.text.insert(tk.END, f" {int(key)+1}. [레벨: {int(value['score']):02}] [{value['name']}]\n")
+                self.text.insert(tk.END, f" {int(key)+1:02}. [레벨: {int(value['score']):02}] [{value['name']}]\n")
         self.text.config(state="disabled")
         
     def scroll_text(self):
