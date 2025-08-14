@@ -33,6 +33,7 @@ class Account():
 
         value = None
         win = tk.Tk()
+
         # 화면 크기 구하기
         screen_width = win.winfo_screenwidth()
         screen_height = win.winfo_screenheight()
@@ -53,6 +54,11 @@ class Account():
 
         tk.Button(win, text="확인", command=on_ok).pack(pady=5)
 
+        win.lift()
+        win.focus_force()
+        win.after(50, lambda: entry.focus())
+        entry.focus()                  # 포커스 주기 (필요 시)
+        
         win.mainloop()
         return value
 
@@ -134,7 +140,7 @@ class Account():
                 if client.password_ok == 0:
                     self.isRun = True
                     self.lable = '비밀번호가 다릅니다.'      
-                    self.msg_inbox = '' 
+                    # self.msg_inbox = '' 
             self.clock.tick(100)          
         pygame.quit()  
         return self.msg_inbox,True

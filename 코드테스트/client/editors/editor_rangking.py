@@ -79,8 +79,11 @@ class EditorRanking:
         # self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
         self.high_score_dict = data
         # print(self.high_score_dict)
+        keys = list(self.high_score_dict.keys())
+        keys.sort()        
         
-        for key, value in self.high_score_dict.items():
+        for key in keys:
+            value = self.high_score_dict[key]
             if value['name'] is not None:
                 self.text.insert(tk.END, f" {int(key)+1}. [레벨: {int(value['score']):02}] [{value['name']}]\n")
         self.text.config(state="disabled")
