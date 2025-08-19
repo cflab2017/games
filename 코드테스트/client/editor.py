@@ -19,10 +19,12 @@ class PythonEditor:
            
         # self.bg_image = tk.PhotoImage(file="./images/bg2.png")
         
-        self.font_size = 20
+        self.font_size = 15
         
         self.level = 1   
         self.last_level = 0
+        self.Challenge = 0
+        self.Challenge_time = 30
 
         self.client = socketClient(self,host)
         # cli.run()
@@ -123,7 +125,7 @@ class PythonEditor:
         self.client.set_bind_input(self.ed_input)
         self.client.set_bind_Ranking(self.ed_ranking)
         
-        self.client.send_request('start')
+        self.client.send_request_code('start')
         self.client.send_request_ranking()
         
      

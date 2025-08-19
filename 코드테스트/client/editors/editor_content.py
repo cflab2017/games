@@ -58,7 +58,7 @@ class EditorContent:
     def clear_msg(self,):
         self.text.config(state="normal")
         self.text.delete("1.0", tk.END)
-        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level} / {self.parent.last_level}]\n", "title")
+        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level} / {self.parent.last_level-1}]\n", "title")
         
         self.text.config(state="disabled")
         

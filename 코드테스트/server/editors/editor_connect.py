@@ -115,17 +115,24 @@ class EditorConnect:
         self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
         # print(self.data)
         for key, value in self.data.items():
-            self.listbox.insert(tk.END, f" [{value['name']}] : 레벨{value['level']}")
+            self.listbox.insert(tk.END, f" [{value['name']}] : 레벨{value['level']} {value['Challenge']}")
 
-    def update_item(self,key,name,level):
-        """새 항목 추가"""
-        if key in self.data:
-            self.data[key]['level'] = level
+    def update_item(self,key,name,level,Challenge):
+        if Challenge:
+            Challenge = '도전'
         else:
+            Challenge = '연습'
+            
+        if key not in self.data:
             self.data[key] = {
                 'name':name,
-                'level':level
+                'level':level,
+                'Challenge':Challenge
             }
+        
+        self.data[key]['level'] = level
+        self.data[key]['Challenge'] = Challenge
+        # print(self.data[key])
         self.refresh_listbox()
 
     def delete_item(self,key):

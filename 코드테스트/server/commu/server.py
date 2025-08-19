@@ -189,7 +189,7 @@ class socketServer():
                         
                 for name in names:
                     del self.login_dict[name]
-                print(self.login_dict)
+                # print(self.login_dict)
         if state == 'w':  
             with open(filename, 'wb') as fw:
                 pickle.dump(self.login_dict,fw)
@@ -312,53 +312,102 @@ class socketServer():
         self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         client.sendall(json_string.encode())
-            
-    def send_to_level_client(self, client,name, level):
+        
+    def get_answ_from_Questions(self,level):        
+        answ = []
+        if Questions.que[level-1]['answ_in'] is not None:
+            answ_in = Questions.que[level-1]['answ_in']
+            if isinstance(answ_in[0], list):
+                for i,an in enumerate(answ_in):
+                    for k in an:
+                        answ.append(k)
+                        
+                    if isinstance(Questions.que[level-1]['answ'][i], list):
+                        for k in Questions.que[level-1]['answ'][i]:
+                            answ.append(k)
+                    else:
+                        answ.append(Questions.que[level-1]['answ'][i])
+                    if i < len(answ_in)-1:
+                        answ.append('')
+                        answ.append('######## 또는 ######## ')
+                        answ.append('')
+            else:
+                answ.append(answ_in)
+                answ.append(Questions.que[level-1]['answ'][0])
+        else:
+            answ = Questions.que[level-1]['answ']
+        return answ
+        
+    def send_to_level_client(self, client,name, level,result=''):
                             
+        challenge_time = self.ed_toolbar.get_challenge_time()
         json_object = {
             'response':{
                 'name':name,
                 'level':level,
-                'result':'',
+                'challenge_time':challenge_time,
+                'result':result,
                 'last':self.last,
-                'question':Questions.que[level-1]['ques']
+                'question':Questions.que[level-1]['ques'],
+                'hint':Questions.que[level-1]['hint'],
+                'answ':self.get_answ_from_Questions(level),
                 }
             }
         # print(json_object)
         self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         client.sendall(json_string.encode())
-            
-    def send_to_client(self, client, values,identity,start_level):
+    
+    def save_to_file_user_code(self,name,level,code):        
+        if name not in self.users:
+            self.users[name] = {}
+        self.users[name][level] = {}
+        self.users[name][level]['code'] = code
+        self.update_store_users_dic('w', name)
+                
+    def send_to_client(self, client, values,identity):
         if 'request' in values:
             name = values['request']['name']
             level = values['request']['level']
             code = values['request']['code']
+            Challenge = values['request']['Challenge']
             
-            result,level = self.infor[identity]['exec'].run(code,level,start_level)
-                            
-            json_object = {
-                'response':{
-                    'name':name,
-                    'level':level,
-                    'result':result,
-                    'last':self.last,
-                    'question':Questions.que[level-1]['ques']
-                    }
-                }
-            self.response = None
-            # print(json_object)
-            json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-            client.sendall(json_string.encode())
+            # challenge_time = self.ed_toolbar.get_challenge_time()
+            if code == 'start':
+                level_next = self.ed_toolbar.get_level()
+                result = '시작'
+            else:            
+                result,level_next, level_up = self.infor[identity]['exec'].run(code,level)
+                
+                if level_up:                
+                    self.save_to_file_user_code(name,level,code)
+                    self.ed_connect.update_item(identity,name,level_next,Challenge)
+                    if Challenge:
+                        self.score_sort(name,level_next)
+            
+            self.send_to_level_client(client,name,level_next,result)
+                
+            # json_object = {
+            #     'response':{
+            #         'name':name,
+            #         'level':level_next,
+            #         'challenge_time':challenge_time,
+            #         'result':result,
+            #         'last':self.last,
+            #         'question':Questions.que[level_next-1]['ques'],
+            #         'hint':Questions.que[level_next-1]['hint'],
+            #         'answ':self.get_answ_from_Questions(level_next),
+            #         }
+            #     }
+            # self.response = None
+            # # print(json_object)
+            # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+            # client.sendall(json_string.encode())
             
     
     #접속된 client마다 각각 쓰레드가 생성된다.
     def thread_client(self,client_socket, identity):
         name = None
-        try:
-            start_level = int(self.ed_toolbar.get_level())
-        except Exception as ex:
-            start_level = 1
             
         self.add_infor(identity)
         while True:
@@ -376,7 +425,7 @@ class socketServer():
                     name = values['sign']['name']
                     password = values['sign']['password']
                     name = self.check_same_name(identity,name)
-                    print(self.login_dict)
+                    # print(self.login_dict)
                     
                     password_ok = 1
                     if name is not None:
@@ -403,6 +452,7 @@ class socketServer():
                     if name is not None:
                         self.infor[identity]['name'] = name
                         self.infor[identity]['exec'].name = name
+                        self.infor[identity]['Challenge'] = False                        
                         self.update_login_dic('w')
                     
                     json_string = json.dumps(response, ensure_ascii=False, default=str)
@@ -412,9 +462,12 @@ class socketServer():
                 if 'request' in values:
                     name = values['request']['name']                    
                     level = values['request']['level']
+                    Challenge = values['request']['Challenge']
+                    self.infor[identity]['Challenge'] = Challenge
                     # self.ed_input.add_msg(name)
-                    self.ed_connect.update_item(identity,name,level)                    
-                    self.send_to_client(client_socket,values,identity,start_level)
+                    # print(values)
+                    self.ed_connect.update_item(identity,name,level,Challenge)                    
+                    self.send_to_client(client_socket,values,identity)
                 # print(values)
                 # self.send_infor_to_all()
                         

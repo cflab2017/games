@@ -78,15 +78,17 @@ class socketClient():
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         self.client_socket.sendall(json_string.encode())
         
-    def send_request(self, code, input_list=[]):        
+    def send_request_code(self, code, input_list=[],Challenge=0):        
         json_object = {
             'request':{
                 'name':self.name,
                 'level':self.parent.level,
                 'code':code,
                 'input':input_list,
+                'Challenge':Challenge
                 }
             }
+        # print(json_object)
         self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         self.client_socket.sendall(json_string.encode())
@@ -166,21 +168,25 @@ class socketClient():
                         
                     self.content.clear_msg()
                     msg = '\n'
-                    # msg = '============================\n'
-                    # msg += f"\t\t 레벨 : [ {self.parent.level} ]\n"
-                    # msg += '============================\n'
                     self.content.add_msg(str(msg))
+                    
+                    self.parent.Challenge_time = server_infor['response']['challenge_time']
+                    
+                    # print(server_infor['response'])
                     for msg in server_infor['response']['question']:
-                        msg = str(msg)
-                        if msg.find('힌트')>-1:
-                            self.content.add_msg('\n')
-                            self.content.add_highlight('힌트')
-                            self.content.add_msg('\n')
-                        elif msg.find('출력 결과')>-1:
-                            self.content.add_msg('\n')
-                            self.content.add_highlight('아래와 같이 출력하세요.')
-                            self.content.add_msg('\n')
-                        else:
+                        self.content.add_msg(str(msg))
+                            
+                            
+                    self.content.add_msg('\n')
+                    self.content.add_highlight('아래와 같이 출력하세요.')
+                    self.content.add_msg('\n')
+                    for msg in server_infor['response']['answ']:
+                            self.content.add_msg(str(msg))
+                            
+                    self.content.add_msg('\n')
+                    self.content.add_highlight('힌트')
+                    self.content.add_msg('\n')
+                    for msg in server_infor['response']['hint']:
                             self.content.add_msg(str(msg))
                 # print(f"서버메세제:{server_infor}")
             except Exception:

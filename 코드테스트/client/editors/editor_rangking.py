@@ -22,10 +22,12 @@ class EditorRanking:
         
         color = self.rgb_to_hex(208,223,211) 
         color_font = self.rgb_to_hex(36,53,40) 
+        color_font2 = self.rgb_to_hex(69,129,69) 
         
         self.scroll_text()
         self.text.tag_configure("title", font=("malgungulim", 20,'bold'), foreground=color_font, background=color,justify='center')   
         self.text.tag_configure("highlight", font=("malgungulim", 20,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("myname", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color_font2,justify='left')   
         
         self.text.bind('<Shift-Return>', self.ignore_a_key)  
         self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
@@ -83,12 +85,16 @@ class EditorRanking:
         keys = [int(key) for key in keys]
         keys.sort()
         keys = [str(key) for key in keys]
-        print(keys)
+        # print(keys)
         
         for key in keys:
             value = self.high_score_dict[key]
             if value['name'] is not None:
-                self.text.insert(tk.END, f" {int(key)+1:02}. [레벨: {int(value['score']):02}] [{value['name']}]\n")
+                msg = f" {int(key)+1:02}. [레벨: {int(value['score']):02}] [{value['name']}]\n"
+                if self.parent.name == value['name']:
+                    self.text.insert(tk.END, msg, "myname")
+                else:
+                    self.text.insert(tk.END, msg)
         self.text.config(state="disabled")
         
     def scroll_text(self):

@@ -120,7 +120,7 @@ class EditorOutput:
             self.add_msg('')
             # self.add_highlight('서버로 코드를 전송합니다.')
             self.parent.show_popup("코드가 서버로 전송되었습니다.", duration=1000)
-            self.client.send_request(code,self.input_list)
+            self.client.send_request_code(code,self.input_list,self.parent.Challenge)
             return
         color = self.rgb_to_hex(47,47,47)
         self.text.configure(foreground="white", background=color)

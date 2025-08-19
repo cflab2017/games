@@ -108,45 +108,39 @@ class CodeExec:
             return True
         return False
             # lst = [x for x in lst if x != value]
-        
-    def run(self, code:str,level:int,start_level:int):
+            
+    def check_line_same(self,output,cnt, line):
+        result = None
+        while output[cnt] == '\n':
+            cnt += 1
+                
+        if str(output[cnt]).replace(' ', '') != str(line).replace(' ', ''):
+            result = f'실패\n출력과 결과값이 다릅니다. \n\n출력:[{output[cnt]}]\n정답:[{line}]\n'
+            return False,0,result
+        cnt += 1
+        return True,cnt,result
+                    
+    def run(self, code:str,level:int):
         self.level = level
         self.input_cnt = 0
         
+        next_up = False
         result = '실패'
-        if code == 'start':
-            result = '시작'
-            self.level = start_level
+        
+        mu = self.check_must(level, code)
+        used = self.check_not_used(level, code)
+        if mu is not None:
+            result = f'실패 (반드시 사용되어야 하는 것 :{mu})'
+        elif used is not None:
+            result = f'실패 (사용하면 안되는 것 :{used})'
         else:
-            mu = self.check_must(level, code)
-            used = self.check_not_used(level, code)
-            if mu is not None:
-                result = f'실패 (반드시 사용되어야 하는 것 :{mu})'
-            elif used is not None:
-                result = f'실패 (사용하면 안되는 것 :{used})'
-            else:
-                output = []
-                
-                inputs = Questions.que[level - 1]['input']
-                if self.check_list(inputs):
-                    for input_item in inputs:                            
-                        queue = multiprocessing.Queue()                    
-                        p = multiprocessing.Process(target=run_code_in_process, args=(code,input_item.copy(),queue))
-                        p.start()
-                        p.join(timeout=2)  # 5초 제한
-
-                        if p.is_alive():
-                            print("실행 시간 초과, 프로세스 종료")
-                            p.terminate()
-                            p.join()
-                            
-                        if not queue.empty():
-                            # result = queue.get()
-                            output += str(queue.get()).split('\n')
-                            # print("실행결과:\n", result)
-                else:
-                    queue = multiprocessing.Queue()
-                    p = multiprocessing.Process(target=run_code_in_process, args=(code,inputs.copy(),queue))
+            output = []
+            
+            inputs = Questions.que[level - 1]['input']
+            if self.check_list(inputs):
+                for input_item in inputs:                            
+                    queue = multiprocessing.Queue()                    
+                    p = multiprocessing.Process(target=run_code_in_process, args=(code,input_item.copy(),queue))
                     p.start()
                     p.join(timeout=2)  # 5초 제한
 
@@ -154,53 +148,80 @@ class CodeExec:
                         print("실행 시간 초과, 프로세스 종료")
                         p.terminate()
                         p.join()
-                    
+                        
                     if not queue.empty():
                         # result = queue.get()
-                        output = str(queue.get()).split('\n')
+                        output += str(queue.get()).split('\n')
                         # print("실행결과:\n", result)
+            else:
+                queue = multiprocessing.Queue()
+                p = multiprocessing.Process(target=run_code_in_process, args=(code,inputs.copy(),queue))
+                p.start()
+                p.join(timeout=2)  # 5초 제한
+
+                if p.is_alive():
+                    print("실행 시간 초과, 프로세스 종료")
+                    p.terminate()
+                    p.join()
                 
-                # print(f'level:{self.level}')
-                
-                while self.safe_remove(output, ''):  # 빈 문자열 제거
-                    pass
-                # self.safe_remove(output, '\n')  # 빈 문자열 제거
+                if not queue.empty():
+                    # result = queue.get()
+                    output = str(queue.get()).split('\n')
+                    # print("실행결과:\n", result)
+            
+            # print(f'level:{self.level}')
+            
+            while self.safe_remove(output, ''):  # 빈 문자열 제거
+                pass
+            # self.safe_remove(output, '\n')  # 빈 문자열 제거
+            # print(output)
+            try:
+                cnt =0
                 # print(output)
-                try:
-                    cnt =0
-                    for i,an in enumerate(Questions.que[level-1]['answ']):
-                        while output[cnt] == '\n':
-                            cnt += 1
-                                
-                        if str(output[cnt]).replace(' ', '') != str(an).replace(' ', ''):
-                            result = f'실패 (결과값:{output[i]} != {an})'
-                            break
-                        cnt += 1
+                is_ok = True
+                for i,an in enumerate(Questions.que[level-1]['answ']):
+                    if isinstance(an,list):
+                        for res in an:
+                            is_ok,cnt,result = self.check_line_same(output,cnt,res)
+                            if is_ok == False:
+                                break
                     else:
-                        result = '정답입니다.'
-                        msg = f'{self.name}님이 {level}번 문제를 해결했습니다.'
-                        self.ed_input.add_msg(msg)
+                        is_ok,cnt,result = self.check_line_same(output,cnt,an)
                         
-                        if self.name not in self.parent.users:
-                            self.parent.users[self.name] = {}
-                        self.parent.users[self.name][self.level] = {}
-                        self.parent.users[self.name][self.level]['code'] = code
-                        self.parent.update_store_users_dic('w', self.name)
-                        # print('users:',self.parent.users)
-                        
-                        self.level += 1
-                        self.ed_connect.update_item(self.identity,self.name,self.level)
-                        self.parent.score_sort(self.name,self.level)
-                        
+                    if is_ok == False:
+                        break
+                    # while output[cnt] == '\n':
+                    #     cnt += 1
                             
-                except Exception as ex:
-                    result = f'실패 (결과값:{ex})'
+                    # if str(output[cnt]).replace(' ', '') != str(an).replace(' ', ''):
+                    #     result = f'실패 (결과값:{output[i]} != {an})'
+                    #     break
+                    # cnt += 1
+                else:
+                    result = '정답입니다.'
+                    msg = f'{self.name}님이 {level}번 문제를 해결했습니다.'
+                    self.ed_input.add_msg(msg)
+                    next_up = True
+                    
+                    # if self.name not in self.parent.users:
+                    #     self.parent.users[self.name] = {}
+                    # self.parent.users[self.name][self.level] = {}
+                    # self.parent.users[self.name][self.level]['code'] = code
+                    # self.parent.update_store_users_dic('w', self.name)
+                    # print('users:',self.parent.users)
+                    
+                    self.level += 1
+                    # self.parent.score_sort(self.name,self.level)
+                    
+                        
+            except Exception as ex:
+                result = f'실패 (결과값:{ex})'
                     
                 
         if self.level > len(Questions.que):
             self.level = 1
             
-        return result, self.level   
+        return result, self.level,next_up
 
         
     # def editor_input(self,prompt="입력: "):

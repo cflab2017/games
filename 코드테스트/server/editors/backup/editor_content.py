@@ -135,7 +135,7 @@ class EditorContent:
         if len(codetemp[0])>1 and len(codetemp)>1:
             if codetemp[0][0]==' ':
                 self.text.delete("1.0", "1.1")
-                print('aaaaa')
+                # print('aaaaa')
 
         code = code.rstrip()
         if not code.strip():
