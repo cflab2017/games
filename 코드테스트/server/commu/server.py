@@ -348,6 +348,7 @@ class socketServer():
                 'challenge_time':challenge_time,
                 'result':result,
                 'last':self.last,
+                'section':Questions.que[level-1]['section'],
                 'question':Questions.que[level-1]['ques'],
                 'hint':Questions.que[level-1]['hint'],
                 'answ':self.get_answ_from_Questions(level),
@@ -371,9 +372,12 @@ class socketServer():
             level = values['request']['level']
             code = values['request']['code']
             Challenge = values['request']['Challenge']
-            
+                        
             # challenge_time = self.ed_toolbar.get_challenge_time()
-            if code == 'start':
+            if code == 'train':
+                result = '시작'
+                level_next = level
+            elif code == 'start':
                 level_next = self.ed_toolbar.get_level()
                 result = '시작'
             else:            
@@ -445,16 +449,13 @@ class socketServer():
                             'last':self.last,
                             'password_ok':password_ok
                             }
-                        }
-                    
-                    # print(response)
-                    
+                        }                    
+                    # print(response)                    
                     if name is not None:
                         self.infor[identity]['name'] = name
                         self.infor[identity]['exec'].name = name
                         self.infor[identity]['Challenge'] = False                        
-                        self.update_login_dic('w')
-                    
+                        self.update_login_dic('w')                    
                     json_string = json.dumps(response, ensure_ascii=False, default=str)
                     client_socket.sendall(json_string.encode())
                     self.send_infor_to_all()

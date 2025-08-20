@@ -60,15 +60,19 @@ class CodeExec:
         self.level = 1
             
     def check_must(self,level, code):
+        code_lines = code.replace(' ', '')
         for mu in Questions.que[level-1]['must']:
             if isinstance(mu, list):
                 for m in mu:
-                    if m in code:
+                    # print('==',m)
+                    m = m.replace(' ', '')
+                    if m in code_lines:
                         break
                 else:
                     return mu[0]
             else:
-                if mu not in code:
+                mu = mu.replace(' ', '')
+                if mu not in code_lines:
                     return mu
         
         return None

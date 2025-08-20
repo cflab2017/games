@@ -50,7 +50,6 @@ class EditorOutput:
     #     self.text.insert("insert", " "*4)
     #     # Prevent the default tkinter behaviour
     #     return "break"
-
             
     def on_ctrl_mousewheel(self,event):
         if event.state & 0x0004:  # Ctrl key mask
@@ -75,18 +74,18 @@ class EditorOutput:
     def set_client(self,client):
         self.client = client
 
-    def clear_msg(self,):
+    def clear_msg(self,title_on=True):
         self.text.config(state="normal")
         self.text.delete("1.0", tk.END)
-        self.text.insert(tk.END, f"코드 실행 결과\n", "title")
-        self.text.config(state="disabled")
-        
+        if title_on:
+            self.text.insert(tk.END, f"코드 실행 결과\n", "title")
+        self.text.config(state="disabled")        
+           
         
     def add_highlight(self, msg):
         self.text.config(state="normal")
         self.text.insert(tk.END, msg+"\n", "highlight")
-        self.text.config(state="disabled")
-        
+        self.text.config(state="disabled")        
          
     def add_msg(self,msg):
         self.text.config(state="normal")

@@ -224,7 +224,7 @@ class ToolBar:
                 
             self.parent.level = level   
             # self.parent.last_level = 0
-            self.parent.client.send_request_code('start',Challenge=self.parent.Challenge)
+            self.parent.client.send_request_code('train',Challenge=self.parent.Challenge)
         self.seconds = 0
             
     def btn_Challenge(self):

@@ -127,15 +127,14 @@ class socketClient():
                     if len(code)>0:
                         self.ed_input.add_code_msg(code)
                     else:
-                        self.ed_input.levels_code_list(levels)
-                    
-                    
+                        self.ed_input.levels_code_list(levels)                    
                 elif 'ranking' in server_infor:   
                     # print(server_infor)
                     if self.ed_ranking is not None:
                         self.ed_ranking.refresh_listbox(server_infor['ranking'])
-                elif 'response' in server_infor:                 
-                    self.output.add_msg('\n')   
+                elif 'response' in server_infor:
+                    self.output.clear_msg(title_on=False)                 
+                    # self.output.add_msg('\n')   
                     
                     # msg = '============================\n'
                     # msg += f"\t서버메세지\n"
@@ -156,11 +155,9 @@ class socketClient():
                         self.parent.last_level = server_infor['response']['last']
                         self.ed_input.clear_msg()
                         self.ed_input.add_msg("#코드를 여기에 작성하세요")
-                        self.ed_input.set_focus()
+                        self.ed_input.set_focus()                        
                         
-                        
-                        if msg.find('정답')>-1:
-                            
+                        if msg.find('정답')>-1:                            
                             start_new_thread(self.dingdong,())
                             # self.dingdong()
                             self.parent.show_popup(f'레벨업!! level : {self.parent.level}')
@@ -168,15 +165,13 @@ class socketClient():
                         
                     self.content.clear_msg()
                     msg = '\n'
-                    self.content.add_msg(str(msg))
-                    
+                    self.content.add_msg(str(msg))                    
                     self.parent.Challenge_time = server_infor['response']['challenge_time']
                     
                     # print(server_infor['response'])
                     for msg in server_infor['response']['question']:
                         self.content.add_msg(str(msg))
-                            
-                            
+                                                        
                     self.content.add_msg('\n')
                     self.content.add_highlight('아래와 같이 출력하세요.')
                     self.content.add_msg('\n')
