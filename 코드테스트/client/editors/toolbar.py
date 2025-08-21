@@ -91,11 +91,18 @@ class ToolBar:
         name_label.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font)
         name_label.pack(side="left", fill="none", expand=0, anchor='center',padx=10)
         
-        run_btn = tk.Button(self.frame, text="제출한 코드", command=self.btn_load_code)
+        run_btn = tk.Button(self.frame, text="나의 코드", command=self.btn_load_code)
         run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
         run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
         ToolTip(run_btn, "서버에 등록된 나의 정답을 코드를 확인 할 수 있습니다.")
+        
+        if self.parent.name == 'hyun' or self.parent.name == 'coding':
+            run_btn = tk.Button(self.frame, text="정답 확인", command=self.btn_load_code_correct)
+            run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
+            run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
+            run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
+            ToolTip(run_btn, "정답을 코드를 확인 할 수 있습니다.")
         
         name_label = tk.Label(self.frame, text=f' 접속 : ▶ {name}')        
         name_label.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
@@ -103,11 +110,17 @@ class ToolBar:
         name_label.pack(side="left", fill="none", expand=0, anchor='center',padx=10)
         self.update_timer()
         
+    def btn_load_code_correct(self):
+        # if self.parent.Challenge == 1:
+        #     self.parent.show_popup('도전 중에는 안되요!!',1000)
+        # else:
+        self.parent.get_user_code(True)
+            
     def btn_load_code(self):
         if self.parent.Challenge == 1:
             self.parent.show_popup('도전 중에는 안되요!!',1000)
         else:
-            self.ed_input.get_user_code()
+            self.parent.get_user_code()
             
     def popup_challenge_stop(self,prompt="도전을 중지할까요?"):
 

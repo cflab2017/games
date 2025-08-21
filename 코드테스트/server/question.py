@@ -16,7 +16,10 @@ class Questions:
         'answ_in':None,
         'answ':['hello'], 
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('hello')",
+        ]
         },
         
 #"""----------------- 02  -----------------"""
@@ -32,7 +35,10 @@ class Questions:
         'answ_in':None,
         'answ':['import random'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('import random')",
+        ]
         },
         
 #"""----------------- 03  -----------------"""
@@ -48,7 +54,10 @@ class Questions:
         'answ_in':None,
         'answ':['com = random.randint(0,100)'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('com = random.randint(0,100)')",
+        ]
         },
         
 #"""----------------- 04  -----------------"""
@@ -64,7 +73,10 @@ class Questions:
         'answ_in':None,
         'answ':['import pygame'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('import pygame')",
+        ]
         },
         
 #"""----------------- 05  -----------------"""
@@ -80,7 +92,10 @@ class Questions:
         'answ_in':None,
         'answ':['pygame.init()'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('pygame.init()')",
+        ]
         },
         
 #"""----------------- 06  -----------------"""
@@ -96,7 +111,10 @@ class Questions:
         'answ_in':None,
         'answ':['while True:'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('while True:')",
+        ]
         },
         
 #"""----------------- 07  -----------------"""
@@ -112,7 +130,10 @@ class Questions:
         'answ_in':None,
         'answ':['if a > b:'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('if a > b:')",
+        ]
         },
         
 #"""----------------- 08  -----------------"""
@@ -128,7 +149,10 @@ class Questions:
         'answ_in':None,
         'answ':['for i in range(5):'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('for i in range(5):')",
+        ]
         },
         
 #"""----------------- 09  -----------------"""
@@ -144,7 +168,10 @@ class Questions:
         'answ_in':None,
         'answ':['class Game:'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('class Game:')",
+        ]
         },
         
 #"""----------------- 10  -----------------"""
@@ -160,7 +187,10 @@ class Questions:
         'answ_in':None,
         'answ':['def __init__(self):'],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "print('def __init__(self):')",
+        ]
         },
 ####################################################################
 #변수          
@@ -182,7 +212,11 @@ class Questions:
         'answ_in':None, 
         'answ':[5],
         'nused':[],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a'],
+        'correct':[
+                "a = 5",
+                "print(a)",
+        ]
         },
 #"""----------------- 12  -----------------"""
         {
@@ -200,7 +234,11 @@ class Questions:
         'answ_in':None, 
         'answ':['hello'],
         'nused':[],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a'],
+        'correct':[
+                "a = 'hello'",
+                "print(a)",
+        ]
         },
 #"""----------------- 13  -----------------"""
         {
@@ -219,7 +257,11 @@ class Questions:
         'answ_in':None, 
         'answ':[True],
         'nused':['\'True\'','\"True\"'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a'],
+        'correct':[
+                "a = True",
+                "print(a)",
+        ]
         },
 #"""----------------- 14  -----------------"""
         {
@@ -237,7 +279,11 @@ class Questions:
         'answ_in':None, 
         'answ':[2.0],
         'nused':['2.0'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','/','8','4']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','/','8','4'],
+        'correct':[
+                "a = 8/4",
+                "print(a)",
+        ]
         },
 #"""----------------- 15  -----------------"""
         {
@@ -255,7 +301,11 @@ class Questions:
         'answ_in':None, 
         'answ':[12],
         'nused':['12'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','+','8','4']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','+','8','4'],
+        'correct':[
+                "a = 8+4",
+                "print(a)",
+        ]
         },
 #"""----------------- 16  -----------------"""
         {
@@ -273,7 +323,11 @@ class Questions:
         'answ_in':None, 
         'answ':[6],
         'nused':['6'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','-','8','2']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','-','8','2'],
+        'correct':[
+                "a = 8-2",
+                "print(a)",
+        ]
         },
 #"""----------------- 17  -----------------"""
         {
@@ -291,7 +345,11 @@ class Questions:
         'answ_in':None, 
         'answ':[16],
         'nused':['16'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','*','8','2']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','*','8','2'],
+        'correct':[
+                "a = 8*2",
+                "print(a)",
+        ]
         },
 #"""----------------- 18  -----------------"""
         {
@@ -312,7 +370,12 @@ class Questions:
         'answ_in':None, 
         'answ':[15],
         'nused':['15'],
-        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','+=','10','5']
+        'must':[['print(a)',"print(f\'{a}\')",'print(f\"{a}\")'],'a','+=','10','5'],
+        'correct':[
+                "a = 10",
+                "a += 5",
+                "print(a)",
+        ]
         },
 #"""----------------- 19  -----------------"""
         {
@@ -332,7 +395,11 @@ class Questions:
         'answ_in':None, 
         'answ':['a = 10'],
         'nused':[],
-        'must':['print','f','{a']
+        'must':['print','f','{a'],
+        'correct':[
+                "a = 10",
+                "print(f'a = {a}')",
+        ]
         },
 
 #"""----------------- 20  -----------------"""
@@ -352,7 +419,12 @@ class Questions:
                 "a = 3, b = 5",
         ],
         'nused':[],
-        'must':['print','f','{a','{b']
+        'must':['print','f','{a','{b'],
+        'correct':[
+                "a = 3",
+                "b = 5",
+                "print(f'a={a},b={b}')",
+        ]
         },
 ####################################################################
 #연산
@@ -373,7 +445,13 @@ class Questions:
         'answ_in':None,
         'answ':[6],
         'nused':[],
-        'must':['print','+','a','b','c']
+        'must':['print','+','a','b','c'],
+        'correct':[
+                "a =3",
+                "b =3",
+                "c=a+b",
+                "print(c)",
+        ]
         },
 
 #"""----------------- 22  -----------------"""
@@ -389,7 +467,13 @@ class Questions:
         'answ_in':None,
         'answ':[8],
         'nused':[],
-        'must':['print','-','a','b','c']
+        'must':['print','-','a','b','c'],
+        'correct':[
+                "a = 12",
+                "b = 4",
+                "c = a -b",
+                "print(c)",
+        ]
         },
 
 #"""----------------- 23  -----------------"""
@@ -405,7 +489,13 @@ class Questions:
         'answ_in':None,
         'answ':[16],
         'nused':[],
-        'must':['print','*','a','b','c']
+        'must':['print','*','a','b','c'],
+        'correct':[
+                "a = 4",
+                "b = 4",
+                "c = a * b",
+                "print(c)",
+        ]
         },
 
 #"""----------------- 24  -----------------"""
@@ -422,7 +512,13 @@ class Questions:
         'answ_in':None,
         'answ':[4.0],
         'nused':[],
-        'must':['print','/','a','b','c']
+        'must':['print','/','a','b','c'],
+        'correct':[
+                "a = 8",
+                "b = 2",
+                "c = a/b",
+                "print(c)",
+        ]
         },
 
 ####################################################################   
@@ -447,7 +543,11 @@ class Questions:
         ],
         'answ':['안녕하세요, 철수님!','안녕하세요, 영희님!'],
         'nused':[],
-        'must':['print','f','{']
+        'must':['print','f','{'],
+        'correct':[
+                "name = input('이름 : ')",
+                "print(f'안녕하세요, {name}님!')",
+        ]
         },
 
 #"""----------------- 26  -----------------"""
@@ -470,7 +570,11 @@ class Questions:
         ],
         'answ':['나이는 12세입니다.','나이는 20세입니다.'],
         'nused':[],
-        'must':['print','f','{']
+        'must':['print','f','{'],
+        'correct':[
+                "age = input('나이 : ')",
+                "print(f'나이는 {age}세입니다.')",
+        ]
         },
 
 #"""----------------- 27  -----------------"""
@@ -494,7 +598,15 @@ class Questions:
         ],
         'answ':['두수의 합은 7입니다.','두수의 합은 8입니다.'],
         'nused':[],
-        'must':['print','f','{','int']
+        'must':['print','f','{','int'],
+        'correct':[
+                "a = input('첫번째:')",
+                "b = input('두번째:')",
+                "a = int(a)",
+                "b = int(b)",
+                "c = a + b",
+                "print(f'두수의 합은 {c}입니다.')",
+        ]
         },
 
 #"""----------------- 28  -----------------"""
@@ -517,7 +629,15 @@ class Questions:
         ], 
         'answ':['결과: 3 - 4 = -1','결과: 5 - 7 = -2'],
         'nused':[],
-        'must':['print','f','{','int']
+        'must':['print','f','{','int'],
+        'correct':[
+                "a = input('첫번째:')",
+                "b = input('두번째:')",
+                "a = int(a)",
+                "b = int(b)",
+                "c = a - b",
+                "print(f'결과: {a} - {b} = {c}')",
+        ]
         },
 
 #"""----------------- 29  -----------------"""
@@ -540,7 +660,15 @@ class Questions:
         ], 
         'answ':['결과: 3 * 4 = 12','결과: 5 * 7 = 35'],
         'nused':[],
-        'must':['print','f','{', 'int']
+        'must':['print','f','{', 'int'],
+        'correct':[
+                "a = input('첫번째:')",
+                "b = input('두번째:')",
+                "a = int(a)",
+                "b = int(b)",
+                "c = a * b",
+                "print(f'결과: {a} * {b} = {c}')",
+        ]
         },
 
 #"""----------------- 30  -----------------"""
@@ -563,7 +691,11 @@ class Questions:
         ], 
         'answ':['문자열 길이 = 5','문자열 길이 = 9'],
         'nused':[],
-        'must':['print','f','{', 'len']
+        'must':['print','f','{', 'len'],
+        'correct':[
+                "s = input('문자열 입력:')",
+                "print(f'문자열 길이 = {len(s)}')",
+        ]
         },
 ####################################################################   
 #조건문   
@@ -590,7 +722,15 @@ class Questions:
         'answ_in':None, 
         'answ':['b가크다'],
         'nused':[],
-        'must':['print','a=3','b=4','if',['else','elif'],'a가크다']
+        'must':['print','a=3','b=4','if',['else','elif'],'a가크다'],
+        'correct':[
+                "a = 3",
+                "b = 4",
+                "if a > b:",
+                "\tprint('a가크다')",
+                "else:",
+                "\tprint('b가크다')",
+        ]
         },
 
 #"""----------------- 32  -----------------"""
@@ -613,7 +753,13 @@ class Questions:
         'answ_in':None, 
         'answ':['a가크거나 같다'],
         'nused':[],
-        'must':['print','a=4','b=3','if','>=']
+        'must':['print','a=4','b=3','if','>='],
+        'correct':[
+                "a = 4",
+                "b = 3",
+                "if a >= b:",
+                "\tprint('a가크거나 같다')",
+        ]
         },
 #"""----------------- 33  -----------------"""
         {
@@ -639,7 +785,14 @@ class Questions:
         ], 
         'answ':['PASS', 'PASS', 'FAIL'],
         'nused':[],
-        'must':['print','input','if','else']
+        'must':['print','input','if','else'],
+        'correct':[
+                "score = int(input('입력:'))",
+                "if score >= 60:",
+                "\tprint('PASS')",
+                "else:",
+                "\tprint('FAIL')",
+        ]
         },
 
 #"""----------------- 34  -----------------"""
@@ -667,7 +820,14 @@ class Questions:
         ], 
         'answ':['미성년자', '성인', '성인'],
         'nused':[],
-        'must':['print','input','if','else']
+        'must':['print','input','if','else'],
+        'correct':[
+                "age = int(input('입력:'))",
+                "if age >= 20:",
+                "\tprint('성인')",
+                "else:",
+                "\tprint('미성년자')",
+        ]
         },
 
 #"""----------------- 35  -----------------"""
@@ -703,7 +863,20 @@ class Questions:
         ], 
         'answ':['C','A','C','D','F'],
         'nused':[],
-        'must':['print','input','if','else']
+        'must':['print','input','if','else'],
+        'correct':[
+                "score = int(input('입력 : '))",
+                "if score >= 90:",
+                "\tprint('A')",
+                "elif score >= 80:",
+                "\tprint('B')",
+                "elif score >= 70:",
+                "\tprint('C')",
+                "elif score >= 60:",
+                "\tprint('D')",
+                "else:",
+                "\tprint('F')",
+        ]
         },
 
 #"""----------------- 36  -----------------"""
@@ -719,12 +892,20 @@ class Questions:
 
         'input':[['10','15'],['90','80']],
         'answ_in':[              
-                ['입력1 : 10','입력2: 14'],
-                ['입력1 : 90','입력2: 80'],
+                ['입력1 :10','입력2 :14'],
+                ['입력1 :90','입력2 :80'],
         ], 
         'answ':['큰수 : 15','큰수 : 90'],
         'nused':[],
-        'must':['print','input','if']
+        'must':['print','input','if'],
+        'correct':[
+                "a = int(input('입력1 :'))",
+                "b = int(input('입력2 :'))",
+                "if a > b:",
+                "\tprint(f'큰수 : {a}')",
+                "else:",
+                "\tprint(f'큰수 : {b}')",
+        ]
         },
 
 #"""----------------- 37  -----------------"""
@@ -748,7 +929,16 @@ class Questions:
         ], 
         'answ':['홀수', '짝수'],
         'nused':[],
-        'must':['print','input','if','%']},
+        'must':['print','input','if','%'],
+        'correct':[
+                "n = int(input('정수입력 : '))",
+                "a = n % 2",
+                "if a == 0:",
+                "\tprint('짝수')",
+                "else:",
+                "\tprint('홀수')",
+        ]
+        },
 
 #"""----------------- 38  -----------------"""
         {
@@ -767,7 +957,15 @@ class Questions:
         ], 
         'answ':['남자','여자'],
         'nused':[],
-        'must':['print','input','if']},
+        'must':['print','input','if'],
+        'correct':[
+                "gender = input('입력 :')",
+                "if gender == '남':",
+                "\tprint('남자')",
+                "else:",
+                "\tprint('여자')",
+        ]
+        },
 
 
 #"""----------------- 39  -----------------"""
@@ -796,7 +994,19 @@ class Questions:
         ], 
         'answ':['20', '90', '5'],
         'nused':[],
-        'must':['print','input','if', 'and']},
+        'must':['print','input','if', 'and'],
+        'correct':[
+                "a = int(input('입력1 :'))",
+                "b = int(input('입력2 :'))",
+                "c = int(input('입력3 :'))",
+                "if a > b and a > c:",
+                "\tprint(a)",
+                "elif b > a and b > c:",
+                "\tprint(b)",
+                "elif c > a and c > b:",
+                "\tprint(c)",
+        ]
+        },
 
 #"""----------------- 40  -----------------"""
         {
@@ -823,7 +1033,19 @@ class Questions:
         ], 
         'answ':['겨울', '가을', '여름', '겨울'],
         'nused':[],
-        'must':['print','input','if', 'and']},
+        'must':['print','input','if', 'and'],
+        'correct':[
+                "month = int(input('입력 : '))",
+                "if 3 <= month and month <= 5:",
+                "\tprint('봄')",
+                "elif 6 <= month and month <= 8:",
+                "\tprint('여름')",
+                "elif 9 <= month and month <= 11:",
+                "\tprint('가을')",
+                "else:",
+                "\tprint('겨울')",
+        ]
+        },
 ####################################################################   
 #반복문     
 #"""----------------- 41  -----------------"""
@@ -843,7 +1065,11 @@ class Questions:
         'answ_in':None,
         'answ':[0,1,2,3,4],
         'nused':[],
-        'must':['print','for','range']
+        'must':['print','for','range'],
+        'correct':[
+                "for i in range(5):",
+                "\tprint(i)",
+        ]
         },
 #"""----------------- 42  -----------------"""
         {
@@ -862,7 +1088,11 @@ class Questions:
         'answ_in':None,
         'answ':[1,2,3,4,5],
         'nused':[],
-        'must':['print','for','range']
+        'must':['print','for','range'],
+        'correct':[
+                "for i in range(1,10):",
+                "\tprint(i)",
+        ]
         },
 
 #"""----------------- 43  -----------------"""
@@ -881,7 +1111,11 @@ class Questions:
         'answ_in':None,
         'answ':[2,4,6,8],
         'nused':[],
-        'must':['print','for']
+        'must':['print','for'],
+        'correct':[
+                "for i in range(2,10,2):",
+                "\tprint(i)",
+        ]
         },
 
 #"""----------------- 44  -----------------"""
@@ -899,7 +1133,11 @@ class Questions:
         'answ_in':None,
         'answ':[5,4,3,2,1],
         'nused':[],
-        'must':['print','for']
+        'must':['print','for'],
+        'correct':[
+                "for i in range(5,0,-1):",
+                "\tprint(i)",
+        ]
         },
 
 
@@ -919,7 +1157,11 @@ class Questions:
         'answ_in':None,
         'answ':['반복','반복','반복','반복','반복'],
         'nused':[],
-        'must':['print','for']
+        'must':['print','for'],
+        'correct':[
+                "for i in range(5):",
+                "\tprint('반복')",
+        ]
         },
 
 #"""----------------- 46  -----------------"""
@@ -939,7 +1181,14 @@ class Questions:
         'answ_in':None,
         'answ':['반복','반복','반복',3,4],
         'nused':[],
-        'must':['print(i)',["print('반복')",'print("반복")'],'for','if','else']
+        'must':['print(i)',["print('반복')",'print("반복")'],'for','if','else'],
+        'correct':[
+                "for i in range(5):",
+                "\tif i < 3:",
+                "\t\tprint('반복')",
+                "\telse:",
+                "\t\tprint(i)",
+        ]
         },
 
 
@@ -953,7 +1202,7 @@ class Questions:
                 '3. total 변수를 사용하여 값을 구하세요',
         ],
         'hint':[
-                "#1을 6번 더한 값 출력"
+                "#1을 6번 더한 값 출력",
                 'total = 0',   
                 'for i in range(6):',
                 '\ttotal += 1',    
@@ -964,7 +1213,13 @@ class Questions:
         'answ_in':None,
         'answ':[8],
         'nused':['8'],
-        'must':['print','for','+=','total']
+        'must':['print','for','+=','total'],
+        'correct':[
+                "total = 0",
+                "for i in range(4):",
+                "\ttotal += 2",
+                "print(total)",
+        ]
         },
         
 #"""----------------- 48  -----------------"""
@@ -986,7 +1241,13 @@ class Questions:
         'answ_in':None,
         'answ':[15],
         'nused':['15'],
-        'must':['print(total)','for','+=','total']
+        'must':['print(total)','for','+=','total'],
+        'correct':[
+                "total = 0",
+                "for i in range(1, 6):",
+                "\ttotal += i",
+                "print(total)",
+        ]
         },
 
 #"""----------------- 49  -----------------"""
@@ -1006,7 +1267,11 @@ class Questions:
         'answ_in':None,
         'answ':['1x2=2','2x2=4','3x2=6','4x2=8','5x2=10','6x2=12','7x2=14','8x2=16','9x2=18'],
         'nused':[],
-        'must':['print','for','f','{']
+        'must':['print','for','f','{'],
+        'correct':[
+                "for i in range(1,10):",
+                "\tprint(f'{i}x2={i*2}')",
+        ]
         },
 
 
@@ -1054,7 +1319,12 @@ class Questions:
                 ],
         ],
         'nused':[],
-        'must':['print','for','f','{']
+        'must':['print','for','f','{'],
+        'correct':[
+                "dan = int(input('출력할 구구단 단수를 입력하세요: '))",
+                "for i in range(1,10):",
+                "\tprint(f'{dan}x{i}={dan*i}')",
+        ]
         },
         
 ####################################################################   
@@ -1078,7 +1348,12 @@ class Questions:
         'input':[],  
         'answ':["['사과', '바나나', '오렌지']"],
         'nused':[],
-        'must':['print']},
+        'must':['print'],
+        'correct':[
+                "lst = ['사과', '바나나', '오렌지'] ",
+                "print(lst)",
+        ]
+        },
 
 #"""----------------- 52  -----------------"""
 
@@ -1096,7 +1371,13 @@ class Questions:
         'input':[],  
         'answ':["['사과', '바나나', '오렌지', '포도']"],
         'nused':[],
-        'must':['print','append']},
+        'must':['print','append'],
+        'correct':[
+                "lst = ['사과', '바나나', '오렌지']",
+                "lst.append('포도')",
+                "print(lst)",
+        ]
+        },
 
 
 #"""----------------- 53  -----------------"""
@@ -1115,7 +1396,14 @@ class Questions:
         'input':[],  
         'answ':["['사과', '오렌지']"],
         'nused':[],
-        'must':['print','remove']},
+        'must':['print','remove'],
+        'correct':[
+                "lst = ['사과', '바나나', '오렌지', '바나나']",
+                "lst.remove('바나나')",
+                "lst.remove('바나나')",
+                "print(lst)",
+        ]
+        },
 
 
 #"""----------------- 54  -----------------"""
@@ -1133,7 +1421,12 @@ class Questions:
         'input':[],  
         'answ':["리스트의 길이 : 3"],
         'nused':[],
-        'must':['print','len']},
+        'must':['print','len'],
+        'correct':[
+                "lst = ['사과', '오렌지', '바나나']",
+                "print(f'리스트의 길이 : {len(lst)}')",
+        ]
+        },
 
 #"""----------------- 55  -----------------"""
         {
@@ -1150,7 +1443,12 @@ class Questions:
         'input':[],  
         'answ':["오렌지"],
         'nused':[],
-        'must':['print','[1]']},
+        'must':['print','[1]'],
+        'correct':[
+                "lst = ['사과', '오렌지', '포도']",
+                "print(lst[1])",
+        ]
+        },
 
 #"""----------------- 56  -----------------"""
         {
@@ -1158,7 +1456,8 @@ class Questions:
         'ques':[
                 '리스트의 모든 요소를 순회하면서 출력하는 프로그램',
                 'for x in lst:',
-                '\tprint(x) 형태로 작성합니다.',
+                '\tprint(x)',
+                '형태로 작성합니다.',
         ],
         'hint':[
                 "lst = ['사과', '오렌지', '포도']",   
@@ -1168,7 +1467,13 @@ class Questions:
         'input':[],  
         'answ':["사과","오렌지","포도"],
         'nused':[],
-        'must':['print','for']},
+        'must':['print','for'],
+        'correct':[
+                "lst = ['사과', '오렌지', '포도']",
+                "for x in lst:",
+                "\tprint(x)",
+        ]
+        },
 
 #"""----------------- 57  -----------------"""
         {
@@ -1186,7 +1491,12 @@ class Questions:
         'input':[],  
         'answ':["15"],
         'nused':[],
-        'must':['print','sum']},
+        'must':['print','sum'],
+        'correct':[
+                "nums = [1, 2, 3, 4, 5]",
+                "print(sum(nums))",
+        ]
+        },
 
 #"""----------------- 58  -----------------"""
         {
@@ -1203,7 +1513,13 @@ class Questions:
         'input':[],  
         'answ':["10","1"],
         'nused':[],
-        'must':['print','min','max']},
+        'must':['print','min','max'],
+        'correct':[
+                "nums = [10, 3, 7, 1, 5]",
+                "print(max(nums))",
+                "print(min(nums))",
+        ]
+        },
 
 #"""----------------- 59  -----------------"""
         {
@@ -1220,7 +1536,13 @@ class Questions:
         'input':[],  
         'answ':["[1, 2, 3, 4, 5]"],
         'nused':[],
-        'must':['print','sort']},
+        'must':['print','sort'],
+        'correct':[
+                "nums = [4, 1, 3, 5, 2]",
+                "nums.sort()",
+                "print(nums)",
+        ]
+        },
 
 #"""----------------- 60  -----------------"""
         {
@@ -1238,7 +1560,13 @@ class Questions:
         'input':[],  
         'answ':["[5, 4, 3, 2, 1]"],
         'nused':[],
-        'must':['print','sort(reverse=True)']},
+        'must':['print','sort(reverse=True)'],
+        'correct':[
+                "nums = [4, 1, 3, 5, 2]",
+                "nums.sort(reverse=True)",
+                "print(nums)",
+        ]
+        },
         
 ####################################################################
 #딕셔너리
@@ -1258,7 +1586,11 @@ class Questions:
         'input':[],  
         'answ':["{'홍길동': 85, '이순신': 92, '강감찬': 78}"],
         'nused':[],
-        'must':['print']
+        'must':['print'],
+        'correct':[
+                "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78}",
+                "print(scores)",
+        ]
         },
 
 #"""----------------- 62  -----------------"""
@@ -1279,7 +1611,11 @@ class Questions:
         'answ_in':None,
         'answ':["이순신 점수 : 92"],
         'nused':[],
-        'must':['print',["['이순신']",'["이순신"]']]
+        'must':['print',["['이순신']",'["이순신"]']],
+        'correct':[
+                "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78}",
+                "print(f\"이순신 점수 : {scores['이순신']}\")",
+        ]
         },
 
 #"""----------------- 63  -----------------"""
@@ -1299,7 +1635,12 @@ class Questions:
         'input':[],  
         'answ':["{'홍길동': 85, '이순신': 92, '강감찬': 78, '유관순': 88}"],
         'nused':[],
-        'must':['print',["['유관순']",'["유관순"]']]
+        'must':['print',["['유관순']",'["유관순"]']],
+        'correct':[
+                "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78}",
+                "scores['유관순'] = 88",
+                "print(scores)",
+        ]
         },
 
 #"""----------------- 64  -----------------"""
@@ -1318,7 +1659,12 @@ class Questions:
         'input':[],  
         'answ':["{'이순신': 92, '강감찬': 78, '유관순': 88}"],
         'nused':[],
-        'must':['print','del']
+        'must':['print','del'],
+        'correct':[
+                "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78, '유관순': 88}",
+                "del scores['홍길동']",
+                "print(scores)",
+        ]
         },
 
 #"""----------------- 65  -----------------"""
@@ -1339,7 +1685,13 @@ class Questions:
         'input':[],  
         'answ':["[92, 78, 88]","합 : 258"],
         'nused':[],
-        'must':['print','list','values()','sum']
+        'must':['print','list','values()','sum'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "a = list(scores.values()) ",
+                "print(a)",
+                "print('합:',sum(a))",
+        ]
         },
 
 #"""----------------- 66  -----------------"""
@@ -1358,7 +1710,12 @@ class Questions:
         'input':[],  
         'answ':["['이순신', '강감찬', '유관순']"],
         'nused':[],
-        'must':['print','list','keys()']
+        'must':['print','list','keys()'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "keys = list(scores.keys())",
+                "print(keys)",
+        ]
         },
 
 #"""----------------- 67  -----------------"""
@@ -1379,7 +1736,12 @@ class Questions:
         'input':[],  
         'answ':["3"],
         'nused':[],
-        'must':['print','len']},
+        'must':['print','len'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "length = len(scores)",
+                "print(length)",
+        ]},
 #"""----------------- 68  -----------------"""
         {
         'section':"딕셔너리",
@@ -1396,7 +1758,12 @@ class Questions:
         'input':[],  
         'answ':["평균 점수: 86.0"],
         'nused':[],
-        'must':['print','len','sum','values']
+        'must':['print','len','sum','values'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "avr = sum(scores.values()) / len(scores)",
+                "print('평균점수:',avr)",
+        ]
         },
 
 #"""----------------- 69  -----------------"""
@@ -1413,13 +1780,20 @@ class Questions:
                 "\tprint(i)",
                 "",
                 "for name, score in scores.items():",
-                "\tprint(f'{name} {score})",
+                "\tprint(f'{name} {score}')",
         ],
         'answ_in':None,
         'input':[],  
         'answ':["이순신: 92","유관순: 88"],
         'nused':[],
-        'must':['print','items','if']
+        'must':['print','items','if'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "",
+                "for name, score in scores.items():",
+                "\tif score >= 80:",
+                "\t\tprint(f'{name} : {score}')",
+        ]
         },
 
 #"""----------------- 70  -----------------"""
@@ -1444,7 +1818,16 @@ class Questions:
         'input':[['강감찬'],['김유신']],  
         'answ':["강감찬의 점수는 78점입니다.","해당 학생이 없습니다."],
         'nused':[],
-        'must':['print','input','if','in']
+        'must':['print','input','if','in'],
+        'correct':[
+                "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",
+                "name = input('이름을 입력하세요: ')",
+                "",
+                "if name in scores:",
+                "\tprint(f'{name}의 점수는 {scores[name]}점입니다.')",
+                "else:",
+                "\tprint('해당 학생이 없습니다.')",
+        ]
         },
         
 ####################################################################   
@@ -1476,7 +1859,16 @@ class Questions:
         'input':[['4','6'],['3','4']],  
         'answ':["두수의 합 : 10","두수의 합 : 7"],
         'nused':['num1+num2'],
-        'must':['print','input','def','add','num1','num2']
+        'must':['print','input','def','add','num1','num2'],
+        'correct':[
+                "def add(a, b):",
+                "\tc = a + b",
+                "\treturn c",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "result = add(num1,num2)",
+                "print('두수의 합 : ',result)",
+        ]
         },
 
 #"""----------------- 72  -----------------"""
@@ -1501,7 +1893,16 @@ class Questions:
         'input':[['4','6'],['3','4']],  
         'answ':["두수의 차 : -2","두수의 차 : -1"],
         'nused':['num1-num2'],
-        'must':['print','input','def','num1','num2']
+        'must':['print','input','def','num1','num2'],
+        'correct':[
+                "def sub(a, b):",
+                "\tc = a - b",
+                "\treturn c",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "result = sub(num1,num2)",
+                "print('두수의 차 : ',result)",
+        ]
         },
 
 #"""----------------- 73  -----------------"""
@@ -1523,7 +1924,16 @@ class Questions:
         'input':[['4','6'],['3','4']],  
         'answ':["두수의 곱 : 24","두수의 곱 : 12"],
         'nused':['num1*num2'],
-        'must':['print','input','def','num1','num2']
+        'must':['print','input','def','num1','num2'],
+        'correct':[
+                "def mul(a, b):",
+                "\tc = a * b",
+                "\treturn c",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "result = mul(num1,num2)",
+                "print('두수의 곱 : ',result)",
+        ]
         },
 
 #"""----------------- 74  -----------------"""
@@ -1545,7 +1955,16 @@ class Questions:
         'input':[['4','2'],['8','2']],  
         'answ':["두수의 나눈값 : 2.0","두수의 나눈값 : 4.0"],
         'nused':['num1/num2'],
-        'must':['print','input','def','num1','num2']
+        'must':['print','input','def','num1','num2'],
+        'correct':[
+                "def div(a, b):",
+                "\tc = a / b",
+                "\treturn c",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "result = div(num1,num2)",
+                "print('두수의 나눈값 : ',result)",
+        ]
         },
 
 #"""----------------- 75  -----------------"""
@@ -1558,7 +1977,7 @@ class Questions:
                 "def average(lst):",
                 "\tresult = lst",
                 "\treturn result ",
-
+                "",
                 "values = [10, 20, 30]",
                 "avr = average(values)",
 
@@ -1568,7 +1987,15 @@ class Questions:
         'input':[],  
         'answ':["평균 : 20.0"],
         'nused':['num1/num2'],
-        'must':['print','def','sum']
+        'must':['print','def','sum'],
+        'correct':[
+                "def average(lst):",
+                "\tresult = sum(lst)/len(lst)",
+                "\treturn result ",
+                "values = [10, 20, 30]",
+                "avr = average(values)",
+                "print('평균 : ',avr)",
+        ]
         },
         
 ####################################################################   
@@ -1585,6 +2012,9 @@ class Questions:
         'input':[],  
         'answ':[],
         'nused':[],
-        'must':[]
+        'must':[],
+        'correct':[
+                
+        ]
         },
     ]

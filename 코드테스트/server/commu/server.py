@@ -293,6 +293,24 @@ class socketServer():
         
     # def handler_exec(signum, frame):
     #     raise TimeoutError("Execution timed out!")
+    def send_to_correct_client(self, client, level):
+        levels = [i+1 for i in range(len(Questions.que)-1)]
+        if level > 0:
+            code = Questions.que[level]['correct']
+        else:
+            code = ''
+        
+        json_object = {
+            'correct':{
+                'level':levels,
+                'code':code,
+                }
+            }
+        # print(json_object)
+        self.response = None
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        client.sendall(json_string.encode())
+        
     def send_to_levels_client(self, client,name, level):
         levels = []
         code = ''
@@ -420,6 +438,9 @@ class socketServer():
                 # print(f"클라이언트에서 받은 메세지 : {data}")
                 
                 values = json.loads(data)
+                if 'correct' in values:
+                    self.send_to_correct_client(client_socket,values['correct'])
+                    
                 if 'levels' in values:
                     self.send_to_levels_client(client_socket,name,values['levels'])
                         

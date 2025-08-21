@@ -45,8 +45,10 @@ class EditorInput:
         self.font_size = self.parent.font_size
         # self.style = get_style_by_name("monokai")
         
+        self.color_hl_bg = self.rgb_to_hex(208,223,211) 
+        self.color_hl_fg = self.rgb_to_hex(36,53,40) 
+        
         self.scroll_text()
-        self.number_widget()
         self.text.bind('<Shift-Return>', self.ignore_shift_enter_key)
         self.text.bind('<Alt-Return>', self.ignore_alt_enter_key)
         self.text.bind("<Key>", self.key_sound)
@@ -55,10 +57,8 @@ class EditorInput:
         self.text.bind("<Control-a>", self.on_ctrl_a)               # Ctrl+A 전체 선택
         self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
 
-        color = self.rgb_to_hex(208,223,211) 
-        color_font = self.rgb_to_hex(36,53,40) 
         
-        self.text.tag_configure("highlight", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", self.font_size), foreground=self.color_hl_fg, background=self.color_hl_bg,justify='center')   
         
         self.token_tags = {
             Token.Keyword: {"foreground": "#569CD6"},
@@ -90,6 +90,7 @@ class EditorInput:
             if self.font_size > 30:
                 self.font_size = 30
             self.text.configure(font=("malgungulim", self.font_size, "normal"))
+            self.linenumber.configure(font=("malgungulim", self.font_size, "normal"))
         # else:
         #     print("Regular scroll")   
         
@@ -97,6 +98,7 @@ class EditorInput:
         self.clear_msg()
         self.add_msg("#코드를 여기에 작성하세요")
         self.set_focus()
+        
         
     def on_backspace(self,event):
         # 현재 커서 위치가 첫 줄이라면 삭제 막기
@@ -189,17 +191,18 @@ class EditorInput:
         self.uniscrollbar.set(first, last)
         
     def scroll_text(self):
-
-        self.uniscrollbar = tk.Scrollbar(self.frame, width=20, relief="flat")
-        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=0, pady=(10, 10))       
+    
         
         self.text = tk.Text(self.frame,  wrap=tk.WORD,
                             # width=5, 
-                            height=22, font=("Consolas", 12),  undo=True,
-   
-                            bg="#1E1E1E", fg="#D4D4D4", insertbackground="white", relief="flat")
-        self.text.config(font=("malgungulim", 16))  # 기본: 영어
-        self.text.configure(font=("malgungulim", 16, "normal"))
+                            height=22, font=("Consolas", self.font_size),  undo=True,   
+                            bg="#1E1E1E", fg="#D4D4D4", insertbackground="white"
+                            # , relief="flat"
+                            )
+        
+        
+        self.text.config(font=("malgungulim", self.font_size))  # 기본: 영어
+        self.text.configure(font=("malgungulim", self.font_size, "normal"))
         self.text.bind("<KeyRelease>", self.on_key_release)
         self.text.bind("<Control-space>", self.show_autocomplete)
         self.text.bind("<<Modified>>", self.on_text_modified)
@@ -209,18 +212,29 @@ class EditorInput:
         self.text.config(tabs=tab)
         self.text.config(spacing1=0, spacing2=1, spacing3=1)
 
+        self.uniscrollbar = tk.Scrollbar(self.frame, width=20
+                                         , relief="flat"
+                                         )
+        self.uniscrollbar.pack(side="right",fill="y", expand=0,padx=0, pady=(10, 10))   
+        
         self.uniscrollbar["command"] = self.scroll_both
         self.text["yscrollcommand"] = self.update_scroll_both
+        
+        self.number_widget()
+        self.text.pack(side="left", fill="both", expand=1,padx=0, pady=(10, 10))
 
-        self.text.pack(side="left", fill="both", expand=1,padx=10, pady=(10, 10))
         
     def number_widget(self):
         pass
-        self.linenumber = TextNumbers(self.frame, self.text,  width=20,relief="flat", state="disabled", justify="right",)
+        self.linenumber = TextNumbers(self.frame, self.text,  width=5, state="disabled", justify="right"
+                                      ,relief="flat"
+                                      )
 
+        self.linenumber.configure(font=("malgungulim", self.font_size, "normal") ,bg="#1E1E1E", fg="#D4D4D4")
+        
         self.uniscrollbar["command"] = self.scroll_both
         self.linenumber["yscrollcommand"] = self.update_scroll_both
-        self.linenumber.pack(side="right", fill="y", expand=0,padx=00, pady=(10, 0))
+        self.linenumber.pack(side="left", fill="both", expand=1,padx=0, pady=(10, 10))
         
     def on_text_modified(self, event=None):
         self.text.edit_modified(False)  # 중요: 플래그 초기화
@@ -387,80 +401,85 @@ class EditorInput:
         listbox.bind("<Escape>", lambda e: popup.destroy())
         listbox.focus_set()
         
-    def get_user_code(self):
-        self.code_level = -1
-        self.open_popup()
-        self.client.send_request_complete_level()
-    
-    def levels_code_list(self, levels):        
-        self.listbox_code.delete(0, tk.END)  # 기존 항목 제거
-        levels.sort()
-        for level in levels:
-            self.listbox_code.insert(tk.END, f"레벨 {level}")
-            
-    def open_popup(self):
-        name = self.parent.name
-        self.code_sel_name = name
-        popup = tk.Toplevel(self.parent.root)
-        popup.title(f"{name}님의 코드 제출 결과")
-        popup.geometry("800x800")
-        popup.attributes('-topmost', True)
-
-        # 좌측 Listbox
-        list_frame = tk.Frame(popup, width = 150)
-        list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)    
-        list_frame.pack_propagate(False)
-
-        self.listbox_code = tk.Listbox(list_frame,
-                                font=("Consolas", 20), 
-                                bg="#1E1E1E", 
-                                fg="#D4D4D4", )
+    # def get_user_code(self, is_correct=False):
+    #     # self.code_level = -1
+    #     # self.open_popup(is_correct)
         
-        self.listbox_code.bind('<<ListboxSelect>>', self.on_select_code)
-        self.listbox_code.pack(side=tk.LEFT, fill=tk.Y)
-
-        # 스크롤바 연결
-        scrollbar = tk.Scrollbar(list_frame, orient="vertical", command=self.listbox_code.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.listbox_code.config(yscrollcommand=scrollbar.set)
-
-        # for level in self.server.users[name]:
-        #     self.listbox_code.insert(tk.END, f"레벨 {level}")
-
-        # 우측 Text
-        self.text_code = tk.Text(popup, wrap="word",
-                                font=("Consolas", 20), 
-                                bg="#1E1E1E", 
-                                fg="#D4D4D4", )
-        self.text_code.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+    #     # self.client.send_request_complete_level(level=0,is_correct = is_correct)
+    #     if is_correct:
+    #         self.popup_code_correct = PopupCode(self.parent,is_correct)
+    #     else:
+    #         self.popup_code = PopupCode(self.parent,is_correct)
     
-    def on_select_code(self,event):
-        selection = self.listbox_code.curselection()
-        if selection:
-            index = selection[0]
-            value = self.listbox_code.get(index)
-            value = str(value).replace('레벨','')
-            value = value.replace(' ','')
-            level = int(value)
-            if self.code_level == level:
-                # print('pass')
-                return
+    # def levels_code_list(self, levels):        
+    #     self.listbox_code.delete(0, tk.END)  # 기존 항목 제거
+    #     levels.sort()
+    #     for level in levels:
+    #         self.listbox_code.insert(tk.END, f"레벨 {level}")
             
-            self.code_level = level
-            name  = self.code_sel_name
-            # code = self.server.users[name][level]['code']
-            self.clear_code_msg()
-            self.client.send_request_complete_level(level)
-            # self.add_code_msg(code)            
-            # print(f"선택된 항목: {value}")
-            
-    def clear_code_msg(self):
-        self.text_code.config(state="normal")
-        self.text_code.delete("1.0", tk.END)
-        self.text_code.config(state="disabled")
+    # def open_popup(self,is_correct):
+    #     self.is_correct = is_correct
+    #     name = self.parent.name
+    #     self.code_sel_name = name
+    #     popup = tk.Toplevel(self.parent.root)
+    #     popup.title(f"{name}님의 코드 제출 결과")
+    #     popup.geometry("800x800")
+    #     popup.attributes('-topmost', True)
+
+    #     # 좌측 Listbox
+    #     list_frame = tk.Frame(popup, width = 150)
+    #     list_frame.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)    
+    #     list_frame.pack_propagate(False)
+
+    #     self.listbox_code = tk.Listbox(list_frame,
+    #                             font=("Consolas", 20), 
+    #                             bg="#1E1E1E", 
+    #                             fg="#D4D4D4", )
         
-    def add_code_msg(self,msg):
-        self.clear_code_msg()
-        self.text_code.config(state="normal")
-        self.text_code.insert(tk.END, msg+"\n")
-        self.text_code.config(state="disabled")
+    #     self.listbox_code.bind('<<ListboxSelect>>', self.on_select_code)
+    #     self.listbox_code.pack(side=tk.LEFT, fill=tk.Y)
+
+    #     # 스크롤바 연결
+    #     scrollbar = tk.Scrollbar(list_frame, orient="vertical", command=self.listbox_code.yview)
+    #     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    #     self.listbox_code.config(yscrollcommand=scrollbar.set)
+
+    #     # for level in self.server.users[name]:
+    #     #     self.listbox_code.insert(tk.END, f"레벨 {level}")
+
+    #     # 우측 Text
+    #     self.text_code = tk.Text(popup, wrap="word",
+    #                             font=("Consolas", 20), 
+    #                             bg="#1E1E1E", 
+    #                             fg="#D4D4D4", )
+    #     self.text_code.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+    
+    # def on_select_code(self,event):
+    #     selection = self.listbox_code.curselection()
+    #     if selection:
+    #         index = selection[0]
+    #         value = self.listbox_code.get(index)
+    #         value = str(value).replace('레벨','')
+    #         value = value.replace(' ','')
+    #         level = int(value)
+    #         if self.code_level == level:
+    #             # print('pass')
+    #             return
+            
+    #         self.code_level = level
+    #         name  = self.code_sel_name
+    #         # code = self.server.users[name][level]['code']
+    #         self.clear_code_msg()
+    #         self.client.send_request_complete_level(level,self.is_correct)
+    #         # self.add_code_msg(code)            
+    #         # print(f"선택된 항목: {value}")
+            
+    # def clear_code_msg(self):
+    #     self.text_code.config(state="normal")
+    #     self.text_code.delete("1.0", tk.END)
+    #     self.text_code.config(state="disabled")
+        
+    # def add_code_msg(self,msg):
+    #     self.text_code.config(state="normal")
+    #     self.text_code.insert(tk.END, msg+"\n")
+    #     self.text_code.config(state="disabled")

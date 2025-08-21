@@ -59,10 +59,15 @@ class socketClient():
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         self.client_socket.sendall(json_string.encode())
         
-    def send_request_complete_level(self, level = 0):        
-        json_object = {
-            'levels':level
-            }
+    def send_request_complete_level(self, level = 0, is_correct = False):     
+        if is_correct:   
+            json_object = {
+                'correct':level
+                }
+        else:
+            json_object = {
+                'levels':level
+                }
         self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
         self.client_socket.sendall(json_string.encode())
@@ -120,14 +125,25 @@ class socketClient():
                         self.password_ok = server_infor['sign']['password_ok']
                         # self.ed_input.clear_msg()
                         # self.ed_input.add_msg("#코드를 여기에 작성하세요")
-                elif 'levels' in server_infor:   
+                elif 'correct' in server_infor:   
                     # print(server_infor)
+                    levels = server_infor['correct']['level']
+                    code_line = server_infor['correct']['code']
+                    if len(code_line)>0:  
+                        self.parent.popup_code_correct.clear_code_msg()
+                        for code in code_line:
+                            self.parent.popup_code_correct.add_code_msg(code)
+                    else:
+                        self.parent.popup_code_correct.levels_code_list(levels)   
+                        
+                elif 'levels' in server_infor:   
                     levels = server_infor['levels']['level']
                     code = server_infor['levels']['code']
-                    if len(code)>0:
-                        self.ed_input.add_code_msg(code)
+                    if len(code)>0:                        
+                        self.parent.popup_code.clear_code_msg()
+                        self.parent.popup_code.add_code_msg(code)
                     else:
-                        self.ed_input.levels_code_list(levels)                    
+                        self.parent.popup_code.levels_code_list(levels)                    
                 elif 'ranking' in server_infor:   
                     # print(server_infor)
                     if self.ed_ranking is not None:

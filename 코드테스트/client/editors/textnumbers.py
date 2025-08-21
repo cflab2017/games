@@ -8,6 +8,8 @@ class TextNumbers(tk.Listbox):
         self.textwidget = textwidget
         self.textwidget.bind("<Return>", self.update_num_list)
         self.textwidget.bind("<BackSpace>", self.update_num_list)
+        
+        self.textwidget.bind("<<Modified>>", self.update_num_list)
     
         self.number_var = tk.Variable(self, value=["1"])
 
@@ -23,12 +25,15 @@ class TextNumbers(tk.Listbox):
     def set_width(self, num_len):
         self.configure(width=num_len+1)
 
-    def update_num_list(self, event):
+    def update_num_list(self, event=None):
         linenums = self.get_num_lines()
-        current_column = self.get_current_colomn()
-        
-        if current_column != 0 and event.keycode != 13: return
-        number_list = list(range(1, linenums)) if event.keycode == 13 else list(range(1, linenums-1))
+        if event is not None:
+            current_column = self.get_current_colomn()
+            
+            # if current_column != 0 and event.keycode != 13: return
+            number_list = list(range(1, linenums)) if event.keycode == 13 else list(range(1, linenums-1))
+        else:
+            number_list = list(range(1, linenums))
 
         self.set_width(len(str(linenums)))
         self.number_var.set(number_list)
