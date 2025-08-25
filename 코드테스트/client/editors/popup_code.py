@@ -4,6 +4,7 @@ import tkinter as tk
 
 import tkinter.font as tkfont
 
+import jedi
 from pygments import lex
 from pygments.lexers import PythonLexer
 from pygments.token import Token
@@ -205,6 +206,7 @@ class PopupCode:
             value = str(value).replace('레벨','')
             value = value.replace(' ','')
             level = int(value)
+            print(level,self.code_level)
             if self.code_level == level:
                 # print('pass')
                 return

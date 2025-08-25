@@ -7,6 +7,7 @@ from editors.editor_input import *
 from editors.editor_output import *
 from editors.editor_content import *
 from editors.editor_rangking import *
+from editors.editor_qlist import *
 from editors.toolbar import *
 
 from editors.popup_code import *
@@ -25,9 +26,11 @@ class PythonEditor:
 
             self.level = 1   
             self.last_level = 0
+            self.level_high = 0
             self.Challenge = 0
             self.Challenge_time = 30
-
+            
+            self.ed_qlist = None
             self.client = socketClient(self,host)
             # cli.run()
 
@@ -103,6 +106,11 @@ class PythonEditor:
             self.frame3_1.pack(side="left", fill="both", expand=1)  
             self.frame3_1.pack_propagate(False)          
             self.ed_content = EditorContent(self,self.frame3_1) 
+            
+            self.frame3_2=tk.Frame(self.frame3)
+            self.frame3_2.pack(side="left", fill="both", expand=1)
+            self.frame3_2.pack_propagate(False)          
+            self.ed_qlist = EditorQlist(self,self.frame3_2) 
 
 
             # self.frame3_2=tk.Frame(self.frame3)
@@ -127,6 +135,7 @@ class PythonEditor:
             self.client.set_bind_input(self.ed_input)
             self.client.set_bind_Ranking(self.ed_ranking)
 
+            self.client.send_request_qlist()
             self.client.send_request_code('start')
             self.client.send_request_ranking()
 

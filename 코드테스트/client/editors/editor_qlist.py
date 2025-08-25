@@ -12,25 +12,29 @@ from pygments.styles import get_style_by_name
 
 from editors.textnumbers import *
     
-class EditorRanking:
+class EditorQlist:
     # from editor import PythonEditor
     def __init__(self,parent,frame):
         self.parent = parent
         self.frame = frame
         self.font_size = 16#self.parent.font_size
         # self.style = get_style_by_name("monokai")
+        self.q_list = None
         
         color = self.rgb_to_hex(208,223,211) 
         color_font = self.rgb_to_hex(36,53,40) 
         color_font2 = self.rgb_to_hex(69,129,69) 
+        color_font3 = self.rgb_to_hex(184,71,91) 
         
         self.scroll_text()
-        self.text.tag_configure("title", font=("malgungulim", 20,'bold'), foreground=color_font, background=color,justify='center')   
-        self.text.tag_configure("highlight", font=("malgungulim", 20,'bold'), foreground=color_font, background=color,justify='center')   
-        self.text.tag_configure("myname", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color_font2,justify='left')   
+        self.text.tag_configure("title", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("highlight", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color,justify='center')   
+        self.text.tag_configure("current", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color_font2,justify='left')   
+        self.text.tag_configure("highscore", font=("malgungulim", self.font_size,'bold'), foreground=color_font, background=color_font3,justify='left')   
         
         self.text.bind('<Shift-Return>', self.ignore_a_key)  
         self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
+        self.clear_msg()
                     
     def on_ctrl_mousewheel(self,event):
         if event.state & 0x0004:  # Ctrl key mask
@@ -42,11 +46,12 @@ class EditorRanking:
         # else:
         #     print("Regular scroll")   
         
-    def clear_msg(self,):
+    def clear_msg(self):
         self.text.config(state="normal")
         self.text.delete("1.0", tk.END)
-        self.text.insert(tk.END, f"문제 [레벨:{self.parent.level} / {self.parent.last_level}]\n", "title")
+        # self.text.insert(tk.END, f"문제 [레벨:{self.parent.level} / {self.parent.last_level}]\n", "title")
         
+        self.add_highlight("문제 리스트")
         self.text.config(state="disabled")
         
     def add_highlight(self, msg):
@@ -74,27 +79,38 @@ class EditorRanking:
         self.text.yview_moveto(first)
         self.uniscrollbar.set(first, last)
         
-    def refresh_listbox(self, data):
-        self.add_highlight("순위")
-        self.text.config(state="normal")
-        self.text.delete("0.0", tk.END)
-        # self.data = dict(sorted(self.data.items(), key=lambda x: x[1]['level'], reverse=True))
-        self.high_score_dict = data
-        # print(self.high_score_dict)
-        keys = list(self.high_score_dict.keys())
-        keys = [int(key) for key in keys]
-        keys.sort()
-        keys = [str(key) for key in keys]
-        # print(keys)
+    def set_Qlist(self,data):
+        self.q_list = data
+        self.refresh_listbox()
         
-        for key in keys:
-            value = self.high_score_dict[key]
-            if value['name'] is not None:
-                msg = f" {int(key)+1:02}. [레벨: {int(value['score']):02}] [{value['name']}]\n"
-                if self.parent.name == value['name']:
-                    self.text.insert(tk.END, msg, "myname")
-                    self.parent.level_high = int(value['score'])
-                    # print('self.parent.level_high:',self.parent.level_high)
+    def refresh_listbox(self):
+        if self.q_list == None:
+            return
+        
+        self.clear_msg()
+        
+        self.text.config(state="normal")
+        for i,q in enumerate(self.q_list):
+            highlight = None
+            if i < len(self.q_list)-1:
+                msg = f"{i+1:02}번 : {q}"
+                    
+                if self.parent.level == i+1:
+                    highlight = "current"
+                    if self.parent.Challenge:
+                        msg += '<< 도전'
+                    else:
+                        msg += '<< 연습'
+                    
+                if self.parent.level_high == i+1:
+                    msg += ' << 기록'
+                    highlight = "highscore"
+                    
+                msg += '\n'
+                if highlight is not None:
+                    self.text.insert(tk.END, msg,highlight)
+                    if highlight == "current":
+                        self.text.see(tk.END)
                 else:
                     self.text.insert(tk.END, msg)
         self.text.config(state="disabled")

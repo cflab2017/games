@@ -55,9 +55,7 @@ class socketClient():
         json_object = {
             'ranking':0
             }
-        self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        self.client_socket.sendall(json_string.encode())
+        self.send_all(json_object)
         
     def send_request_complete_level(self, level = 0, is_correct = False):     
         if is_correct:   
@@ -68,9 +66,7 @@ class socketClient():
             json_object = {
                 'levels':level
                 }
-        self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        self.client_socket.sendall(json_string.encode())
+        self.send_all(json_object)
         
     def send_request_sign(self, name, password):        
         json_object = {
@@ -80,8 +76,7 @@ class socketClient():
                 }
             }
         self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        self.client_socket.sendall(json_string.encode())
+        self.send_all(json_object)
         
     def send_request_code(self, code, input_list=[],Challenge=0):        
         json_object = {
@@ -93,9 +88,31 @@ class socketClient():
                 'Challenge':Challenge
                 }
             }
+        self.send_all(json_object)
+        
+    def send_request_qlist(self):        
+        json_object = {
+            'qlist':{}
+            }
+        self.send_all(json_object)
+        
+    def recv_all(self,sock, length):
+        data = b''
+        while len(data) < length:
+            more = sock.recv(length - len(data))
+            if not more:
+                raise EOFError('소켓 연결이 끊어졌습니다.')
+            data += more
+        return data
+    
+    def send_all(self, json_object):
         # print(json_object)
-        self.response = None
         json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        
+        # 메시지 길이 먼저 전송 (헤더)        
+        length = len(json_string.encode())
+        self.client_socket.sendall(str(length).zfill(10).encode())  # 10자리 고정 길이 헤더
+
         self.client_socket.sendall(json_string.encode())
         
     def client_run(self):
@@ -112,9 +129,19 @@ class socketClient():
     def recv_data(self,client_socket):
         while True:
             try:
-                data = client_socket.recv(4096).decode()
+                # data = client_socket.recv(4096).decode()
                 # print(f"{data}")
-                server_infor = json.loads(data)    
+                # server_infor = json.loads(data)  
+                
+                # 먼저 헤더(길이 정보) 수신
+                header = self.recv_all(client_socket, 10)
+                data_length = int(header.decode())
+
+                # 지정된 길이만큼 데이터 수신
+                data = self.recv_all(client_socket, data_length)
+                server_infor = json.loads(data.decode())
+                # print("받은 데이터:", server_infor)
+                  
                 # print(server_infor)     
                 if 'sign' in server_infor:                    
                     if 'identity' in server_infor['sign']:
@@ -147,7 +174,13 @@ class socketClient():
                 elif 'ranking' in server_infor:   
                     # print(server_infor)
                     if self.ed_ranking is not None:
-                        self.ed_ranking.refresh_listbox(server_infor['ranking'])
+                        self.ed_ranking.refresh_listbox(server_infor['ranking']) 
+                    if self.parent.ed_qlist is not None:      
+                        self.parent.ed_qlist.refresh_listbox()
+                elif 'qlist' in server_infor:   
+                    # print(server_infor)
+                    self.parent.ed_qlist.set_Qlist(server_infor['qlist'])
+                    
                 elif 'response' in server_infor:
                     self.output.clear_msg(title_on=False)                 
                     # self.output.add_msg('\n')   
@@ -199,6 +232,7 @@ class socketClient():
                     self.content.add_msg('\n')
                     for msg in server_infor['response']['hint']:
                             self.content.add_msg(str(msg))
+                    self.parent.ed_qlist.refresh_listbox()
                 # print(f"서버메세제:{server_infor}")
             except Exception:
                 err_msg = traceback.format_exc()

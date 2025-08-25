@@ -260,15 +260,17 @@ class socketServer():
         json_object = {
             'ranking':self.high_score_dict
             }         
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)   
-        json_string = json_string.encode()
+        # json_string = json.dumps(json_object, ensure_ascii=False, default=str)   
+        # json_string = json_string.encode()
         
         if client is not None:
-            client.sendall(json_string)
+            # client.sendall(json_string)            
+            self.send_all(client,json_object)
         else:
             for identity in self.client_sockets:
                 client = self.client_sockets[identity]
-                client.sendall(json_string)
+                # client.sendall(json_string)     
+                self.send_all(client,json_object)
     
     def send_client_level(self, name,level):
         for identity in self.infor:
@@ -293,10 +295,21 @@ class socketServer():
         
     # def handler_exec(signum, frame):
     #     raise TimeoutError("Execution timed out!")
+    def send_to_qlist_client(self, client):
+        qlist = [que['section'] for que in Questions.que]
+        
+        json_object = {
+            'qlist':qlist
+            }
+        self.response = None
+        # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        # client.sendall(json_string.encode())     
+        self.send_all(client,json_object)
+        
     def send_to_correct_client(self, client, level):
         levels = [i+1 for i in range(len(Questions.que)-1)]
         if level > 0:
-            code = Questions.que[level]['correct']
+            code = Questions.que[level-1]['correct']
         else:
             code = ''
         
@@ -308,8 +321,9 @@ class socketServer():
             }
         # print(json_object)
         self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        client.sendall(json_string.encode())
+        # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        # client.sendall(json_string.encode())     
+        self.send_all(client,json_object)
         
     def send_to_levels_client(self, client,name, level):
         levels = []
@@ -328,8 +342,9 @@ class socketServer():
             }
         # print(json_object)
         self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        client.sendall(json_string.encode())
+        # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        # client.sendall(json_string.encode())     
+        self.send_all(client,json_object)
         
     def get_answ_from_Questions(self,level):        
         answ = []
@@ -374,8 +389,9 @@ class socketServer():
             }
         # print(json_object)
         self.response = None
-        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-        client.sendall(json_string.encode())
+        # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        # client.sendall(json_string.encode())
+        self.send_all(client,json_object)
     
     def save_to_file_user_code(self,name,level,code):        
         if name not in self.users:
@@ -409,24 +425,26 @@ class socketServer():
             
             self.send_to_level_client(client,name,level_next,result)
                 
-            # json_object = {
-            #     'response':{
-            #         'name':name,
-            #         'level':level_next,
-            #         'challenge_time':challenge_time,
-            #         'result':result,
-            #         'last':self.last,
-            #         'question':Questions.que[level_next-1]['ques'],
-            #         'hint':Questions.que[level_next-1]['hint'],
-            #         'answ':self.get_answ_from_Questions(level_next),
-            #         }
-            #     }
-            # self.response = None
-            # # print(json_object)
-            # json_string = json.dumps(json_object, ensure_ascii=False, default=str)
-            # client.sendall(json_string.encode())
-            
     
+    def recv_all(self,sock, length):
+        data = b''
+        while len(data) < length:
+            more = sock.recv(length - len(data))
+            if not more:
+                raise EOFError('소켓 연결이 끊어졌습니다.')
+            data += more
+        return data
+    
+    def send_all(self, client_socket,json_object):
+        # print(json_object)
+        json_string = json.dumps(json_object, ensure_ascii=False, default=str)
+        
+        # 메시지 길이 먼저 전송 (헤더)        
+        length = len(json_string.encode())
+        client_socket.sendall(str(length).zfill(10).encode())  # 10자리 고정 길이 헤더
+
+        client_socket.sendall(json_string.encode())
+        
     #접속된 client마다 각각 쓰레드가 생성된다.
     def thread_client(self,client_socket, identity):
         name = None
@@ -434,16 +452,29 @@ class socketServer():
         self.add_infor(identity)
         while True:
             try:
-                data = client_socket.recv(1024*10).decode()
-                # print(f"클라이언트에서 받은 메세지 : {data}")
                 
-                values = json.loads(data)
+                # data = client_socket.recv(1024*10).decode()
+                # print(f"클라이언트에서 받은 메세지 : {data}")                
+                # values = json.loads(data)
+                
+                # 먼저 헤더(길이 정보) 수신
+                header = self.recv_all(client_socket, 10)
+                data_length = int(header.decode())
+
+                # 지정된 길이만큼 데이터 수신
+                data = self.recv_all(client_socket, data_length)
+                values = json.loads(data.decode())
+                # print("받은 데이터:", values)
+                
                 if 'correct' in values:
                     self.send_to_correct_client(client_socket,values['correct'])
                     
+                if 'qlist' in values:
+                    self.send_to_qlist_client(client_socket)
+                        
                 if 'levels' in values:
                     self.send_to_levels_client(client_socket,name,values['levels'])
-                        
+                    
                 if 'ranking' in values:
                     self.send_infor_to_all(client_socket)
                 if 'sign' in values:
@@ -477,8 +508,9 @@ class socketServer():
                         self.infor[identity]['exec'].name = name
                         self.infor[identity]['Challenge'] = False                        
                         self.update_login_dic('w')                    
-                    json_string = json.dumps(response, ensure_ascii=False, default=str)
-                    client_socket.sendall(json_string.encode())
+                    # json_string = json.dumps(response, ensure_ascii=False, default=str)
+                    # client_socket.sendall(json_string.encode())     
+                    self.send_all(client_socket,response)
                     self.send_infor_to_all()
                 
                 if 'request' in values:
