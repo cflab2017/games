@@ -1999,7 +1999,95 @@ class Questions:
         },
         
 ####################################################################   
+#함수
 
+#"""----------------- 76  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "생성자(__init__)만 있는 Calculator 클래스를 생성하세요.",
+                "",
+                "실행결과는 없습니다.",
+                "힌트 코드의 문제 점을 수정하세요.",
+        ],
+        'hint':[
+                "class Calculator:",
+                "\tdef init(): #<생성자에 문제 해결!!",
+                "\t\tpass",
+        ],
+        'answ_in':None,
+        'input':[],  
+        'answ':[],
+        'nused':[],
+        'must':['def','class Calculator:','def __init__','(self):'],
+        'correct':[
+                "class Calculator:",
+                "\tdef __init__(self):",
+                "\t\tpass",
+        ]
+        },
+
+#"""----------------- 77  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "생성자(__init__)만 있는 Student 클래스를 생성하세요.",
+                "",
+                "실행결과는 없습니다.",
+        ],
+        'hint':[
+                "class Calculator:",
+        ],
+        'answ_in':None,
+        'input':[],  
+        'answ':[],
+        'nused':[],
+        'must':['def','class Student:','def __init__','(self):'],
+        'correct':[
+                "class Student:",
+                "\tdef __init__(self):",
+                "\t\tpass",
+        ]
+        },
+#"""----------------- 77  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "Calculator 클래스를 생성하고",
+                "\tadd 함수 클래스에 추가",
+                "",
+                "두개의 정수를 입력받아",
+                "add 함수를 호출하여 두 수의 합을 출력하세요.",
+        ],
+        'hint':[
+                "class Calculator:",
+                "\tdef add(self,a,b):",
+                "\t\tpass",
+                "",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "cal = Calculator()",
+                "print(cal.add(3,4))",
+        ],
+        'answ_in':None,
+        'input':[['3','4'],['6','3']],  
+        'answ':["합 : 7","합 : 9"],
+        'nused':[],
+        'must':['print','class Calculator:','input','def add(self,', 'cal.add'],
+        'correct':[
+                "class Calculator:",
+                "\tdef add(self,a,b):",
+                "\t\treturn a+b",
+                "",
+                "num1 = int(input('첫번째:'))",
+                "num2 = int(input('두번째:'))",
+                "cal = Calculator()",
+                "print('합 : ',cal.add(num1,num2))",
+        ]
+        },
+
+
+####################################################################   
 #"""----------------- 71  -----------------"""
 
         {

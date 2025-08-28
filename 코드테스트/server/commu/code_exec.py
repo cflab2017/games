@@ -180,42 +180,31 @@ class CodeExec:
             # self.safe_remove(output, '\n')  # 빈 문자열 제거
             # print(output)
             try:
-                cnt =0
-                # print(output)
                 is_ok = True
-                for i,an in enumerate(Questions.que[level-1]['answ']):
-                    if isinstance(an,list):
-                        for res in an:
-                            is_ok,cnt,result = self.check_line_same(output,cnt,res)
-                            if is_ok == False:
-                                break
-                    else:
-                        is_ok,cnt,result = self.check_line_same(output,cnt,an)
-                        
-                    if is_ok == False:
-                        break
-                    # while output[cnt] == '\n':
-                    #     cnt += 1
-                            
-                    # if str(output[cnt]).replace(' ', '') != str(an).replace(' ', ''):
-                    #     result = f'실패 (결과값:{output[i]} != {an})'
-                    #     break
-                    # cnt += 1
+                if len(Questions.que[level-1]['answ']) == 0:
+                    if len(output) > 0 and len(output[0]):
+                        is_ok = False
+                        result = f'실패\n출력과 결과값이 다릅니다. \n\n출력:{output}'
                 else:
+                    cnt =0
+                    for i,an in enumerate(Questions.que[level-1]['answ']):
+                        if isinstance(an,list):
+                            for res in an:
+                                is_ok,cnt,result = self.check_line_same(output,cnt,res)
+                                if is_ok == False:
+                                    break
+                        else:
+                            is_ok,cnt,result = self.check_line_same(output,cnt,an)
+                            
+                        if is_ok == False:
+                            break
+                        
+                if is_ok:
                     result = '정답입니다.'
                     msg = f'{self.name}님이 {level}번 문제를 해결했습니다.'
                     self.ed_input.add_msg(msg)
-                    next_up = True
-                    
-                    # if self.name not in self.parent.users:
-                    #     self.parent.users[self.name] = {}
-                    # self.parent.users[self.name][self.level] = {}
-                    # self.parent.users[self.name][self.level]['code'] = code
-                    # self.parent.update_store_users_dic('w', self.name)
-                    # print('users:',self.parent.users)
-                    
+                    next_up = True                        
                     self.level += 1
-                    # self.parent.score_sort(self.name,self.level)
                     
                         
             except Exception as ex:
