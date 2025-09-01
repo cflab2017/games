@@ -1,7 +1,7 @@
 @echo off
 :: 작업할 폴더 경로로 이동
 @REM cd /d D:\MyProject\GitRepo
-cd c:\github\game
+cd c:\github\games
 
 :: 현재 상태 출력
 echo =========================

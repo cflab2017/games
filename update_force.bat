@@ -1,7 +1,7 @@
 @echo off
 @REM cd /d D:\MyProject\GitRepo
 c:
-cd c:\github\game
+cd c:\github\games
 
 echo =========================
 echo Force Update from GitHub
