@@ -55,6 +55,10 @@ class ToolBar:
         self.label = tk.Label(self.frame, text="타이머: 0초", font=("Helvetica", 20,"bold"), foreground=color_font3)
         self.label.pack(side="left", fill="none", expand=0, anchor='center')
         
+        self.label_bonus = tk.Label(self.frame, text="보너스: 0초", font=("Helvetica", 20,"bold"), foreground=color_font3)
+        self.label_bonus.pack(side="left", fill="none", expand=0, anchor='center')        
+        # self.label_bonus.pack_forget()
+
         self.ed_output = ed_output
         run_btn = tk.Button(self.frame, text="실행해보기", command=self.ed_output.only_run_code_thread)
         run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
@@ -63,7 +67,7 @@ class ToolBar:
         ToolTip(run_btn, "작성한 코드의 실행 결과를 볼 수 있습니다.")
         
         
-        run_btn = tk.Button(self.frame, text="확인받기", command=self.ed_output.run_code_thread)
+        run_btn = tk.Button(self.frame, text="확인받기(Shift+Enter)", command=self.ed_output.run_code_thread)
         run_btn.config(font=("malgungulim", self.font_size, "bold"))  # 기본: 영어
         run_btn.configure(font=("malgungulim", self.font_size, "normal", "bold"), foreground=color_font2, background=color)
         run_btn.pack(side="left", padx=10,fill="none", expand=0, anchor='center')
@@ -214,7 +218,8 @@ class ToolBar:
         self.dingdong()
         self.parent.show_popup('도전을 중지했습니다.',1000)
         self.parent.client.send_request_code('start',Challenge=self.parent.Challenge)
-        self.seconds = 0
+        self.seconds = 0   
+        # self.label_bonus.pack_forget()
        
         
     def btn_train(self):
@@ -246,9 +251,23 @@ class ToolBar:
             self.parent.level = 1   
             # self.parent.last_level = 0
             self.parent.client.send_request_code('start',Challenge=self.parent.Challenge)
-            self.parent.show_popup(f'도전을 시작합니다.\n도전시간은 {self.parent.Challenge_time}분입니다.',2000)
+            msg = f'도전을 시작합니다.\n도전시간은 {self.parent.Challenge_time}분입니다.'
+            msg += '\n'
+            msg += '\n'
+            msg += '보너스 시간\n'
+            msg += '\n'
+            msg += f'붙여넣기 사용(Ctrl+V)\n'
+            msg += f'2 * (level//10+1) 초\n'
+            msg += '\n'
+            msg += f'붙여넣기 사용안함\n'
+            msg += f'4 * (level//10+1) 초\n'
+            
+            self.parent.show_popup(msg,5000)
             # self.seconds = 60 * 30
-            self.seconds = self.parent.Challenge_time*60+2
+            self.seconds = self.parent.Challenge_time*60+5  
+            self.parent.Challenge_bonus_limit = 30             
+            self.parent.ctrl_v_detected = False
+            # self.label_bonus.pack()
         else:
             # self.parent.show_popup('도전 중입니다.',1000)
             self.popup_challenge_stop()
@@ -280,7 +299,7 @@ class ToolBar:
             self.train_btn.config(text='연습하기')
         else:
             self.train_btn.configure(foreground=color_font2, background=color_font1)
-            self.train_btn.config(text='연습중')
+            self.train_btn.config(text='연습중(문제선택하기)')
             
             color_font1 = self.rgb_to_hex(255,255,255)
             color_font2 = self.rgb_to_hex(196,26,81)
@@ -300,4 +319,16 @@ class ToolBar:
         secs = self.seconds % 60
         self.label.config(text=f"{hrs:02}:{mins:02}:{secs:02}")
         
+        
+        # if self.parent.Challenge == 1:
+        if self.parent.Challenge_bonus_limit > 0:
+            self.parent.Challenge_bonus_limit -= 1
+            secs = self.parent.Challenge_bonus_limit
+            self.label_bonus.configure(foreground=self.rgb_to_hex(0,128,64), background=self.rgb_to_hex(255,255,255))
+        else:
+            secs = 0
+            self.label_bonus.configure(foreground=self.rgb_to_hex(255,255,255), background=self.rgb_to_hex(255,255,255))
+                
+        self.label_bonus.config(text=f"보너스:{secs:02}")
+            
         self.parent.root.after(1000, self.update_timer)  # 1초마다 반복

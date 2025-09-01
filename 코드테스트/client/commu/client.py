@@ -199,6 +199,22 @@ class socketClient():
                         # self.ttaeng()
                         start_new_thread(self.ttaeng,())
                     
+                     
+                    bonus = server_infor['response']['bonus']
+                    if self.parent.Challenge:
+                        if msg.find('시작')>-1:
+                            msg = '\n'
+                            msg += '보너스 시간\n'
+                            msg += '\n'
+                            msg += f'붙여넣기 사용\n'
+                            msg += f'2 * (level//10+1) 초\n'
+                            msg += '\n'
+                            msg += f'붙여넣기 사용안함\n'
+                            msg += f'4 * (level//10+1) 초\n'
+                            self.output.add_msg(msg)     
+                            self.Challenge_bonus = bonus + 5
+                            self.parent.Challenge_bonus_limit = self.Challenge_bonus
+                
                     if self.parent.level < server_infor['response']['level']:
                         self.parent.level = server_infor['response']['level']
                         self.parent.last_level = server_infor['response']['last']
@@ -209,7 +225,28 @@ class socketClient():
                         if msg.find('정답')>-1:                            
                             start_new_thread(self.dingdong,())
                             # self.dingdong()
-                            self.parent.show_popup(f'레벨업!! level : {self.parent.level}')
+                            msg = f'레벨업!! level : {self.parent.level}'
+                            if self.parent.Challenge:
+                                msg += f'\n제한시간 : {bonus} 초'
+                            self.parent.show_popup(msg)
+                            
+                            if self.parent.Challenge:
+                                if self.parent.Challenge_bonus_limit > 0:
+                                    msg = '\n\n'
+                                    if self.parent.ctrl_v_detected:
+                                        bonus_time = 2*(self.parent.level//10+1)
+                                        msg += f'보너스 타임 {bonus_time}초가 추가되었습니다.\n'
+                                        msg += f'붙여 넣기를 사용했습니다.\n'
+                                        msg += f'(붙여 넣기 사용안하면 보너스 타임 2배!!)\n'
+                                    else:
+                                        bonus_time = 4*(self.parent.level//10+1)
+                                        msg += f'보너스 타임 {bonus_time}초가 추가되었습니다.'
+                                        
+                                    self.parent.set_bonus(bonus_time)
+                                    self.output.add_msg(msg)  
+                                    
+                                self.Challenge_bonus = bonus
+                                self.parent.Challenge_bonus_limit = self.Challenge_bonus
                         # self.output.add_msg(f'레벨업!! level : {self.parent.level}')
                         
                     self.content.clear_msg()
@@ -233,6 +270,8 @@ class socketClient():
                     for msg in server_infor['response']['hint']:
                             self.content.add_msg(str(msg))
                     self.parent.ed_qlist.refresh_listbox()
+                    
+                    self.parent.ctrl_v_detected = False
                 # print(f"서버메세제:{server_infor}")
             except Exception:
                 err_msg = traceback.format_exc()

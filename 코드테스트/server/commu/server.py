@@ -384,6 +384,7 @@ class socketServer():
                 'section':Questions.que[level-1]['section'],
                 'question':Questions.que[level-1]['ques'],
                 'hint':Questions.que[level-1]['hint'],
+                'bonus':Questions.que[level-1]['bonus'],
                 'answ':self.get_answ_from_Questions(level),
                 }
             }

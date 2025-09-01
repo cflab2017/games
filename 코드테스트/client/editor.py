@@ -29,6 +29,9 @@ class PythonEditor:
             self.level_high = 0
             self.Challenge = 0
             self.Challenge_time = 30
+            self.Challenge_bonus = 0
+            self.Challenge_bonus_limit = 0
+            self.ctrl_v_detected = False
             
             self.ed_qlist = None
             self.client = socketClient(self,host)
@@ -84,15 +87,27 @@ class PythonEditor:
             self.frame2_1_1.pack_propagate(False)        
             self.ed_input = EditorInput(self,self.frame2_1_1)
 
-            self.frame2_1_2=tk.Frame(self.frame2_1)              
-            self.frame2_1_2.pack(side="left", fill="both", expand=1)          
-            self.frame2_1_2.pack_propagate(False)    
-            self.ed_ranking = EditorRanking(self,self.frame2_1_2) 
+            # self.frame2_1_2=tk.Frame(self.frame2_1)              
+            # self.frame2_1_2.pack(side="left", fill="both", expand=1)          
+            # self.frame2_1_2.pack_propagate(False)    
+            # self.ed_ranking = EditorRanking(self,self.frame2_1_2) 
 
             self.frame2_2=tk.Frame(self.frame1_1)   
             self.frame2_2.pack(fill="both", expand=1)    
             self.frame2_2.pack_propagate(False) 
-            self.ed_output = EditorOutput(self,self.frame2_2)              
+            # self.ed_output = EditorOutput(self,self.frame2_2) 
+            
+            
+            self.frame2_2_1=tk.Frame(self.frame2_2)              
+            self.frame2_2_1.pack(side="left", fill="both", expand=1)          
+            self.frame2_2_1.pack_propagate(False)        
+            self.ed_output = EditorOutput(self,self.frame2_2_1)
+
+            self.frame2_2_2=tk.Frame(self.frame2_2)              
+            self.frame2_2_2.pack(side="left", fill="both", expand=1)          
+            self.frame2_2_2.pack_propagate(False)    
+            self.ed_ranking = EditorRanking(self,self.frame2_2_2) 
+                         
 
             #########################################################################    
             #########################################################################    
@@ -138,7 +153,10 @@ class PythonEditor:
             self.client.send_request_qlist()
             self.client.send_request_code('start')
             self.client.send_request_ranking()
-
+            
+        def set_bonus(self, seconds):
+            self.toolbar.seconds += seconds
+            
         def get_user_code(self, is_correct=False):
             if is_correct:
                 try:
@@ -180,7 +198,7 @@ class PythonEditor:
                 popup.resizable(False, False)
 
                 # 내용 표시
-                label = tk.Label(popup, text=message, font=("malgungulim", 30, "bold"), bg="white", fg="red")
+                label = tk.Label(popup, text=message, font=("malgungulim", 20, "bold"), bg="white", fg="black")
                 label.pack(expand=True)
 
                 # 자동 종료 타이머

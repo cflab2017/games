@@ -55,6 +55,8 @@ class EditorInput:
         self.text.bind("<KeyPress-BackSpace>", self.on_backspace)  # Backspace
         self.text.bind("<Delete>", self.on_delete_key)              # Delete 키
         self.text.bind("<Control-a>", self.on_ctrl_a)               # Ctrl+A 전체 선택
+        self.text.bind("<Control-v>", self.on_ctrl_v)               # Ctrl+V 전체 선택
+        self.text.bind("<Control-V>", self.on_ctrl_v)               # Ctrl+V 전체 선택
         self.text.bind("<MouseWheel>", self.on_ctrl_mousewheel) 
 
         
@@ -121,6 +123,19 @@ class EditorInput:
             # 선택 영역 없으면 무시
             pass
 
+    def on_ctrl_v(self,event):
+        # Ctrl + V 처리 (전체 선택)
+        # self.text.tag_add(tk.SEL, "1.0", tk.END)
+        # print('aaa')
+        self.parent.ctrl_v_detected = True
+        # return "break"
+    #         try:
+    #     clipboard = root.clipboard_get()
+    #     print("붙여넣기 내용:", clipboard)
+    #     entry.insert(tk.END, clipboard)
+    # except tk.TclError:
+    #     print("클립보드에 텍스트 없음")
+    
     def on_ctrl_a(self,event):
         # Ctrl + A 처리 (전체 선택)
         self.text.tag_add(tk.SEL, "1.0", tk.END)

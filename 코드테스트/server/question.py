@@ -12,6 +12,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],
         'answ_in':None,
         'answ':['hello'], 
@@ -31,6 +32,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['import random'],
@@ -50,6 +52,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['com = random.randint(0,100)'],
@@ -69,6 +72,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['import pygame'],
@@ -88,6 +92,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['pygame.init()'],
@@ -107,6 +112,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['while True:'],
@@ -126,6 +132,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['if a > b:'],
@@ -145,6 +152,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['for i in range(5):'],
@@ -164,6 +172,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['class Game:'],
@@ -183,6 +192,7 @@ class Questions:
         'hint':[
                 "print('안녕하세요')",
         ],
+        'bonus':30,
         'input':[],  
         'answ_in':None,
         'answ':['def __init__(self):'],
@@ -208,6 +218,7 @@ class Questions:
                 "a = 10",
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[5],
@@ -230,6 +241,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':['hello'],
@@ -253,6 +265,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[True],
@@ -275,6 +288,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[2.0],
@@ -297,6 +311,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[12],
@@ -319,6 +334,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[6],
@@ -341,6 +357,7 @@ class Questions:
         'hint':[
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[16],
@@ -366,6 +383,7 @@ class Questions:
                 "a += 1",
                 "print(a)",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':[15],
@@ -391,6 +409,7 @@ class Questions:
                 "a = 10",
                 "print(f'a{a}')",
         ],
+        'bonus':40,
         'input':[],    
         'answ_in':None, 
         'answ':['a = 10'],
@@ -413,6 +432,7 @@ class Questions:
         'hint':[
                 "f'a = {}' 를 사용하세요.",
         ],
+        'bonus':40,
         'input':[],     
                 'answ_in':None,
                 'answ':[
@@ -441,6 +461,7 @@ class Questions:
                 "c = a + b",
                 "print(c)",
         ],
+        'bonus':40,
         'input':[],  
         'answ_in':None,
         'answ':[6],
@@ -463,6 +484,7 @@ class Questions:
         ],
         'hint':[
         ],
+        'bonus':40,
         'input':[],  
         'answ_in':None,
         'answ':[8],
@@ -485,6 +507,7 @@ class Questions:
         ],
         'hint':[
         ],
+        'bonus':40,
         'input':[],  
         'answ_in':None,
         'answ':[16],
@@ -508,6 +531,7 @@ class Questions:
         'hint':[
         ],
 
+        'bonus':40,
         'input':[],  
         'answ_in':None,
         'answ':[4.0],
@@ -535,6 +559,7 @@ class Questions:
                 'name = input("이름 : ")',
                 'print(name)',
         ],
+        'bonus':40,
 
         'input':[['철수'],['영희']],     
         'answ_in':[              
@@ -562,6 +587,7 @@ class Questions:
                 'age = input("나이 : ")',
                 'print(age)',
         ],
+        'bonus':40,
 
         'input':[['12'],['20']],     
         'answ_in':[              
@@ -591,6 +617,7 @@ class Questions:
                 'a = int(a)',
                 'b = int(b)',
         ],
+        'bonus':40,
         'input':[['3','4'],['5','3']],   
         'answ_in':[              
                 ['첫번째 : 3','두번째 : 4'],
@@ -621,6 +648,7 @@ class Questions:
                 'a = input("첫번째:")',
                 'b = input("두번째:")',
         ],
+        'bonus':40,
 
         'input':[['3','4'],['5','7']],  
         'answ_in':[              
@@ -652,6 +680,7 @@ class Questions:
                 'a = input("첫번째:")',
                 'b = input("두번째:")',
         ],
+        'bonus':40,
 
         'input':[['3','4'],['5','7']],   
         'answ_in':[              
@@ -683,6 +712,7 @@ class Questions:
                 's = input("문자열 입력:")',
                 'len 함수를 사용하면 문자열의 길이를 구할 수 있습니다.',
         ],
+        'bonus':40,
 
         'input':[['hello'],['codingnow']],      
         'answ_in':[              
@@ -718,6 +748,7 @@ class Questions:
                 'else:',
                 '\tprint("다르다")',
         ],
+        'bonus':40,
         'input':[],   
         'answ_in':None, 
         'answ':['b가크다'],
@@ -749,6 +780,7 @@ class Questions:
                 'if a == b:',
                 '\tprint("같다")',
         ],
+        'bonus':40,
         'input':[],   
         'answ_in':None, 
         'answ':['a가크거나 같다'],
@@ -777,6 +809,7 @@ class Questions:
                 'else:',
                 '\tprint("??")',
         ],
+        'bonus':40,
         'input':[['85'],['60'],['59']],   
         'answ_in':[              
                 ['입력 : 85'],
@@ -811,6 +844,7 @@ class Questions:
                 'else:',
                 '\tprint("미성년자")',
         ],
+        'bonus':40,
 
         'input':[['17'],['20'],['21']],  
         'answ_in':[              
@@ -852,6 +886,7 @@ class Questions:
                 "else:",
                 "\tprint('ccc')",
         ],
+        'bonus':40,
 
         'input':[['78'],['90'],['71'],['60'],['50']],  
         'answ_in':[              
@@ -889,6 +924,7 @@ class Questions:
                 "a = int(input('입력1 :'))",    
                 "b = int(input('입력2 :'))",
         ],
+        'bonus':40,
 
         'input':[['10','15'],['90','80']],
         'answ_in':[              
@@ -921,6 +957,7 @@ class Questions:
                 'a = n % 2',
                 'print(a)',
         ],
+        'bonus':40,
 
         'input':[[7],[2]],  
         'answ_in':[              
@@ -949,6 +986,7 @@ class Questions:
         'hint':[
                 "gender = input('입력 :')",    
         ],
+        'bonus':40,
 
         'input':[['남'],['여']],  
         'answ_in':[              
@@ -985,6 +1023,7 @@ class Questions:
                 "elif b > a and b > c:",  
                 "\tprint('b가 제일크다')",  
         ],
+        'bonus':40,
 
         'input':[['10','15','20'],['90','80','70'],['5','3','4']],  
         'answ_in':[              
@@ -1023,6 +1062,7 @@ class Questions:
                 "if 3 <= month and month <= 5:",   
                 "\tprint('봄')",  
         ],
+        'bonus':40,
 
         'input':[['1'],['9'],['6'],['12']],  
         'answ_in':[              
@@ -1060,6 +1100,7 @@ class Questions:
                 'for i in range(10):',
                 '\tprint(i)', 
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1083,6 +1124,7 @@ class Questions:
                 'for i in range(10):',
                 '\tprint(i)', 
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1106,6 +1148,7 @@ class Questions:
         'hint':[
                 'range(시작, 중지, 증가):',   
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1128,6 +1171,7 @@ class Questions:
         'hint':[
                 'range(시작, 중지, 증가):',   
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1152,6 +1196,7 @@ class Questions:
                 'for i in range(5):',   
                 "\tprint(i)",
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1176,6 +1221,7 @@ class Questions:
                 'for i in range(5):',   
                 "\tprint(i)",
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1208,6 +1254,7 @@ class Questions:
                 '\ttotal += 1',    
                 'print(total)', 
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1236,6 +1283,7 @@ class Questions:
                 '\ttotal += 1',    
                 'print(total)', 
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1262,6 +1310,7 @@ class Questions:
                 'for i in range(5):',
                 '\tprint(i)',    
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1288,6 +1337,7 @@ class Questions:
                 'for i in range(5):',
                 '\tprint(i)', 
         ],
+        'bonus':40,
 
         'input':[['7'],['6']],  
         'answ_in':[
@@ -1343,6 +1393,7 @@ class Questions:
                 "lst = ['a','b']",   
                 'print(lst)',  
         ],
+        'bonus':40,
 
         'answ_in':None,
         'input':[],  
@@ -1367,6 +1418,7 @@ class Questions:
                 "lst = ['사과', '바나나', '오렌지']",   
                 'print(lst)',   
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["['사과', '바나나', '오렌지', '포도']"],
@@ -1392,6 +1444,7 @@ class Questions:
                 "lst = ['사과', '바나나', '오렌지', '바나나']",   
                 'print(lst)',  
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["['사과', '오렌지']"],
@@ -1417,6 +1470,7 @@ class Questions:
                 "lst = ['사과', '오렌지', '바나나']",   
                 'print(lst)', 
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["리스트의 길이 : 3"],
@@ -1439,6 +1493,7 @@ class Questions:
                 "lst = ['사과', '오렌지', '포도']",   
                 'print(lst)',  
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["오렌지"],
@@ -1463,6 +1518,7 @@ class Questions:
                 "lst = ['사과', '오렌지', '포도']",   
                 'print(lst)',    
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["사과","오렌지","포도"],
@@ -1487,6 +1543,7 @@ class Questions:
         "nums = [1, 2, 3, 4, 5]",   
         'print(nums)',   
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["15"],
@@ -1509,6 +1566,7 @@ class Questions:
         "nums = [10, 3, 7, 1, 5]",   
         'print(nums)',   
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["10","1"],
@@ -1532,6 +1590,7 @@ class Questions:
         "nums = [4, 1, 3, 5, 2]",   
         'print(nums)',   
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["[1, 2, 3, 4, 5]"],
@@ -1556,6 +1615,7 @@ class Questions:
                 "nums = [4, 1, 3, 5, 2]",   
                 'print(nums)',   
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["[5, 4, 3, 2, 1]"],
@@ -1582,6 +1642,7 @@ class Questions:
                 "scores = {'홍길동': 85, '이순신': 92}",   
                 'print(scores)',    
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["{'홍길동': 85, '이순신': 92, '강감찬': 78}"],
@@ -1606,6 +1667,7 @@ class Questions:
                 "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78}",   
                 "print(scores['홍길동'])",    
         ],
+        'bonus':40,
 
         'input':[],  
         'answ_in':None,
@@ -1631,6 +1693,7 @@ class Questions:
                 "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78}",   
                 'print(scores)',  
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["{'홍길동': 85, '이순신': 92, '강감찬': 78, '유관순': 88}"],
@@ -1655,6 +1718,7 @@ class Questions:
                 "scores = {'홍길동': 85, '이순신': 92, '강감찬': 78, '유관순': 88}",   
                 'print(scores)',    
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["{'이순신': 92, '강감찬': 78, '유관순': 88}"],
@@ -1681,6 +1745,7 @@ class Questions:
                 'a = list(scores.values()) #리스트로 변환',    
                 'print(a)',    
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["[92, 78, 88]","합 : 258"],
@@ -1706,6 +1771,7 @@ class Questions:
                 "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",    
                 'print(scores.keys())', 
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["['이순신', '강감찬', '유관순']"],
@@ -1731,6 +1797,7 @@ class Questions:
                 'length = ???',    
                 'print(length)',  
         ],
+        'bonus':40,
         'answ_in':None,
 
         'input':[],  
@@ -1754,6 +1821,7 @@ class Questions:
         "scores = {'이순신': 92, '강감찬': 78, '유관순': 88}",    
         "print('평균점수')",  
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["평균 점수: 86.0"],
@@ -1782,6 +1850,7 @@ class Questions:
                 "for name, score in scores.items():",
                 "\tprint(f'{name} {score}')",
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["이순신: 92","유관순: 88"],
@@ -1811,6 +1880,7 @@ class Questions:
                 "if name in scores:",
                 "\tprint(f'score에 있습니다.')",   
         ],
+        'bonus':40,
         'answ_in':[
                 ['이름을 입력하세요: 강감찬'],
                 ['이름을 입력하세요: 김유신']
@@ -1851,6 +1921,7 @@ class Questions:
                 "result = add(3,5)",
                 "print(result)",
         ],
+        'bonus':40,
         'answ_in':[
                 ["첫번째: 4","두번째: 6"],
                 ["첫번째: 3","두번째: 4"]
@@ -1886,6 +1957,7 @@ class Questions:
                 "",
                 "print(result)",
         ],
+        'bonus':40,
         'answ_in':[
                 ["첫번째: 4","두번째: 6"],
                 ["첫번째: 3","두번째: 4"]
@@ -1917,6 +1989,7 @@ class Questions:
                 "",
                 "print(result)",
         ],
+        'bonus':40,
         'answ_in':[
                 ["첫번째: 4","두번째: 6"],
                 ["첫번째: 3","두번째: 4"]
@@ -1948,6 +2021,7 @@ class Questions:
                 "",
                 "print(result)",
         ],
+        'bonus':40,
         'answ_in':[
                 ["첫번째: 4","두번째: 2"],
                 ["첫번째: 8","두번째: 2"]
@@ -1983,6 +2057,7 @@ class Questions:
 
                 "print('평균 : ',avr)",
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':["평균 : 20.0"],
@@ -2015,6 +2090,7 @@ class Questions:
                 "\tdef init(): #<생성자에 문제 해결!!",
                 "\t\tpass",
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':[],
@@ -2038,6 +2114,7 @@ class Questions:
         'hint':[
                 "class Calculator:",
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[],  
         'answ':[],
@@ -2049,7 +2126,7 @@ class Questions:
                 "\t\tpass",
         ]
         },
-#"""----------------- 77  -----------------"""
+#"""----------------- 78  -----------------"""
         {
         'section':"클래스",
         'ques':[
@@ -2069,6 +2146,7 @@ class Questions:
                 "cal = Calculator()",
                 "print(cal.add(3,4))",
         ],
+        'bonus':40,
         'answ_in':None,
         'input':[['3','4'],['6','3']],  
         'answ':["합 : 7","합 : 9"],
@@ -2088,7 +2166,7 @@ class Questions:
 
 
 ####################################################################   
-#"""----------------- 71  -----------------"""
+#"""----------------- 79  -----------------"""
 
         {
         'section':"완료",
@@ -2096,6 +2174,7 @@ class Questions:
         "완료했습니다.",
         ],
         'hint':[],    
+        'bonus':40,
         'answ_in':None,     
         'input':[],  
         'answ':[],
