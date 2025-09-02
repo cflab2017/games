@@ -244,25 +244,29 @@ class ToolBar:
             # self.parent.last_level = 0
             self.parent.client.send_request_code('train',Challenge=self.parent.Challenge)
         self.seconds = 0
-            
+    
+    def challenage_on_msg(self):
+        self.parent.Challenge = 1
+        msg = f'도전을 시작합니다.\n도전시간은 {self.parent.Challenge_time}분입니다.'
+        msg += '\n'
+        msg += '\n'
+        msg += '보너스 시간\n'
+        msg += '\n'
+        msg += f'붙여넣기 사용(Ctrl+V)\n'
+        msg += f'2 * (level//10+1) 초\n'
+        msg += '\n'
+        msg += f'붙여넣기 사용안함\n'
+        msg += f'4 * (level//10+1) 초\n'
+        
+        self.parent.show_popup(msg,5000)
+        
     def btn_Challenge(self):
         if self.parent.Challenge == 0:
-            self.parent.Challenge = 1
             self.parent.level = 1   
             # self.parent.last_level = 0
             self.parent.client.send_request_code('start',Challenge=self.parent.Challenge)
-            msg = f'도전을 시작합니다.\n도전시간은 {self.parent.Challenge_time}분입니다.'
-            msg += '\n'
-            msg += '\n'
-            msg += '보너스 시간\n'
-            msg += '\n'
-            msg += f'붙여넣기 사용(Ctrl+V)\n'
-            msg += f'2 * (level//10+1) 초\n'
-            msg += '\n'
-            msg += f'붙여넣기 사용안함\n'
-            msg += f'4 * (level//10+1) 초\n'
+            self.challenage_on_msg()
             
-            self.parent.show_popup(msg,5000)
             # self.seconds = 60 * 30
             self.seconds = self.parent.Challenge_time*60+5  
             self.parent.Challenge_bonus_limit = 30             

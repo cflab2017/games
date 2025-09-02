@@ -154,6 +154,9 @@ class PythonEditor:
             self.client.send_request_code('start')
             self.client.send_request_ranking()
             
+        def set_challenge_time(self, seconds):
+            self.toolbar.seconds = seconds
+            
         def set_bonus(self, seconds):
             self.toolbar.seconds += seconds
             

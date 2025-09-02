@@ -180,7 +180,10 @@ class socketClient():
                 elif 'qlist' in server_infor:   
                     # print(server_infor)
                     self.parent.ed_qlist.set_Qlist(server_infor['qlist'])
-                    
+                elif 'challenge' in server_infor:
+                    self.parent.toolbar.challenage_on_msg()                        
+                    seconds = server_infor['challenge']['time']+5
+                    self.parent.set_challenge_time(seconds)
                 elif 'response' in server_infor:
                     self.output.clear_msg(title_on=False)                 
                     # self.output.add_msg('\n')   

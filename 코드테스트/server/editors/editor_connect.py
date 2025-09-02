@@ -38,6 +38,7 @@ class EditorConnect:
 # 우클릭 메뉴 생성
         self.context_menu = Menu(self.frame, tearoff=0)
         self.context_menu.add_command(label="레벨 이동", command=self.menu_action_level)
+        self.context_menu.add_command(label="도전 레벨 & 시간", command=self.menu_action_Challenge_time)
         
         self.listbox.bind('<<ListboxSelect>>', self.on_select)
         self.listbox.bind('<Button-3>', self.show_context_menu)  # Windows: Button-3, Mac: Button-2
@@ -70,6 +71,37 @@ class EditorConnect:
                     level = int(level)
                     # print(name,level)
                     self.parent.server.send_client_level(name,level)
+                except Exception as ex:
+                    print(ex)
+            #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")
+            # else:
+            #     messagebox.showwarning("입력 취소", "숫자 입력이 취소되었습니다.")
+            
+    def menu_action_Challenge_time(self):
+        selection = self.listbox.curselection()
+        if selection:
+            value = self.listbox.get(selection[0])
+            value = re.findall(r'\[(.*?)\]', value)
+            
+            # print(f"{value}")
+            name = value[0]
+            
+            # Challenge_time = simpledialog.askinteger("도전 시간 입력", "도전 시간을 입력하세요(분.초):")
+            Challenge_values = simpledialog.askstring("도전 시간 입력", "도전 시간을 입력하세요(레벨.분.초):")
+            # print(level)
+            if Challenge_values is not None:
+                try:
+                    Challenge_values = str(Challenge_values).split('.')
+                    
+                    if len(Challenge_values)==3:
+                        level = int(Challenge_values[0])
+                        mi = int(Challenge_values[1])
+                        se = int(Challenge_values[2])
+                        
+                        Challenge_time = mi*60 + se
+                        
+                        self.parent.server.send_client_level(name,level)
+                        self.parent.server.send_client_challenge_time(name,Challenge_time)
                 except Exception as ex:
                     print(ex)
             #     messagebox.showinfo("입력 결과", f"입력한 숫자는 {num}입니다.")

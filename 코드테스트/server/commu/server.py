@@ -281,7 +281,16 @@ class socketServer():
                     break
             except Exception as ex:
                 print(ex)
-                    
+                
+    def send_client_challenge_time(self, name,seconds):
+        for identity in self.infor:
+            try:
+                if self.infor[identity]['name'] == name:
+                    client = self.client_sockets[identity]
+                    self.send_challenge_time_to_client(client,seconds)
+                    break
+            except Exception as ex:
+                print(ex)          
     #client가 접속되는지 기다리고 쓰레드를 생서한다.
     def server_run(self):
         while True:
@@ -394,6 +403,14 @@ class socketServer():
         # client.sendall(json_string.encode())
         self.send_all(client,json_object)
     
+    def send_challenge_time_to_client(self, client,seconds):                            
+        json_object = {
+            'challenge':{
+                'time':seconds,
+                }
+            }
+        self.send_all(client,json_object)
+        
     def save_to_file_user_code(self,name,level,code):        
         if name not in self.users:
             self.users[name] = {}
