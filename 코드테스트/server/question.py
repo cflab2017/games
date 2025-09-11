@@ -2164,7 +2164,131 @@ class Questions:
         ]
         },
 
+#"""----------------- 79  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "힌트 코드를 사용해서",
+                "greet( ) 함수를 완성하세요.",
+        ],
+        'hint':[
+                "class Person:",
+                "\tdef __init__(self, name, age):",
+                "\t\tself.name = name",
+                "\t\tself.age = age",
+                "",
+                "\tdef greet(self):",
+                "\t\tpass",
+                "",
+                "",
+                "p1 = Person('코딩', 19)",
+                "p1.greet()",
+        ],
+        'bonus':40,
+        'answ_in':None,
+        'input':[],  
+        'answ':["이름:코딩, 나이:19"],
+        'nused':[],
+        'must':['print','class Person:','{self.name}','{self.age}', 'p1.greet()'],
+        'correct':[
+                "class Person:",
+                "\tdef __init__(self, name, age):",
+                "\t\tself.name = name",
+                "\t\tself.age = age",
+                "",
+                "\tdef greet(self):",
+                "\t\tprint(f'이름:{self.name}, 나이:{self.age}')",
+                "",
+                "",
+                "p1 = Person('코딩', 19)",
+                "p1.greet()",
+        ]
+        },
 
+#"""----------------- 80  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "힌트 코드를 사용해서",
+                "greet( ) 함수 없이 이름과 나이를 출력하세요.",
+                "클래스 변수 p1을 사용하면 ",
+                "self로 선언한 변수를 접근 할 수 있어요 ",
+        ],
+        'hint':[
+                "class Person:",
+                "\tdef __init__(self, name, age):",
+                "\t\tself.name = name",
+                "\t\tself.age = age",
+                "",
+                "",
+                "p1 = Person('코딩', 19)",
+                "print(f'{p1.name})'",
+        ],
+        'bonus':40,
+        'answ_in':None,
+        'input':[],  
+        'answ':["이름:코딩, 나이:19"],
+        'nused':['greet()'],
+        'must':['print','class Person:','{p1.name}','{p1.age}'],
+        'correct':[
+                "class Person:",
+                "\tdef __init__(self, name, age):",
+                "\t\tself.name = name",
+                "\t\tself.age = age",
+                "",
+                "",
+                "p1 = Person('코딩', 19)",
+                "print(f'이름:{p1.name}, 나이:{p1.age}')",
+        ]
+        },
+
+#"""----------------- 81  -----------------"""
+        {
+        'section':"클래스",
+        'ques':[
+                "힌트 코드를 사용해서",
+                "가로3, 세로5 사각형의 넓이를 구합니다.",
+                "클래스의 area를 사용 ",
+        ],
+        'hint':[
+                "class Rectangle:",
+                "\tdef __init__(self, width, height):",
+                "\t\tpass",
+                "",
+                "\tdef area(self):#넓이",
+                "\t\tpass",
+                "",
+                "",
+                "width = 3",
+                "height = 5",
+                "#클래스 생성",
+                "",
+                "#area 함수 호출해서 결과값 받아오기",
+        ],
+        'bonus':40,
+        'answ_in':None,
+        'input':[],  
+        'answ':["직사각형의 넓이 : 15"],
+        'nused':['width*height','width * height'],
+        'must':['print','class Rectangle:','self.width','self.height' ,'self.width * self.height'],
+        'correct':[
+                "class Rectangle:",
+                "\tdef __init__(self, width, height):",
+                "\t\tself.width = width",
+                "\t\tself.height = height",
+                "",
+                "\tdef area(self):#넓이",
+                "\t\treturn self.width * self.height",
+                "",
+                "",
+                "width = 3",
+                "height = 5",
+                "r = Rectangle(width, height)",
+                "",
+                "area = r.area()",
+                "print(f'직사각형의 넓이 : ',area)",
+        ]
+        },
 ####################################################################   
 #"""----------------- 79  -----------------"""
 
