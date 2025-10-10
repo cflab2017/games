@@ -73,6 +73,8 @@ class GameClient:
         self.power = 0
         self.is_charging = False
         self.last_move_dir = 0
+        
+        self.lobby_listRooms_ret = None
 
         # 사운드 로드
         self.fire_sound = None
@@ -208,12 +210,15 @@ class GameClient:
     def handle_lobby_screen(self, events):
         for event in events:
             room_name = self.room_input.handle_event(event)
+            # print(room_name)
             if room_name:
                 self.send_message({"type": "create_room", "room_name": room_name})
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i, name in enumerate(self.room_list):
                     if pygame.Rect(300, 150 + i * 40, 200, 30).collidepoint(event.pos):
                         self.send_message({"type": "join_room", "room_name": name}); break
+                if self.lobby_listRooms_ret.collidepoint(event.pos):
+                    self.send_message({"type": "list_rooms"})
 
     def draw_lobby_screen(self):
         self.screen.fill(SKY_BLUE)
@@ -227,6 +232,19 @@ class GameClient:
         if self.lobby_error_message:
             error_text = self.font.render(self.lobby_error_message, True, RED)
             self.screen.blit(error_text, (300, 450))
+        
+        img = self.big_font.render("List Rooms", True, BLACK)
+        img_ret = img.get_rect()
+        img_ret.x = 300
+        img_ret.y = 550
+        self.screen.blit(img, img_ret)
+        
+        img_ret.width += 10
+        img_ret.height += 10
+        img_ret.x -= 5
+        img_ret.y -= 5
+        self.lobby_listRooms_ret = img_ret
+        pygame.draw.rect(self.screen, GREEN, img_ret,1)
 
     def handle_game_over_screen(self, events):
         for event in events:
