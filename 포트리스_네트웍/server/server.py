@@ -67,7 +67,19 @@ class GameServer:
                 # print(message,player_id)
                 if player_id is None: # 아직 로그인하지 않은 클라이언트
                     if message.get("type") == "login":
-                        player_id = message.get("player_id", f"player_{uuid.uuid4().hex[:4]}")
+                        requested_player_id = message.get("player_id", "").strip()
+
+                        # Check length limit
+                        if not requested_player_id or len(requested_player_id) > 10:
+                            await self.send_message(writer, {"type": "login_fail", "reason": "아이디는 1~10자 이내여야 합니다."})
+                            return # Stop processing this login attempt
+
+                        # Check for duplicate ID
+                        if requested_player_id in [client_id for client_id in self.clients.values()]:
+                            await self.send_message(writer, {"type": "login_fail", "reason": "이미 사용 중인 아이디입니다."})
+                            return # Stop processing this login attempt
+                        
+                        player_id = requested_player_id
                         self.clients[writer] = player_id
                         await self.send_message(writer, {"type": "login_ok", "id": player_id})
                         print(f"[INFO] {player_id} 로그인.")
@@ -93,8 +105,13 @@ class GameServer:
         if msg_type == "list_rooms": 
             await self.send_message(writer, {"type": "room_list", "rooms": list(self.rooms.keys())})
         elif msg_type == "create_room":
-            room_name = message.get("room_name")
-            # print('aaaa:',self.rooms)
+            room_name = message.get("room_name", "").strip()
+
+            # Check length limit
+            if not room_name or len(room_name) > 10:
+                await self.send_message(writer, {"type": "create_fail", "reason": "방 이름은 1~10자 이내여야 합니다."})
+                return # Stop processing this room creation attempt
+
             if room_name and room_name not in self.rooms:
                 self.rooms[room_name] = GameRoom(room_name, self)
                 self.players_in_room[player_id] = room_name

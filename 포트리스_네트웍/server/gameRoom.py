@@ -3,6 +3,7 @@ import json
 import math
 import time
 import uuid
+import random
 from values import *
 
 class GameRoom:
@@ -25,7 +26,15 @@ class GameRoom:
         for x in range(MAP_WIDTH):
             y1 = 50 * math.sin(x * 2 * math.pi / (MAP_WIDTH * 0.8))
             y2 = 25 * math.sin(x * 2 * math.pi / (MAP_WIDTH * 0.3))
-            heights[x] = int(350 + y1 + y2)
+            heights[x] = int(700 + y1 + y2)
+
+        # Add a wall in the middle
+        wall_x = MAP_WIDTH // 2
+        wall_width = 10
+        wall_top_y = MAP_HEIGHT // 2
+        for i in range(wall_x - wall_width // 2, wall_x + wall_width // 2):
+            heights[i] = min(heights[i], wall_top_y)
+
         return heights
 
     async def broadcast(self, message):
@@ -40,11 +49,11 @@ class GameRoom:
         # print(self.rooms)
         if len(self.clients) >= 2: return
         self.clients[writer] = player_id
-        spawn_x = 100 if len(self.clients) == 1 else 700
+        spawn_x = MAP_WIDTH // 8 if len(self.clients) == 1 else MAP_WIDTH * 7 // 8
         spawn_y = self.terrain_heights[spawn_x] - 15
         self.game_state["players"][player_id] = {
             "id": player_id, "x": spawn_x, "y": spawn_y, "hp": 100,
-            "vx": 0, "angle": 45 if spawn_x < 400 else 135,
+            "vx": 0, "angle": 45 if spawn_x < MAP_WIDTH / 2 else 135,
             "move_left": TURN_MOVE_DISTANCE
         }
         await self.server.send_message(writer, {"type": "join_ok", "room_name": self.name, "terrain_heights": self.terrain_heights})
@@ -62,7 +71,28 @@ class GameRoom:
             await self.broadcast_room_state()
     async def start_game(self):
         self.turn_order = list(self.game_state["players"].keys())
+        random.shuffle(self.turn_order)
+        self.game_state["phase"] = "roulette"
+        self.game_state["roulette_selection"] = None
+        await self.broadcast_room_state()
+        asyncio.create_task(self.run_roulette())
+
+    async def run_roulette(self):
+        start_time = time.time()
+        roulette_duration = 3
+        player_ids = self.turn_order
+
+        i = 0
+        while time.time() - start_time < roulette_duration:
+            self.game_state["roulette_selection"] = player_ids[i % len(player_ids)]
+            await self.broadcast_room_state()
+            await asyncio.sleep(0.1)
+            i += 1
+
+        # Final selection
+        self.game_state["current_turn"] = self.turn_order[0]
         self.current_turn_index = 0
+        del self.game_state["roulette_selection"]
         self.game_state["phase"] = "playing"
         self.physics_loop_task = asyncio.create_task(self.physics_loop())
         await self.start_turn()
@@ -72,6 +102,7 @@ class GameRoom:
         player_id = self.turn_order[self.current_turn_index]
         self.game_state["current_turn"] = player_id
         self.game_state["players"][player_id]["move_left"] = TURN_MOVE_DISTANCE
+        self.game_state["turn_start_time"] = time.time()
         await self.broadcast_room_state()
 
     async def next_turn(self):
@@ -125,7 +156,17 @@ class GameRoom:
                         if not await self.check_for_winner(): await self.next_turn()
                     state_changed = True # 포탄은 항상 움직이므로 상태 변경으로 간주
                 
-                # 3. 상태 변경이 있었으면 클라이언트에 알림
+                # 3. 턴 타이머 계산
+                if self.game_state["phase"] == "playing":
+                    turn_start_time = self.game_state.get("turn_start_time", 0)
+                    elapsed = time.time() - turn_start_time
+                    remaining = TURN_DURATION - elapsed
+                    self.game_state["turn_remaining_time"] = remaining
+                    if remaining <= 0:
+                        await self.next_turn()
+                    state_changed = True
+
+                # 4. 상태 변경이 있었으면 클라이언트에 알림
                 if state_changed:
                     await self.broadcast_room_state()
                 
@@ -156,9 +197,26 @@ class GameRoom:
             move = message.get("move", 0)
             dist = abs(move * (100 / TICK_RATE))
             if player["move_left"] > dist:
-                player["x"] += move * (100 / TICK_RATE)
-                player["x"] = max(15, min(MAP_WIDTH - 15, player["x"]))
-                # y좌표 업데이트는 physics_loop로 이전됨
+                original_x = player["x"]
+                new_x = original_x + move * (100 / TICK_RATE)
+                
+                wall_x_center = MAP_WIDTH // 2
+                wall_half_width = 5
+                player_radius = 15
+                
+                left_boundary = wall_x_center - wall_half_width - player_radius
+                right_boundary = wall_x_center + wall_half_width + player_radius
+
+                # If player is on the left and tries to cross
+                if original_x <= left_boundary and new_x > left_boundary:
+                    new_x = left_boundary
+                
+                # If player is on the right and tries to cross
+                elif original_x >= right_boundary and new_x < right_boundary:
+                    new_x = right_boundary
+                
+                player["x"] = new_x
+                player["x"] = max(player_radius, min(MAP_WIDTH - player_radius, player["x"]))
                 player["move_left"] -= dist
         elif msg_type == "aim":
             player["angle"] = message.get("angle", 0)
