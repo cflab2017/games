@@ -73,6 +73,7 @@ class GameClient:
         self.return_to_lobby_button = pygame.Rect(SCREEN_WIDTH // 2 - 120, SCREEN_HEIGHT // 2 + 50, 240, 50)
         self.lobby_error_message = "" # 로비 화면 오류 메시지
         self.explosions = []
+        self.hp_gain_effects = []
 
         self.angle = 90
         self.power = 0
@@ -159,6 +160,15 @@ class GameClient:
                 "max_radius": msg["radius"],
                 "start_time": time.time()
             })
+        elif msg_type == "hp_gain_effect":
+            player_id = msg.get("player_id")
+            player = self.game_state.get("players", {}).get(player_id)
+            if player:
+                self.hp_gain_effects.append({
+                    "text": f"+{msg.get('amount', 0)}",
+                    "pos": (player['x'], player['y']),
+                    "start_time": time.time()
+                })
 
 
     def get_host_ip(self):        
@@ -322,6 +332,17 @@ class GameClient:
             self.screen.blit(your_turn_text, (SCREEN_WIDTH // 2 - your_turn_text.get_width() // 2, 10))
             me = self.game_state["players"].get(self.my_id)
             if me: self.screen.blit(self.font.render(f"Move Left: {int(me['move_left'])}", True, WHITE), (10, 60))
+        
+        # Display all player HPs on the left side
+        players = sorted(list(self.game_state.get("players", {}).values()), key=lambda p: p.get("team", 0))
+        hp_display_y = 90 # Start below other UI elements
+        for player in players:
+            hp_text = f"{player['id']}: {player['hp']} HP"
+            rendered_text = self.font.render(hp_text, True, WHITE)
+            text_rect = rendered_text.get_rect(topleft=(10, hp_display_y))
+            self.screen.blit(rendered_text, text_rect)
+            hp_display_y += 25
+
         if self.is_charging:
             pygame.draw.rect(self.screen, BLACK, (SCREEN_WIDTH // 2 - 152, SCREEN_HEIGHT - 50, 304, 24), 2)
             pygame.draw.rect(self.screen, YELLOW, (SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 48, 300 * (self.power / MAX_POWER), 20))
@@ -398,6 +419,15 @@ class GameClient:
             pygame.draw.circle(surface, (*color, alpha), (current_radius, current_radius), current_radius)
             self.screen.blit(surface, (explosion["x"] - current_radius, explosion["y"] - current_radius))
 
+    def draw_minerals(self):
+        minerals = self.game_state.get("minerals", [])
+        for mineral in minerals:
+            x, y = int(mineral["x"]), int(mineral["y"])
+            # Draw a simple diamond shape
+            points = [(x, y - 8), (x + 8, y), (x, y + 8), (x - 8, y)]
+            pygame.draw.polygon(self.screen, (0, 255, 255), points) # Cyan color
+            pygame.draw.polygon(self.screen, WHITE, points, 1)
+
     def draw_player(self, player):
         color = GREEN if player["id"] == self.my_id else RED
         pos = (int(player["x"]), int(player["y"]))
@@ -408,7 +438,7 @@ class GameClient:
         self.screen.blit(self.font.render(player["id"], True, BLACK), (pos[0] - self.font.render(player["id"], True, BLACK).get_width() // 2, pos[1] - 50))
         
         angle_to_draw = self.angle if player["id"] == self.my_id else player['angle']
-        rad = math.radians(angle_to_draw if player['x'] < 400 else 180 - angle_to_draw)
+        rad = math.radians(angle_to_draw if player['x'] < SCREEN_WIDTH // 2 else 180 - angle_to_draw)
         end_pos = (pos[0] + 25 * math.cos(rad), pos[1] - 25 * math.sin(rad))
         pygame.draw.line(self.screen, BLACK, pos, end_pos, 4)
 
@@ -438,6 +468,27 @@ class GameClient:
                 pygame.draw.rect(self.screen, YELLOW, (x_pos - 20, y_pos, 10, text.get_height()), 0)
                 pygame.draw.rect(self.screen, YELLOW, (x_pos + text.get_width() + 10, y_pos, 10, text.get_height()), 0)
 
+    def draw_hp_gain_effects(self):
+        now = time.time()
+        for effect in self.hp_gain_effects[:]:
+            elapsed = now - effect["start_time"]
+            if elapsed > 1.0: # Effect lasts for 1 second
+                self.hp_gain_effects.remove(effect)
+                continue
+            
+            # Position floats up
+            pos_x, pos_y = effect["pos"]
+            pos_y -= elapsed * 30 # Move up
+
+            # Alpha fades out
+            alpha = 255 * (1 - elapsed)
+            
+            text_surface = self.big_font.render(effect["text"], True, GREEN)
+            text_surface.set_alpha(alpha)
+            
+            text_rect = text_surface.get_rect(center=(int(pos_x), int(pos_y - 50))) # Start above player head
+            self.screen.blit(text_surface, text_rect)
+
     def draw_game_screen(self):
         self.screen.fill(SKY_BLUE)
         if not self.game_state: return
@@ -458,10 +509,14 @@ class GameClient:
 
             pygame.draw.rect(self.screen, RED, (0, LAVA_LEVEL, SCREEN_WIDTH, SCREEN_HEIGHT - LAVA_LEVEL)) # NEW: 용암 그리기
 
-        for player in self.game_state.get("players", {}).values(): self.draw_player(player)
+        self.draw_minerals()
+        for player in self.game_state.get("players", {}).values():
+            if 'x' in player: # Only draw players that have been assigned a position
+                self.draw_player(player)
         for proj in self.game_state.get("projectiles", {}).values(): pygame.draw.circle(self.screen, BLACK, (int(proj['x']), int(proj['y'])), 5)
         
         self.draw_explosions()
+        self.draw_hp_gain_effects()
         self.draw_game_ui()
 
         if self.game_state.get("phase") == "roulette":

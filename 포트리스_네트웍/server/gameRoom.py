@@ -49,12 +49,9 @@ class GameRoom:
         # print(self.rooms)
         if len(self.clients) >= 2: return
         self.clients[writer] = player_id
-        spawn_x = MAP_WIDTH // 8 if len(self.clients) == 1 else MAP_WIDTH * 7 // 8
-        spawn_y = self.terrain_heights[spawn_x] - 15
+        # Defer position and team assignment until the game starts
         self.game_state["players"][player_id] = {
-            "id": player_id, "x": spawn_x, "y": spawn_y, "hp": 100,
-            "vx": 0, "angle": 45 if spawn_x < MAP_WIDTH / 2 else 135,
-            "move_left": TURN_MOVE_DISTANCE
+            "id": player_id, "hp": 100, "move_left": TURN_MOVE_DISTANCE
         }
         await self.server.send_message(writer, {"type": "join_ok", "room_name": self.name, "terrain_heights": self.terrain_heights})
         await self.broadcast_room_state()
@@ -69,9 +66,61 @@ class GameRoom:
                     self.game_state["phase"] = "game_over"
                     if self.physics_loop_task: self.physics_loop_task.cancel()
             await self.broadcast_room_state()
+    def _assign_player_positions_and_teams(self):
+        player_ids = list(self.game_state["players"].keys())
+        random.shuffle(player_ids)
+        
+        # Player 1 (left side)
+        p1_id = player_ids[0]
+        p1_spawn_x = MAP_WIDTH // 8
+        self.game_state["players"][p1_id].update({
+            "x": p1_spawn_x,
+            "y": self.terrain_heights[p1_spawn_x] - 15,
+            "vx": 0,
+            "angle": 45,
+            "team": 1
+        })
+
+        # Player 2 (right side)
+        p2_id = player_ids[1]
+        p2_spawn_x = MAP_WIDTH * 7 // 8
+        self.game_state["players"][p2_id].update({
+            "x": p2_spawn_x,
+            "y": self.terrain_heights[p2_spawn_x] - 15,
+            "vx": 0,
+            "angle": 135,
+            "team": 2
+        })
+
+        # The turn order is decided by this shuffle as well.
+        self.turn_order = player_ids
+
+    def _initialize_minerals(self):
+        self.game_state["minerals"] = []
+        mineral_count_per_side = 5
+        
+        # Team 1 minerals (left side)
+        for _ in range(mineral_count_per_side):
+            while True:
+                x = random.randint(MAP_WIDTH // 8 + 50, MAP_WIDTH // 2 - 50)
+                y = self.terrain_heights[x] + random.randint(20, 150) # Place it deeper and more varied
+                # Avoid placing minerals too close to each other
+                if all(math.hypot(x - m['x'], y - m['y']) > 30 for m in self.game_state["minerals"]):
+                    self.game_state["minerals"].append({"x": x, "y": y, "team": 1})
+                    break
+
+        # Team 2 minerals (right side)
+        for _ in range(mineral_count_per_side):
+            while True:
+                x = random.randint(MAP_WIDTH // 2 + 50, MAP_WIDTH * 7 // 8 - 50)
+                y = self.terrain_heights[x] + random.randint(20, 150) # Place it deeper and more varied
+                if all(math.hypot(x - m['x'], y - m['y']) > 30 for m in self.game_state["minerals"]):
+                    self.game_state["minerals"].append({"x": x, "y": y, "team": 2})
+                    break
+
     async def start_game(self):
-        self.turn_order = list(self.game_state["players"].keys())
-        random.shuffle(self.turn_order)
+        self._assign_player_positions_and_teams()
+        self._initialize_minerals() # Minerals depend on team territories, which are now set.
         self.game_state["phase"] = "roulette"
         self.game_state["roulette_selection"] = None
         await self.broadcast_room_state()
@@ -142,18 +191,56 @@ class GameRoom:
                 # 2. 포탄 물리 계산 (포탄이 날아갈 때만)
                 if self.game_state["phase"] == "projectile_flying":
                     proj_id, proj = next(iter(self.game_state["projectiles"].items()))
+                    
+                    # 다음 위치 계산
                     proj['vy'] += GRAVITY * (1 / TICK_RATE)
-                    proj['x'] += proj['vx'] * (1 / TICK_RATE)
-                    proj['y'] += proj['vy'] * (1 / TICK_RATE)
+                    new_x = proj['x'] + proj['vx'] * (1 / TICK_RATE)
+                    new_y = proj['y'] + proj['vy'] * (1 / TICK_RATE)
 
+                    # --- 연속 충돌 감지 (CCD) for Terrain ---
+                    terrain_collided = False
+                    collision_point = None
+                    steps = 5  # 보간 단계 수
+                    for i in range(1, steps + 1):
+                        t = i / steps
+                        interp_x = proj['x'] * (1 - t) + new_x * t
+                        interp_y = proj['y'] * (1 - t) + new_y * t
+                        px, py = int(interp_x), int(interp_y)
+
+                        if not (0 <= px < MAP_WIDTH and py < MAP_HEIGHT) or py >= self.terrain_heights[px]:
+                            terrain_collided = True
+                            collision_point = (interp_x, interp_y)
+                            break
+                    
+                    # 포탄 위치 업데이트
+                    proj['x'] = new_x
+                    proj['y'] = new_y
+
+                    # --- 플레이어 충돌 감지 (최종 위치에서) ---
                     px, py = int(proj['x']), int(proj['y'])
-                    collided = not (0 <= px < MAP_WIDTH and py < MAP_HEIGHT) or py >= self.terrain_heights[px]
-
+                    player_collided = False
+                    for player in self.game_state["players"].values():
+                        if math.hypot(px - player["x"], py - player["y"]) < 20: # 플레이어 반지름(15) + 포탄 반지름(5)
+                            if player['id'] == proj['owner_id']:
+                                if time.time() - proj.get('creation_time', 0) > 0.5:
+                                    player_collided = True
+                                    break
+                            else:
+                                player_collided = True
+                                break
+                    
+                    # --- 충돌 처리 ---
+                    collided = terrain_collided or player_collided
                     if collided:
+                        # 지형과 충돌했다면, 충돌 지점에서 폭발
+                        if terrain_collided and collision_point:
+                            proj['x'], proj['y'] = collision_point
+                        
                         await self.handle_explosion(proj)
                         del self.game_state["projectiles"][proj_id]
                         self.game_state["phase"] = "playing"
                         if not await self.check_for_winner(): await self.next_turn()
+                    
                     state_changed = True # 포탄은 항상 움직이므로 상태 변경으로 간주
                 
                 # 3. 턴 타이머 계산
@@ -176,10 +263,26 @@ class GameRoom:
 
     async def handle_explosion(self, projectile):
         radius, ex, ey = 45, int(projectile["x"]), int(projectile["y"])
+        
+        # Player damage
         for player in self.game_state["players"].values():
             if math.hypot(ex - player["x"], ey - player["y"]) < radius:
                 player["hp"] = max(0, player["hp"] - int(50 * (1 - math.hypot(ex - player["x"], ey - player["y"]) / radius)))
         
+        # Mineral collision
+        owner_id = projectile.get("owner_id")
+        owner_player = self.game_state["players"].get(owner_id)
+        if owner_player:
+            owner_team = owner_player.get("team")
+            for mineral in reversed(self.game_state.get("minerals", [])):
+                if math.hypot(ex - mineral["x"], ey - mineral["y"]) < radius:
+                    if owner_team != mineral["team"]:
+                        owner_player["hp"] += 10
+                        # Broadcast an event for the visual effect
+                        await self.broadcast({"type": "hp_gain_effect", "player_id": owner_id, "amount": 10})
+                    self.game_state["minerals"].remove(mineral)
+
+        # Terrain destruction
         for i in range(max(0, ex - radius), min(MAP_WIDTH, ex + radius)):
             if abs(i - ex) < radius:
                 depth = (radius**2 - (i - ex)**2)**0.5
@@ -225,9 +328,9 @@ class GameRoom:
             rad = math.radians(angle if player['x'] < MAP_WIDTH / 2 else 180 - angle)
             self.game_state["projectiles"][f"p_{uuid.uuid4().hex[:4]}"] = {
                 "owner_id": player_id, "x": player["x"], "y": player["y"] - 10,
-                "vx": math.cos(rad) * message.get("power", 0), "vy": -math.sin(rad) * message.get("power", 0)
+                "vx": math.cos(rad) * message.get("power", 0), "vy": -math.sin(rad) * message.get("power", 0),
+                "creation_time": time.time()
             }
-            self.game_state["phase"] = "projectile_flying"
-        
+            self.game_state["phase"] = "projectile_flying"         
         await self.check_for_winner()
         await self.broadcast_room_state()
